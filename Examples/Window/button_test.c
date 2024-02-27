@@ -16,17 +16,16 @@ int main(int argc, char* argv[]) {
     Window* window = Window_Create("Window Test", 640, 480 );
     Window_LoadTexture(window, "Assets/Image/background1.jpg");
 
-    Button* button = Button_Create(window->renderer, 100, 100, 300, 100, NULL, NULL);
-    Button_LoadTexture(button, "Assets/Image/button1.png");
+    Button* button = Button_Create(window->renderer, 50, 50, 100, 100, NULL, NULL);
+    Button_LoadTexture(button, "Assets/Image/button2.png");
 
     int running = 1;
     SDL_Event event;
 
     while (running) {
-        Button_Render(button);
+        
         //Window_Render(window);
-        
-        
+        Button_Render(button);
         
         while (SDL_PollEvent(&event)) {
             switch (event.type) {

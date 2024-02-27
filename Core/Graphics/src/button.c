@@ -21,7 +21,7 @@ Button* Button_Create(SDL_Renderer* renderer, int x, int y, int w, int h, void (
 
     // Initialiser les attributs renderer, texture, on_click et data
     button->renderer = renderer;
-    button->texture = IMG_LoadTexture(button->renderer, "../../Assets/Image/button1.png");
+    //button->texture = IMG_LoadTexture(button->renderer, "Assets/Image/button1.png");
     button->on_click = on_click;
     button->data = data;
 
@@ -58,7 +58,8 @@ int Button_SetSize(Button* button, int width, int height) {
     return 1;
 }
 
-int Button_LoadTexture(Button* button, const char* path) {
+int Button_LoadTexture(Button* button, const char* path)
+{
     // Load the image
     SDL_Surface* loadedSurface = IMG_Load(path);
     if (!loadedSurface) {
@@ -66,10 +67,16 @@ int Button_LoadTexture(Button* button, const char* path) {
         return 0;
     }
 
-    // Create a texture from the image
-    button->texture = SDL_CreateTextureFromSurface(button->renderer, loadedSurface);
+    // Create a new texture
+    button->texture = SDL_CreateTexture(button->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, loadedSurface->w, loadedSurface->h);
     if (!button->texture) {
         printf("Unable to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
+        return 0;
+    }
+
+    // Blit the surface onto the texture
+    if (SDL_BlitSurface(loadedSurface, NULL, button->texture, NULL) < 0) {
+        printf("Unable to blit surface to texture! SDL Error: %s\n", SDL_GetError());
         return 0;
     }
 
@@ -77,12 +84,8 @@ int Button_LoadTexture(Button* button, const char* path) {
     button->rect.w = loadedSurface->w;
     button->rect.h = loadedSurface->h;
 
-    // Free the surface
-    SDL_FreeSurface(loadedSurface);
-
     return 1;
 }
-
 // Fonction pour vérifier si un bouton est pressé
 int Button_IsPressed(Button* button, int x, int y) {
     // Vérifier si la souris est sur le bouton
