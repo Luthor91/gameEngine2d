@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-ENV DEBIAN_FRONTEND=noninteractive 
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
 RUN apt-get update && \
@@ -24,4 +24,4 @@ RUN cmake -B build -S . && \
     cmake --build build
 
 # Run the project
-CMD ["/app/build/my_project"]
+CMD ["/app/build/gameEngine"]
