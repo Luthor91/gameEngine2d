@@ -7,7 +7,9 @@ set(CMAKE_C_FLAGS "-O3")
 set(SOURCES
   Core/Graphics/src/window.c
   Core/Graphics/src/button.c
-  Examples/Window/button_test.c
+  Core/Graphics/src/sprite.c
+  Core/Graphics/src/renderer.c
+  Examples/SDL2/button_test.c
 )
 
 set(INCLUDE_DIRS

@@ -16,6 +16,8 @@ int Window_LoadTexture(Window* window, const char* path);
 void Window_Destroy(Window* window);
 void Window_Render(Window* window);
 
+SDL_Renderer* Window_GetRenderer(Window* window);
+
 int Window_SetIcon(Window* window, const char* filename);
 int Window_SetPosition(Window* window, int x, int y);
 int Window_SetSize(Window* window, int width, int height);
