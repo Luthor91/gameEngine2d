@@ -90,6 +90,5 @@ int Button_IsPressed(Button* button, int x, int y) {
 
 // Fonction pour dessiner un bouton
 void Button_Render(Button* button) {
-
     Sprite_Render(button->sprite);
 }

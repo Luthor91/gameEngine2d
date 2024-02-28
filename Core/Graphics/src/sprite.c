@@ -26,7 +26,7 @@ void Sprite_Destroy(Sprite* sprite) {
     sprite->texture = NULL;
 }
 
-void Sprite_SetRect(Sprite* sprite, SDL_Rect rect) {
+void Sprite_SetRectangle(Sprite* sprite, SDL_Rect rect) {
     sprite->rect = rect;
 }
 
@@ -41,6 +41,8 @@ void Sprite_SetSize(Sprite* sprite, int width, int height) {
 }
 
 void Sprite_Render(Sprite* sprite) {
-    SDL_Rect srcRect = { sprite->rect.x, sprite->rect.y, sprite->rect.w, sprite->rect.h };
+
+    SDL_RenderClear(sprite->renderer);
     SDL_RenderCopy(sprite->renderer, sprite->texture, NULL, &sprite->rect);
+    SDL_RenderPresent(sprite->renderer);
 }
