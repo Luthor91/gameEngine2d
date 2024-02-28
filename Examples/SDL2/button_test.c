@@ -25,18 +25,17 @@ int main(int argc, char* argv[]) {
 
     int total_button = 1;
 
-    SDL_Renderer** renderers = malloc(total_button * sizeof(SDL_Renderer*));
     Sprite** sprites = malloc(total_button * sizeof(Sprite*));
 
     for (int i = 0; i < total_button; i++) {
-        renderers[i] = Window_GetRenderer(window->window);
+        SDL_Renderer* renderer = Window_GetRenderer(window->window);
         
-        Button* button = Button_Create(renderers[i], 50, 50, 100, 100, NULL, NULL);
+        Button* button = Button_Create(renderer, 50, 50, 100, 100, NULL, NULL);
         
-        sprites[i] = Button_SetSprite(button, renderers[i], "Assets/Image/button2.png");
+        sprites[i] = Button_SetSprite(button, renderer, "Assets/Image/button2.png");
         
         Button_SetOnClick(button, onClick, (void*)i);
-        Sprite_SetRectangle(sprites[i], (SDL_Rect){5+i, 10+i, 100+i, 100+i});
+        Sprite_SetRectangle(&sprites[i], (SDL_Rect){5+i, 10+i, 100+i, 100+i});
     
     }
 
@@ -44,10 +43,13 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     while (running) {
-        Renderer_Clear(renderers, total_button);
-        //Renderer_Sprite_Copy(sprites, total_button);
-        Renderer_Present(renderers, total_button);
+        Renderer_Clear(sprites, total_button);
+        Renderer_Sprite_Copy(sprites, total_button);
+        Renderer_Present(sprites, total_button);
+
         //SDL_RenderPresent(window->renderer);
+        //SDL_RenderClear(window->renderer);
+        //SDL_RenderCopy(window->renderer, window->texture, NULL, NULL);
 
      
     }
