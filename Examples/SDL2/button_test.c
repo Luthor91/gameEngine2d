@@ -23,7 +23,7 @@ int main(int argc, char* argv[]) {
     Window* window = Window_Create("Window Test", 640, 480 );
     Window_LoadTexture(window, "Assets/Image/background1.jpg");
 
-    int total_button = 1;
+    int total_button = 300;
 
     Sprite** sprites = malloc(total_button * sizeof(Sprite*));
 
@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
         sprites[i] = button->sprite;
         
-        //Button_SetOnClick(button, onClick, (void*)i);
+        Button_SetOnClick(button, onClick, (void*)i);
         Sprite_SetRectangle(sprites[i], (SDL_Rect){20+i, 20+i, 30+i, 30+i});
     
     }
