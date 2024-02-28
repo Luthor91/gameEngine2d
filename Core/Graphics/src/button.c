@@ -19,9 +19,6 @@ Button* Button_Create(SDL_Renderer* renderer, int x, int y, int w, int h, void (
     button->on_click = on_click;
     button->data = data;
 
-    // Initialiser les attributs renderer, texture, on_click et data
-    button->renderer = renderer;
-    //button->texture = IMG_LoadTexture(button->renderer, "Assets/Image/button1.png");
     button->on_click = on_click;
     button->data = data;
 
@@ -34,8 +31,7 @@ void Button_Destroy(Button* button) {
         return;
     }
 
-    SDL_DestroyTexture(button->texture);
-    SDL_DestroyRenderer(button->renderer);
+    Sprite_Destroy(button->sprite);
     
     free(button);
 }
@@ -52,40 +48,23 @@ int Button_SetSize(Button* button, int width, int height) {
     button->rect.w = width;
     button->rect.h = height;
 
-    // Set the renderer's size and scale
-    SDL_RenderSetLogicalSize(button->renderer, width, height);
-
     return 1;
 }
 
-int Button_LoadTexture(Button* button, const char* path)
-{
-    // Load the image
-    SDL_Surface* loadedSurface = IMG_Load(path);
-    if (!loadedSurface) {
-        printf("Unable to load image %s! SDL_image Error: %s\n", path, IMG_GetError());
-        return 0;
-    }
+int Button_SetSprite(Button* button, SDL_Renderer* renderer, const char* path) {
 
-    // Create a new texture
-    button->texture = SDL_CreateTexture(button->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_TARGET, loadedSurface->w, loadedSurface->h);
-    if (!button->texture) {
-        printf("Unable to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
-        return 0;
-    }
-
-    // Blit the surface onto the texture
-    if (SDL_BlitSurface(loadedSurface, NULL, button->texture, NULL) < 0) {
-        printf("Unable to blit surface to texture! SDL Error: %s\n", SDL_GetError());
-        return 0;
-    }
-
-    // Get the width and height of the image
-    button->rect.w = loadedSurface->w;
-    button->rect.h = loadedSurface->h;
-
+    button->sprite = Sprite_Create(renderer, path);
+    
     return 1;
 }
+
+int Button_SetOnClick(Button* button, void (*on_click)(void*), void* data) {
+    button->on_click = on_click;
+    button->data = data;
+    return 1;
+}
+
+
 // Fonction pour vérifier si un bouton est pressé
 int Button_IsPressed(Button* button, int x, int y) {
     // Vérifier si la souris est sur le bouton
@@ -95,10 +74,8 @@ int Button_IsPressed(Button* button, int x, int y) {
             return 0;
         }
 
-        // Définir l'état du bouton comme pressé
         button->pressed = 1;
 
-        // Appeler la fonction de rappel pour le clic
         if (button->on_click) {
             button->on_click(button->data);
         }
@@ -106,7 +83,6 @@ int Button_IsPressed(Button* button, int x, int y) {
         return 1;
     }
 
-    // Si le bouton n'est pas pressé, définir l'état du bouton comme non pressé
     button->pressed = 0;
 
     return 0;
@@ -114,13 +90,6 @@ int Button_IsPressed(Button* button, int x, int y) {
 
 // Fonction pour dessiner un bouton
 void Button_Render(Button* button) {
-    SDL_Rect srcRect;
-    srcRect.x = 0;
-    srcRect.y = 0;
-    srcRect.w = button->rect.w;
-    srcRect.h = button->rect.h;
 
-    SDL_RenderClear(button->renderer);
-    SDL_RenderCopy(button->renderer, button->texture, &srcRect, &button->rect);  
-    SDL_RenderPresent(button->renderer);
+    Sprite_Render(button->sprite);
 }

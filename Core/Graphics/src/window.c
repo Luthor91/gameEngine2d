@@ -80,6 +80,10 @@ int Window_SetSize(Window* window, int width, int height) {
     return 1;
 }
 
+SDL_Renderer* Window_GetRenderer(Window* window) {
+    return window->renderer;
+}
+
 int Window_LoadTexture(Window* window, const char* path) {
     SDL_Surface* surface = IMG_Load(path);
     if (!surface) {
