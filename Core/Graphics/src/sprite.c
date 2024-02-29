@@ -50,6 +50,14 @@ void Sprite_SetScale(Sprite* sprite, double scale) {
 }
 
 void Sprite_SetRectangle(Sprite* sprite, SDL_Rect rect) {
+
+    int min_x = rect.x;
+    int min_y = rect.y;
+    int max_x = rect.w + rect.x;
+    int max_y = rect.y + rect.y;
+
+    SDL_Point center = (SDL_Point){max_x-min_x, max_y-min_y };
+    sprite->center = center;
     sprite->rect = rect;
 }
 
@@ -78,13 +86,21 @@ void Sprite_Render(Sprite* sprite) {
 // Copie une texture sur chaque renderer d'un tableau
 void Sprite_RenderAll(Sprite** sprites, int numSprites, SDL_Renderer* renderer) {
     for (int i = 0; i < numSprites; i++) {
-
         
         SDL_Rect newRect = Sprite_CalcScale(sprites[i]->rect, sprites[i]->scale);
-
         SDL_RenderCopy(renderer, sprites[i]->texture, NULL, &newRect);
     }
 }
+
+void Sprite_RenderRotAll(Sprite** sprites, int numSprites, SDL_Renderer* renderer) {
+    for (int i = 0; i < numSprites; i++) {
+        SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL;
+        SDL_Rect newRect = Sprite_CalcScale(sprites[i]->rect, sprites[i]->scale);
+        SDL_RenderCopyEx(renderer, sprites[i]->texture, NULL, &newRect, 60, &sprites[i]->center, flip);
+    }
+}
+
+        
 
 SDL_Rect Sprite_CalcScale(SDL_Rect rect, double scale) {
     int new_w = (int)(rect.w * scale);
@@ -99,5 +115,4 @@ SDL_Rect Sprite_CalcScale(SDL_Rect rect, double scale) {
 
     return rect;
 
-   
 }

@@ -25,32 +25,32 @@ int main(int argc, char* argv[]) {
     /****************************
         La création du renderer est obligatoire pour chaque fenêtre
     ***************************/
-    Window* window = Window_Create("Window Test", 0, 0, 960, 1080);
+    Window* window = Window_Create("Window Test", 0, 0, 720, 480);
     SDL_Renderer* renderer = Window_CreateRenderer(window);
     
     /****************************
         Bloc de code pour afficher une fenêtre
     ***************************/
     Window_SetSprite(window, renderer, "Assets/Image/background1.jpg");
-    Sprite_SetRectangle(window->sprite, (SDL_Rect){ 0, 0, 960, 1080} );
+    Sprite_SetRectangle(window->sprite, (SDL_Rect){ 0, 0, 720, 480} );
     Window_SyncRectWithSprite(window);
 
 
-    int total_button = 600;
+    int total_button = 63; // Nombre de bouton = total_button - 1
     int x = 0;
     int y = 0;
     Sprite** sprites = malloc(total_button * sizeof(Sprite*));
     Button** buttons = malloc(total_button * sizeof(Button*));
     
     // x=x+35 permet d'incrémenter la position des nouveaux élements
-    for (long i = 0; i < total_button; i++, x=x+35) {
+    for (long i = 0; i < total_button; i++, x=x+100) {
 
         Button* button = Button_Create(0, 0, 10, 10);
         Button_SetSprite(button, renderer, "Assets/Image/button2.png");
 
-        if (i % 31 == 0 && i != 0) {
+        if (i % 7 == 0 && i != 0) {
             x = 0;
-            y = y + 10;
+            y = y + 50;
         }
 
         Sprite_SetRectangle(button->sprite, (SDL_Rect){ x, y, 30, 30} );
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
     ***************************/
         SDL_RenderClear(renderer);
         Window_Render(window, renderer);
-        Sprite_RenderAll(sprites, total_button, renderer);
+        Sprite_RenderRotAll(sprites, total_button, renderer);
         SDL_RenderPresent(renderer);        
 
         SDL_Delay(10);

@@ -8,6 +8,8 @@ typedef struct Sprite {
     SDL_Renderer* renderer;
     SDL_Texture* texture;
     SDL_Rect rect;
+    SDL_Point center;
+    double angle;
     double scale;
     char* path;
 } Sprite;

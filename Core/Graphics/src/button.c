@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "../include/button.h"
+#include "../include/sprite.h"
 
 // Fonction pour créer un bouton
 Button* Button_Create(int x, int y, int width, int height) {
@@ -61,7 +62,7 @@ int Button_SetOnClick(Button* button, void (*on_click)(void*), void* data) {
 
 int Button_SyncRectWithSprite(Button* button) {
 
-    button->rect = button->sprite->rect;
+    button->rect = Sprite_CalcScale(button->sprite->rect, button->sprite->scale);
     return 1;
 }
 
@@ -75,14 +76,13 @@ int Button_IsPressed(Button* button, int x, int y) {
         }
 
         button->pressed = 1;
-
+        printf("x:%d, y:%d, w:%d, h:%d\n", button->rect.x, button->rect.y, button->rect.w, button->rect.h);
         if (button->on_click) {
             button->on_click(button->data);
         }
 
         return 1;
     }
-
     button->pressed = 0;
 
     return 0;
