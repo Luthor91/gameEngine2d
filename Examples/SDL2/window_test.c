@@ -1,4 +1,4 @@
-//  gcc -I/usr/include/SDL2 -o window_test window_test.c ../../Core/Graphics/src/window.c -lSDL2 -lSDL2_image -lm && ./window_test
+//  gcc -I/usr/include/SDL2 -o window_test window_test.c Core/Graphics/src/window.c -lSDL2 -lSDL2_image -lm && ./window_test
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>

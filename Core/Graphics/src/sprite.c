@@ -8,15 +8,31 @@ Sprite* Sprite_Create(SDL_Renderer* renderer, const char* filepath) {
     }
 
     Sprite* sprite = malloc(sizeof(Sprite));
-
-    sprite->renderer = renderer;
    
     sprite->texture = IMG_LoadTexture(renderer, filepath);
-
     if (!sprite->texture) {
-        fprintf(stderr, "sprite_init: %s\n", IMG_GetError());
+        fprintf(stderr, "Sprite_Create: %s\n", IMG_GetError());
         return 0;
     }
+
+    sprite->renderer = renderer;
+    if (!sprite->texture) {
+        fprintf(stderr, "Sprite_Create: %s\n", IMG_GetError());
+        return 0;
+    }
+
+    sprite->path = (char*) malloc(strlen(filepath) + 1);
+    if (sprite->path == NULL) {
+        fprintf(stderr, "Sprite_Create:Erreur d'allocation de mémoire pour le chemin du sprite\n");
+        return 0;
+    }
+
+    if (strcpy(sprite->path, filepath) == NULL) {
+        fprintf(stderr, "Sprite_Create: Erreur de copie du chemin dans le sprite\n");
+        return 0;
+    }
+
+    sprite->scale = 1.0;
 
     return sprite;
 }
@@ -24,6 +40,13 @@ Sprite* Sprite_Create(SDL_Renderer* renderer, const char* filepath) {
 void Sprite_Destroy(Sprite* sprite) {
     SDL_DestroyTexture(sprite->texture);
     sprite->texture = NULL;
+}
+
+void Sprite_SetScale(Sprite* sprite, double scale) {
+    if (scale == 0.0) {
+        return;
+    }
+    sprite->scale = scale;
 }
 
 void Sprite_SetRectangle(Sprite* sprite, SDL_Rect rect) {
@@ -40,9 +63,41 @@ void Sprite_SetSize(Sprite* sprite, int width, int height) {
     sprite->rect.h = height;
 }
 
+void Sprite_SetRenderer(Sprite* sprite, SDL_Renderer* renderer) {
+    sprite->renderer = renderer;
+    
+}
+
 void Sprite_Render(Sprite* sprite) {
 
-    SDL_RenderClear(sprite->renderer);
-    SDL_RenderCopy(sprite->renderer, sprite->texture, NULL, &sprite->rect);
-    SDL_RenderPresent(sprite->renderer);
+    SDL_Rect newRect = Sprite_CalcScale(sprite->rect, sprite->scale);
+
+    SDL_RenderCopy(sprite->renderer, sprite->texture, NULL, &newRect);
+}
+
+// Copie une texture sur chaque renderer d'un tableau
+void Sprite_RenderAll(Sprite** sprites, int numSprites, SDL_Renderer* renderer) {
+    for (int i = 0; i < numSprites; i++) {
+
+        
+        SDL_Rect newRect = Sprite_CalcScale(sprites[i]->rect, sprites[i]->scale);
+
+        SDL_RenderCopy(renderer, sprites[i]->texture, NULL, &newRect);
+    }
+}
+
+SDL_Rect Sprite_CalcScale(SDL_Rect rect, double scale) {
+    int new_w = (int)(rect.w * scale);
+    int new_h = (int)(rect.h * scale);
+
+    if (new_w >= 1) {
+        rect.w = (int)new_w;
+    }
+    if (new_h >= 1) {
+        rect.h = (int)new_h;
+    }
+
+    return rect;
+
+   
 }

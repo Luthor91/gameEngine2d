@@ -1,4 +1,4 @@
-//  gcc -I/usr/include/SDL2 -o button_test button_test.c  ../../Core/Graphics/src/button.c ../../Core/Graphics/src/window.c -lSDL2 -lSDL2_image -lm && ./button_test
+//  gcc -I/usr/include/SDL2 -o Examples/SDL2/button_test button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/renderer.c -lSDL2 -lSDL2_image -lm && ./button_test
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -14,18 +14,19 @@ int main(int argc, char* argv[]) {
     }
 
     Window* window = Window_Create("Window Test", 640, 480 );
-    Window_LoadTexture(window, "Assets/Image/background1.jpg");
+    Window_LoadTexture(window, "../../Assets/Image/background1.jpg");
 
-    Button* button = Button_Create(window->renderer, 50, 50, 100, 100, NULL, NULL);
-    Button_LoadTexture(button, "Assets/Image/button2.png");
+    Button* button = Button_Create(window->renderer, 100, 100, 300, 100, NULL, NULL);
+    Button_LoadTexture(button, "../../Assets/Image/button1.png");
 
     int running = 1;
     SDL_Event event;
 
     while (running) {
-        
-        //Window_Render(window);
         Button_Render(button);
+        Window_Render(window);
+        
+        
         
         while (SDL_PollEvent(&event)) {
             switch (event.type) {

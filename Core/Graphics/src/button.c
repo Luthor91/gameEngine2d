@@ -4,7 +4,7 @@
 #include "../include/button.h"
 
 // Fonction pour créer un bouton
-Button* Button_Create(SDL_Renderer* renderer, int x, int y, int w, int h, void (*on_click)(void*), void* data) {
+Button* Button_Create(int x, int y, int width, int height) {
     Button* button = (Button*) malloc(sizeof(Button));
     if (!button) {
         fprintf(stderr, "Button_Create: %s\n", IMG_GetError());
@@ -13,14 +13,9 @@ Button* Button_Create(SDL_Renderer* renderer, int x, int y, int w, int h, void (
 
     button->rect.x = x;
     button->rect.y = y;
-    button->rect.w = w;
-    button->rect.h = h;
+    button->rect.w = width;
+    button->rect.h = height;
     button->pressed = 0;
-    button->on_click = on_click;
-    button->data = data;
-
-    button->on_click = on_click;
-    button->data = data;
 
     return button;
 }
@@ -64,12 +59,17 @@ int Button_SetOnClick(Button* button, void (*on_click)(void*), void* data) {
     return 1;
 }
 
+int Button_SyncRectWithSprite(Button* button) {
+
+    button->rect = button->sprite->rect;
+    return 1;
+}
 
 // Fonction pour vérifier si un bouton est pressé
 int Button_IsPressed(Button* button, int x, int y) {
-    // Vérifier si la souris est sur le bouton
+
     if (x >= button->rect.x && x <= button->rect.x + button->rect.w && y >= button->rect.y && y <= button->rect.y + button->rect.h) {
-        // Si le bouton est déjà pressé, ne rien faire
+
         if (button->pressed) {
             return 0;
         }
@@ -88,7 +88,6 @@ int Button_IsPressed(Button* button, int x, int y) {
     return 0;
 }
 
-// Fonction pour dessiner un bouton
 void Button_Render(Button* button) {
     Sprite_Render(button->sprite);
 }
