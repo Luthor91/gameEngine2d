@@ -25,10 +25,10 @@ int main(int argc, char* argv[]) {
     /****************************
         Bloc de code pour afficher une fenêtre
     ***************************/
-    Window* window = Window_Init("Window Test", 0, 0, 720, 480, "Assets/Image/background1.jpg", 360, 48, 1.0, 0.0); // here
+    Window* window = Window_Init("Window Test", 0, 0, 720, 480, "Assets/Image/background1.jpg", 360, 240, 1.0, 0.0); // here
     SDL_Renderer* renderer = Window_GetRenderer(window);
     
-    int total_button = 1; // Nombre de bouton = total_button - 1
+    int total_button = 5; // Nombre de bouton = total_button - 1
     int x = 0, y = 0;
     Sprite** sprites = malloc(total_button * sizeof(Sprite*));
     Button** buttons = malloc(total_button * sizeof(Button*));
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
             y = y + 50;
         }
 
-        Sprite* sprite = Sprite_Init(renderer, "Assets/Image/button2.png", x, y, 30, 30, (int)x+30/2, (int)y+30/2, i/20, i/10);
+        Sprite* sprite = Sprite_Init(renderer, "Assets/Image/button2.png", (SDL_Rect){200, 200, 30, 30}, (SDL_Point){360, 240}, 1, 1.0*i);
         Button* button = Button_InheritSprite(sprite, onClick, (void*)i);
         
         sprites[i] = button->sprite;

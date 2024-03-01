@@ -65,7 +65,7 @@ Window* Window_Init(const char* title, int x, int y, int width, int height, cons
     window->rect.w = width;
     window->rect.h = height;
 
-    Sprite* sprite = Sprite_Init(renderer, sprite_path, x, y, width, height, center_x, center_y, scale, angle);
+    Sprite* sprite = Sprite_Init(renderer, sprite_path, (SDL_Rect){x, y, width, height}, (SDL_Point){center_x, center_y}, scale, angle);
 
     window->sprite = sprite;
 

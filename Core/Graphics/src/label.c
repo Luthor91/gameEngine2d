@@ -1,4 +1,4 @@
-#include "../include/sprite.h"
+#include "../include/label.h"
 
 /**************************
     Fichier source décrivant les fonctions associé au Sprite : 
@@ -29,104 +29,24 @@
 /**************************
     Initialisation du sprite
 ***************************/
-Sprite* Sprite_Create(SDL_Renderer* renderer, const char* filepath) {
 
-    if (!renderer) {
-        fprintf(stderr, "Error renderer doesn't exists\n");
-        return 0;
-    }
-
-    Sprite* sprite = malloc(sizeof(Sprite));
-   
-    sprite->texture = IMG_LoadTexture(renderer, filepath);
-    if (!sprite->texture) {
-        fprintf(stderr, "Sprite_Create: %s\n", IMG_GetError());
-        return 0;
-    }
-
-    sprite->renderer = renderer;
-    if (!sprite->texture) {
-        fprintf(stderr, "Sprite_Create: %s\n", IMG_GetError());
-        return 0;
-    }
-
-    sprite->path = (char*) malloc(strlen(filepath) + 1);
-    if (sprite->path == NULL) {
-        fprintf(stderr, "Sprite_Create:Erreur d'allocation de mémoire pour le chemin du sprite\n");
-        return 0;
-    }
-
-    if (strcpy(sprite->path, filepath) == NULL) {
-        fprintf(stderr, "Sprite_Create: Erreur de copie du chemin dans le sprite\n");
-        return 0;
-    }
-
-    sprite->scale = 1.0;
-
-    return sprite;
-}
-
-Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect rect, SDL_Point pos_center, double scale, double angle) {
-
-    if (!renderer) {
-        fprintf(stderr, "Error renderer doesn't exists\n");
-        return 0;
-    }
-
-    if (scale == 0) {
-        scale = 1;
-    }
-
-    Sprite* sprite = malloc(sizeof(Sprite));
-    SDL_Point center_point;
-    //SDL_Rect rect;
-   
-    sprite->texture = IMG_LoadTexture(renderer, filepath);
-    if (!sprite->texture) {
-        fprintf(stderr, "Sprite_Init: %s\n", IMG_GetError());
-        return 0;
-    }
-
-    sprite->renderer = renderer;
-    if (!sprite->texture) {
-        fprintf(stderr, "Sprite_Init: %s\n", IMG_GetError());
-        return 0;
-    }
-
-    sprite->path = (char*) malloc(strlen(filepath) + 1);
-    if (sprite->path == NULL) {
-        fprintf(stderr, "Sprite_Init:Erreur d'allocation de mémoire pour le chemin du sprite\n");
-        return 0;
-    }
-
-    if (strcpy(sprite->path, filepath) == NULL) {
-        fprintf(stderr, "Sprite_Init: Erreur de copie du chemin dans le sprite\n");
-        return 0;
-    }
+Label* Label_Init(SDL_Renderer* renderer, const char* font, int size_font, SDL_Color color_font, const char* text, int pos_x, int pos_y, int width, int height, int center_x, int center_y, double scale, double angle) {
     
-    int new_w = (int)(rect.w * scale);
-    int new_h = (int)(rect.h * scale);
+    TTF_Font* ttf_font = TTF_OpenFont(font, size_font);
 
-    if (new_w >= 1) {
-        rect.w = (int)new_w;
-    }
-    if (new_h >= 1) {
-        rect.h = (int)new_h;
-    }
-/*
-    rect.x = pos_x;
-    rect.y = pos_y;
-    rect.w = width;
-    rect.h = height;
-    center_point.x = center_x;
-    center_point.y = center_y;
-    */
-    sprite->center = pos_center;
-    sprite->rect = rect;
-    sprite->scale = scale;
-    sprite->angle = angle;
+    SDL_Color color = color_font;
 
-    return sprite;
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(ttf_font, text, color); 
+
+    SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+    SDL_Rect Message_rect; //create a rect
+    Message_rect.x = 0;  //controls the rect's x coordinate 
+    Message_rect.y = 0; // controls the rect's y coordinte
+    Message_rect.w = 100; // controls the width of the rect
+    Message_rect.h = 100; // controls the height of the rect
+
+    return label;
 }
 
 /**************************

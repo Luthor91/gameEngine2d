@@ -21,7 +21,7 @@ typedef struct Sprite {
 ***************************/
 Sprite* Sprite_Create(SDL_Renderer* renderer, const char* filepath);
 
-Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, int pos_x, int pos_y, int width, int height, int center_x, int center_y, double scale, double angle);
+Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect rect, SDL_Point pos_center, double scale, double angle);
 void Sprite_SetRectangle(Sprite* sprite, SDL_Rect rect);
 
 void Sprite_SetScale(Sprite* sprite, double scale);
