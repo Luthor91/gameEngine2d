@@ -1,4 +1,4 @@
-//  gcc -I/usr/include/SDL2 -o button_test button_test.c  ../../Core/Graphics/src/button.c ../../Core/Graphics/src/window.c -lSDL2 -lSDL2_image -lm && ./button_test
+//  gcc -I/usr/include/SDL2 -o Examples/SDL2/button_test button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/renderer.c -lSDL2 -lSDL2_image -lm && ./button_test
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 
     while (running) {
         Button_Render(button);
-        //Window_Render(window);
+        Window_Render(window);
         
         
         

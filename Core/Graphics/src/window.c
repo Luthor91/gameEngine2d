@@ -2,112 +2,149 @@
 #include <SDL2/SDL_image.h>
 
 #include "../include/window.h"
+#include "../include/sprite.h"
 
-Window* Window_Create(const char* title, int width, int height) {
-    // Create the window
-    SDL_Window* window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+Window* Window_Create(const char* title, int x, int y, int width, int height) {
+    Window* window = (Window*)malloc(sizeof(Window));
     if (!window) {
-        // Handle the error
+        fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
         return NULL;
     }
 
-    // Create the renderer
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer) {
-        // Handle the error
-        SDL_DestroyWindow(window);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    if (!sdl_window) {
+        fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
+        Window_Destroy(window);
         return NULL;
     }
 
-    // Allocate memory for the window structure
-    Window* window_struct = (Window*)malloc(sizeof(Window));
-    if (!window_struct) {
-        // Handle the error
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
-        return NULL;
-    }
+    window->window = sdl_window;
+    window->rect.x = x;
+    window->rect.y = y;
+    window->rect.w = width;
+    window->rect.h = height;
 
-    // Set the window and renderer
-    window_struct->window = window;
-    window_struct->renderer = renderer;
-
-    return window_struct;
+    return window;
 }
 
+Window* Window_Init(const char* title, int x, int y, int width, int height, const char* sprite_path, int center_x, int center_y, double scale, double angle) {
+    if (!sprite_path) {
+        fprintf(stderr, "Window_Init: Sprite invalide\n");
+        return NULL;
+    }
+    
+    if (scale <= 0.0) {
+        fprintf(stderr, "Window_Init: Scale invalide\n");
+        return NULL;
+    }
+    Window* window = (Window*)malloc(sizeof(Window));
+    if (!window) {
+        fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
+        return NULL;
+    }
+
+    SDL_Window* sdl_window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    if (!sdl_window) {
+        fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
+        Window_Destroy(window);
+        return NULL;
+    }
+
+    window->window = sdl_window;
+
+    SDL_Renderer* renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!sdl_window) {
+        fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
+        Window_Destroy(window);
+        return NULL;
+    }
+
+    
+    window->rect.x = x;
+    window->rect.y = y;
+    window->rect.w = width;
+    window->rect.h = height;
+
+    Sprite* sprite = Sprite_Init(renderer, sprite_path, x, y, width, height, center_x, center_y, scale, angle);
+
+    window->sprite = sprite;
+
+    return window;
+}
+
+
 void Window_Destroy(Window* window) {
+
     if (!window) {
         return;
     }
 
-    SDL_DestroyTexture(window->texture);
-    SDL_DestroyRenderer(window->renderer);
+    SDL_DestroyTexture(window->sprite->texture);
+    SDL_DestroyRenderer(window->sprite->renderer);
     SDL_DestroyWindow(window->window);
 
     free(window);
 }
 
 int Window_SetIcon(Window* window, const char* filename) {
-    // Load the icon
+
     SDL_Surface* icon = SDL_LoadBMP(filename);
     if (!icon) {
-        // Handle the error
         return 0;
     }
 
-    // Set the window's icon
     SDL_SetWindowIcon(window->window, icon);
 
-    // Free the surface
     SDL_FreeSurface(icon);
 
     return 1;
 }
 
 int Window_SetPosition(Window* window, int x, int y) {
-    // Set the window's position on the screen
+
     SDL_SetWindowPosition(window->window, x, y);
+    
     return 1;
 }
 
 int Window_SetSize(Window* window, int width, int height) {
-    // Set the window's size and scale
-    SDL_SetWindowSize(window->window, width, height);
 
-    // Set the renderer's size and scale
-    SDL_RenderSetLogicalSize(window->renderer, width, height);
+    SDL_SetWindowSize(window->window, width, height);
+    SDL_RenderSetLogicalSize(window->sprite->renderer, width, height);
 
     return 1;
+}
+
+int Window_SyncRectWithSprite(Window* window) {
+
+    window->rect = window->sprite->rect;
+    return 1;
+}
+
+SDL_Renderer* Window_CreateRenderer(Window* window) {
+    SDL_Renderer* renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer) {
+        fprintf(stderr, "Window_CreateRenderer: %s\n", IMG_GetError());
+        return NULL;
+    }
+    return renderer;
 }
 
 SDL_Renderer* Window_GetRenderer(Window* window) {
-    return window->renderer;
+    if (!window->sprite->renderer) {
+        fprintf(stderr, "Window_GetRenderer: Invalid renderer\n");
+    }
+    
+    return window->sprite->renderer;
 }
 
-int Window_LoadTexture(Window* window, const char* path) {
-    SDL_Surface* surface = IMG_Load(path);
-    if (!surface) {
-        fprintf(stderr, "IMG_Load: %s\n", IMG_GetError());
+
+int Window_SetSprite(Window* window, SDL_Renderer* renderer, const char* path) {
+    if (!renderer) {
+        fprintf(stderr, "Window_SetSprite: %s\n", IMG_GetError());
         return 0;
     }
-
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(window->renderer, surface);
-    SDL_FreeSurface(surface);
-
-    if (!texture) {
-        fprintf(stderr, "SDL_CreateTextureFromSurface: %s\n", SDL_GetError());
-        return 0;
-    }
-
-    window->texture = texture;
-
+    window->sprite = Sprite_Create(renderer, path);
+    
     return 1;
-}
-
-void Window_Render(Window* window) {
-
-    SDL_RenderClear(window->renderer);
-    SDL_RenderCopy(window->renderer, window->texture, NULL, NULL);
-    SDL_RenderPresent(window->renderer);
-
 }
