@@ -10,7 +10,7 @@ typedef struct Window {
 } Window;
 
 Window* Window_Create(const char* title, int x, int y, int width, int height);
-Window* Window_Init(const char* title, SDL_rect rect, const char* sprite_path, SDL_Point pos_center, double scale, double angle);
+Window* Window_Init(const char* title, SDL_Rect rect, const char* sprite_path, SDL_Point pos_center, double scale, double angle);
 
 int Window_LoadTexture(Window* window, const char* path);
 void Window_Destroy(Window* window);

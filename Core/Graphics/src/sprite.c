@@ -74,12 +74,10 @@ Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect rect,
     }
 
     if (scale == 0) {
-        scale = 1;
+        scale = 1.0;
     }
 
     Sprite* sprite = malloc(sizeof(Sprite));
-    SDL_Point center_point;
-    //SDL_Rect rect;
    
     sprite->texture = IMG_LoadTexture(renderer, filepath);
     if (!sprite->texture) {
@@ -113,14 +111,7 @@ Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect rect,
     if (new_h >= 1) {
         rect.h = (int)new_h;
     }
-/*
-    rect.x = pos_x;
-    rect.y = pos_y;
-    rect.w = width;
-    rect.h = height;
-    center_point.x = center_x;
-    center_point.y = center_y;
-    */
+
     sprite->center = pos_center;
     sprite->rect = rect;
     sprite->scale = scale;
@@ -209,14 +200,35 @@ void Sprite_UpdateRect(Sprite* sprite) {
 ***************************/
 
 void Sprite_RenderStatic(Sprite* sprite, SDL_Renderer* renderer) {
+    if (!renderer){
+        printf("Sprite_RenderStatic: Erreur renderer invalide\n");
+        return;
+    }
+    if (!sprite){
+        printf("Sprite_RenderStatic: Erreur sprite invalide\n");
+        return;
+    }
+    
     SDL_RenderCopy(renderer, sprite->texture, NULL, &sprite->rect);
 }
 
 void Sprite_RenderTransformable(Sprite* sprite, SDL_Renderer* renderer, SDL_RendererFlip flip) {
+    if (!renderer){
+        printf("Sprite_RenderTransformable: Erreur renderer invalide\n");
+        return;
+    }
+    if (!sprite){
+        printf("Sprite_RenderTransformable: Erreur sprite invalide\n");
+        return;
+    }
     SDL_RenderCopyEx(renderer, sprite->texture, NULL, &sprite->rect, sprite->angle, &sprite->center, flip);
 }
 
 void Sprites_RenderStatic(Sprite** sprites, int numSprites, SDL_Renderer* renderer) {
+    if (!renderer){
+        printf("Sprites_RenderStatic: Erreur renderer invalide\n");
+        return;
+    }
     for (int i = 0; i < numSprites; i++) {
         SDL_RenderCopy(renderer, sprites[i]->texture, NULL, &sprites[i]->rect);
     }

@@ -1,12 +1,15 @@
-//  gcc -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c -lSDL2 -lSDL2_image -lm && ./button_test
+//  gcc -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lm && ./button_test
+// gcc -O3 -g -Wall -Wextra -std=c89 -pedantic -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./button_test
 
 #include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "../../Core/Graphics/include/window.h"
 #include "../../Core/Graphics/include/button.h"
 #include "../../Core/Graphics/include/sprite.h"
+#include "../../Core/Graphics/include/label.h"
 
 /****************************
     Fonction utilisé lors de l'appuie du bouton
@@ -25,15 +28,19 @@ int main(int argc, char* argv[]) {
     /****************************
         Bloc de code pour afficher une fenêtre
     ***************************/
-    Window* window = Window_Init("Window Test", (SDL_Rect){0, 0, 720, 480}, "Assets/Image/background1.jpg", (SDL_Point){360, 240}, 1.0, 0.0); // here
+    Window* window = Window_Init("Window Test", (SDL_Rect){0, 0, 720, 480}, "Assets/Image/background1.jpg", (SDL_Point){360, 240}, 1.0, 0.0);
     SDL_Renderer* renderer = Window_GetRenderer(window);
     
-    int total_button = 5; // Nombre de bouton = total_button - 1
+    Label* label = Label_Init(renderer, (SDL_Rect){50, 50, 100, 100}, (SDL_Point){360, 240}, (SDL_Color){255, 0, 0}, "../../Assets/Fonts/SIXTY.TTF", "Ceci est un texte", 15, 1.0, 0.0);
+    
+    int total_button = 5;
     int x = 0, y = 0;
     Sprite** sprites = malloc(total_button * sizeof(Sprite*));
     Button** buttons = malloc(total_button * sizeof(Button*));
     
     // x=x+35 permet d'incrémenter la position des nouveaux élements
+    printf("Window : \n\tx:%d, y:%d, w:%d, h:%d\n", window->sprite->rect.x, window->sprite->rect.y, window->sprite->rect.w, window->sprite->rect.h);
+
     for (long i = 0; i < total_button; i++, x=x+100) {
 
         if (i % 7 == 0 && i != 0) {
@@ -47,7 +54,7 @@ int main(int argc, char* argv[]) {
         sprites[i] = button->sprite;
         buttons[i] = button;
 
-        printf("x:%d, y:%d, w:%d, h:%d\n", button->sprite->rect.x, button->sprite->rect.y, button->sprite->rect.w, button->sprite->rect.h);
+        printf("Button : \n\tx:%d, y:%d, w:%d, h:%d\n", button->sprite->rect.x, button->sprite->rect.y, button->sprite->rect.w, button->sprite->rect.h);
 
     }
 

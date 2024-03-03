@@ -27,23 +27,24 @@ Window* Window_Create(const char* title, int x, int y, int width, int height) {
     return window;
 }
 
-Window* Window_Init(const char* title, int x, int y, int width, int height, const char* sprite_path, int center_x, int center_y, double scale, double angle) {
+Window* Window_Init(const char* title, SDL_Rect rect, const char* sprite_path, SDL_Point pos_center, double scale, double angle) {
+
     if (!sprite_path) {
         fprintf(stderr, "Window_Init: Sprite invalide\n");
         return NULL;
     }
     
     if (scale <= 0.0) {
-        fprintf(stderr, "Window_Init: Scale invalide\n");
-        return NULL;
+        scale = 1.0;
     }
+
     Window* window = (Window*)malloc(sizeof(Window));
     if (!window) {
         fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
         return NULL;
     }
 
-    SDL_Window* sdl_window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, rect.x, rect.y, rect.w, rect.h, SDL_WINDOW_SHOWN);
     if (!sdl_window) {
         fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
         Window_Destroy(window);
@@ -51,27 +52,28 @@ Window* Window_Init(const char* title, int x, int y, int width, int height, cons
     }
 
     window->window = sdl_window;
-
-    SDL_Renderer* renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!sdl_window) {
         fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
         Window_Destroy(window);
         return NULL;
     }
 
+    window->rect = rect;
+
+    SDL_Renderer* renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer) {
+        fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
+        return NULL;
+    }
     
-    window->rect.x = x;
-    window->rect.y = y;
-    window->rect.w = width;
-    window->rect.h = height;
-
-    Sprite* sprite = Sprite_Init(renderer, sprite_path, (SDL_Rect){x, y, width, height}, (SDL_Point){center_x, center_y}, scale, angle);
-
-    window->sprite = sprite;
+    window->sprite = Sprite_Init(renderer, sprite_path, rect, pos_center, scale, angle);
+    if (!window->sprite) {
+        fprintf(stderr, "Window_Init: Erreur création du sprite\n");
+        return NULL;
+    }
 
     return window;
 }
-
 
 void Window_Destroy(Window* window) {
 
@@ -137,7 +139,6 @@ SDL_Renderer* Window_GetRenderer(Window* window) {
     
     return window->sprite->renderer;
 }
-
 
 int Window_SetSprite(Window* window, SDL_Renderer* renderer, const char* path) {
     if (!renderer) {
