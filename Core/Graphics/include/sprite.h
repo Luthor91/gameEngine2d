@@ -14,8 +14,6 @@ typedef struct Sprite {
     char* path;
 } Sprite;
 
-#include "../include/sprite.h"
-
 /**************************
     Initialisation du sprite
 ***************************/

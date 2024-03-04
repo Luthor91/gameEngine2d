@@ -2,7 +2,6 @@
 #include <SDL2/SDL_image.h>
 
 #include "../include/button.h"
-#include "../include/sprite.h"
 
 // Fonction pour créer un bouton
 Button* Button_Create(int x, int y, int width, int height) {

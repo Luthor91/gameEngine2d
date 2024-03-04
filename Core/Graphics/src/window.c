@@ -1,17 +1,13 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
 #include "../include/window.h"
-#include "../include/sprite.h"
 
-Window* Window_Create(const char* title, int x, int y, int width, int height) {
+Window* Window_Create(const char* title, SDL_Rect rect) {
     Window* window = (Window*)malloc(sizeof(Window));
     if (!window) {
         fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
         return NULL;
     }
 
-    SDL_Window* sdl_window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, rect.x, rect.y, rect.w, rect.h, SDL_WINDOW_SHOWN);
     if (!sdl_window) {
         fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
         Window_Destroy(window);
@@ -19,10 +15,7 @@ Window* Window_Create(const char* title, int x, int y, int width, int height) {
     }
 
     window->window = sdl_window;
-    window->rect.x = x;
-    window->rect.y = y;
-    window->rect.w = width;
-    window->rect.h = height;
+    window->rect = rect;
 
     return window;
 }

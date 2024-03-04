@@ -1,6 +1,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "sprite.h"
 
 typedef struct Window {
@@ -9,7 +11,7 @@ typedef struct Window {
     Sprite* sprite;
 } Window;
 
-Window* Window_Create(const char* title, int x, int y, int width, int height);
+Window* Window_Create(const char* title, SDL_Rect rect);
 Window* Window_Init(const char* title, SDL_Rect rect, const char* sprite_path, SDL_Point pos_center, double scale, double angle);
 
 int Window_LoadTexture(Window* window, const char* path);
@@ -17,7 +19,6 @@ void Window_Destroy(Window* window);
 void Window_Render(Window* window, SDL_Renderer* renderer);
 SDL_Renderer* Window_GetRenderer(Window* window);
 
-Window* Window_Create(const char* title, int x, int y, int w, int h);
 void Window_Destroy(Window* button);
 int Window_SetPosition(Window* window, int x, int y);
 int Window_SetSize(Window* window, int width, int height);
