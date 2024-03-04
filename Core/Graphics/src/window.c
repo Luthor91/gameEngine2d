@@ -1,13 +1,13 @@
 #include "../include/window.h"
 
-Window* Window_Create(const char* title, SDL_Rect rect) {
+Window* Window_Create(const char* title, SDL_Rect* rect) {
     Window* window = (Window*)malloc(sizeof(Window));
     if (!window) {
         fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
         return NULL;
     }
 
-    SDL_Window* sdl_window = SDL_CreateWindow(title, rect.x, rect.y, rect.w, rect.h, SDL_WINDOW_SHOWN);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, rect->x, rect->y, rect->w, rect->h, SDL_WINDOW_SHOWN);
     if (!sdl_window) {
         fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
         Window_Destroy(window);
@@ -20,7 +20,7 @@ Window* Window_Create(const char* title, SDL_Rect rect) {
     return window;
 }
 
-Window* Window_Init(const char* title, SDL_Rect rect, const char* sprite_path, SDL_Point pos_center, double scale, double angle) {
+Window* Window_Init(const char* title, SDL_Rect* rect, const char* sprite_path, SDL_Point* pos_center, double scale, double angle) {
 
     if (!sprite_path) {
         fprintf(stderr, "Window_Init: Sprite invalide\n");
@@ -37,7 +37,7 @@ Window* Window_Init(const char* title, SDL_Rect rect, const char* sprite_path, S
         return NULL;
     }
 
-    SDL_Window* sdl_window = SDL_CreateWindow(title, rect.x, rect.y, rect.w, rect.h, SDL_WINDOW_SHOWN);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, rect->x, rect->y, rect->w, rect->h, SDL_WINDOW_SHOWN);
     if (!sdl_window) {
         fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
         Window_Destroy(window);

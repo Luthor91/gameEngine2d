@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     /****************************
         Bloc de code pour afficher une fenêtre
     ***************************/
-    Window* window = Window_Init("Window Test", (SDL_Rect){0, 0, 720, 480}, "Assets/Image/background1.jpg", (SDL_Point){360, 240}, 1.0, 0.0);
+    Window* window = Window_Init("Window Test", &(SDL_Rect){0, 0, 720, 480}, "Assets/Image/background1.jpg", &(SDL_Point){360, 240}, 1.0, 0.0);
     SDL_Renderer* renderer = Window_GetRenderer(window);
     
     //Window* window = Window_Create("Window Test", (SDL_Rect){0, 0, 720, 480});
@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     
     Label* label = Label_Init(renderer, &(SDL_Rect){50, 50, 100, 100}, &(SDL_Point){360, 240}, &(SDL_Color){255, 255, 0}, "Assets/Fonts/Open_Sans/OpenSans-Regular.ttf", "Ceci est un texte", 25, 1.0, 0.0);
     
-    //printf("Button : \n\tx:%d, y:%d, w:%d, h:%d\n", button->sprite->rect.x, button->sprite->rect.y, button->sprite->rect.w, button->sprite->rect.h);
+    //printf("Button : \n\tx:%d, y:%d, w:%d, h:%d\n", button->sprite->rect->x, button->sprite->rect->y, button->sprite->rect->w, button->sprite->rect->h);
 
     int isRunning = 1;
     SDL_Event event;
@@ -62,9 +62,10 @@ int main(int argc, char* argv[]) {
     ***************************/
         SDL_RenderClear(renderer);
 
-        printf("tst\n");
+        printf("tst 1\n");
+        
         Sprite_RenderStatic(window->sprite, renderer);
-        printf("tst\n");
+
 
         Label_Renderer(label, renderer);
 

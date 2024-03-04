@@ -7,8 +7,8 @@
         SDL_Renderer* renderer;
         SDL_Texture* texture;
         SDL_Rect rect;
-        SDL_Point center;
-        SDL_Point pivot;
+        SDL_Point*center;
+        SDL_Point*pivot;
         double angle;
         double scale;
         char* path;
@@ -66,7 +66,7 @@ Sprite* Sprite_Create(SDL_Renderer* renderer, const char* filepath) {
     return sprite;
 }
 
-Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect rect, SDL_Point pos_center, double scale, double angle) {
+Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect* rect, SDL_Point* pos_center, double scale, double angle) {
 
     if (!renderer) {
         fprintf(stderr, "Error renderer doesn't exists\n");
@@ -102,14 +102,14 @@ Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect rect,
         return 0;
     }
     
-    int new_w = (int)(rect.w * scale);
-    int new_h = (int)(rect.h * scale);
+    int new_w = (int)(rect->w * scale);
+    int new_h = (int)(rect->h * scale);
 
     if (new_w >= 1) {
-        rect.w = (int)new_w;
+        rect->w = (int)new_w;
     }
     if (new_h >= 1) {
-        rect.h = (int)new_h;
+        rect->h = (int)new_h;
     }
 
     sprite->center = pos_center;
@@ -124,14 +124,14 @@ Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect rect,
     Affectation des valeurs au sprite
 ***************************/
 
-void Sprite_SetRectangle(Sprite* sprite, SDL_Rect rect) {
+void Sprite_SetRectangle(Sprite* sprite, SDL_Rect* rect) {
 
-    int min_x = rect.x;
-    int min_y = rect.y;
-    int max_x = rect.w + rect.x;
-    int max_y = rect.y + rect.y;
+    int min_x = rect->x;
+    int min_y = rect->y;
+    int max_x = rect->w + rect->x;
+    int max_y = rect->y + rect->y;
 
-    SDL_Point center = (SDL_Point){max_x-min_x, max_y-min_y };
+    SDL_Point*center = &(SDL_Point){max_x-min_x, max_y-min_y };
     sprite->center = center;
     sprite->rect = rect;
 }
@@ -146,19 +146,19 @@ void Sprite_SetScale(Sprite* sprite, double scale) {
 }
 
 void Sprite_SetPosition(Sprite* sprite, int x, int y) {
-    sprite->rect.x = x;
-    sprite->rect.y = y;
+    sprite->rect->x = x;
+    sprite->rect->y = y;
 }
 
 void Sprite_SetCenter(Sprite* sprite, int x, int y) {
 
-    SDL_Point center = (SDL_Point){x, y };
+    SDL_Point*center = &(SDL_Point){x, y };
     sprite->center = center;
 }
 
 void Sprite_SetSize(Sprite* sprite, int width, int height) {
-    sprite->rect.w = width;
-    sprite->rect.h = height;
+    sprite->rect->w = width;
+    sprite->rect->h = height;
 }
 
 void Sprite_SetRenderer(Sprite* sprite, SDL_Renderer* renderer) {
@@ -171,26 +171,26 @@ void Sprite_SetRenderer(Sprite* sprite, SDL_Renderer* renderer) {
 
 void Sprite_UpdateCenter(Sprite* sprite) {
 
-    int min_x = sprite->rect.x;
-    int min_y = sprite->rect.y;
-    int max_x = sprite->rect.w + sprite->rect.x;
-    int max_y = sprite->rect.y + sprite->rect.y;
+    int min_x = sprite->rect->x;
+    int min_y = sprite->rect->y;
+    int max_x = sprite->rect->w + sprite->rect->x;
+    int max_y = sprite->rect->y + sprite->rect->y;
 
-    SDL_Point center = (SDL_Point){max_x-min_x, max_y-min_y };
+    SDL_Point*center = &(SDL_Point){max_x-min_x, max_y-min_y };
     sprite->center = center;
 
 }
 
 void Sprite_UpdateRect(Sprite* sprite) {
 
-    int new_w = (int)(sprite->rect.w * sprite->scale);
-    int new_h = (int)(sprite->rect.h * sprite->scale);
+    int new_w = (int)(sprite->rect->w * sprite->scale);
+    int new_h = (int)(sprite->rect->h * sprite->scale);
 
     if (new_w >= 1) {
-        sprite->rect.w = (int)new_w;
+        sprite->rect->w = (int)new_w;
     }
     if (new_h >= 1) {
-        sprite->rect.h = (int)new_h;
+        sprite->rect->h = (int)new_h;
     }
 
 }
@@ -208,8 +208,17 @@ void Sprite_RenderStatic(Sprite* sprite, SDL_Renderer* renderer) {
         printf("Sprite_RenderStatic: Erreur sprite invalide\n");
         return;
     }
+    if (!sprite->texture){
+        printf("Sprite_RenderStatic: Erreur texture invalide\n");
+        return;
+    }
+    if (!sprite->rect){
+        printf("Sprite_RenderStatic: Erreur bounds invalide\n");
+        return;
+    }
+printf("tst 2 x:%d, y:%d, w:%d, h:%d\n", sprite->rect->x, sprite->rect->y, sprite->rect->w, sprite->rect->h );
+    SDL_RenderCopy(renderer, sprite->texture, NULL, sprite->rect);
     
-    SDL_RenderCopy(renderer, sprite->texture, NULL, &sprite->rect);
 }
 
 void Sprite_RenderTransformable(Sprite* sprite, SDL_Renderer* renderer, SDL_RendererFlip flip) {
@@ -221,7 +230,7 @@ void Sprite_RenderTransformable(Sprite* sprite, SDL_Renderer* renderer, SDL_Rend
         printf("Sprite_RenderTransformable: Erreur sprite invalide\n");
         return;
     }
-    SDL_RenderCopyEx(renderer, sprite->texture, NULL, &sprite->rect, sprite->angle, &sprite->center, flip);
+    SDL_RenderCopyEx(renderer, sprite->texture, NULL, sprite->rect, sprite->angle, sprite->center, flip);
 }
 
 void Sprites_RenderStatic(Sprite** sprites, int numSprites, SDL_Renderer* renderer) {
@@ -230,13 +239,13 @@ void Sprites_RenderStatic(Sprite** sprites, int numSprites, SDL_Renderer* render
         return;
     }
     for (int i = 0; i < numSprites; i++) {
-        SDL_RenderCopy(renderer, sprites[i]->texture, NULL, &sprites[i]->rect);
+        SDL_RenderCopy(renderer, sprites[i]->texture, NULL, sprites[i]->rect);
     }
 }
 
 void Sprites_RenderTransformable(Sprite** sprites, int numSprites, SDL_Renderer* renderer, SDL_RendererFlip flip ) {
     for (int i = 0; i < numSprites; i++) {
-        SDL_RenderCopyEx(renderer, sprites[i]->texture, NULL, &sprites[i]->rect, sprites[i]->angle, &sprites[i]->center, flip);
+        SDL_RenderCopyEx(renderer, sprites[i]->texture, NULL, sprites[i]->rect, sprites[i]->angle, sprites[i]->center, flip);
     }
 }
 

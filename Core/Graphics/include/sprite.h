@@ -7,8 +7,8 @@
 typedef struct Sprite {
     SDL_Renderer* renderer;
     SDL_Texture* texture;
-    SDL_Rect rect;
-    SDL_Point center;
+    SDL_Rect* rect;
+    SDL_Point* center;
     double angle;
     double scale;
     char* path;
@@ -19,8 +19,8 @@ typedef struct Sprite {
 ***************************/
 Sprite* Sprite_Create(SDL_Renderer* renderer, const char* filepath);
 
-Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect rect, SDL_Point pos_center, double scale, double angle);
-void Sprite_SetRectangle(Sprite* sprite, SDL_Rect rect);
+Sprite* Sprite_Init(SDL_Renderer* renderer, const char* filepath, SDL_Rect* rect, SDL_Point* pos_center, double scale, double angle);
+void Sprite_SetRectangle(Sprite* sprite, SDL_Rect* rect);
 
 void Sprite_SetScale(Sprite* sprite, double scale);
 
