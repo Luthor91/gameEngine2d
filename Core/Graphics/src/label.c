@@ -9,17 +9,13 @@
 
     typedef struct Label {
         SDL_Renderer* renderer;
-        SDL_Surface* surface;
-        SDL_Color color;
-        SDL_Rect rect;
-        SDL_Point center;
+        SDL_Surface* texture;
+        Transform* transform;
+        SDL_Color* color;
         TTF_Font* font;
+        int font_size;
         char* text;
-        //SDL_Texture texture;
-        double angle;
-        double scale;
     } Label;
-
 
 ***************************/
 
@@ -28,76 +24,37 @@
     Initialisation du sprite
 ***************************/
 
-Label* Label_Init(SDL_Renderer* renderer, SDL_Rect* rect, SDL_Point* center, SDL_Color* color_font, char* font, char* text, int size_font, double scale, double angle) {  
+Label* Label_Init(Transform* transform, SDL_Color* color_font, const char* font, char* text, int size_font) {  
     
-    if(!TTF_WasInit() && TTF_Init() == -1) {
-        printf("Label_Init: %s\n", TTF_GetError());
+    Label* label = malloc(sizeof(Label));
+    if (!label) {
         return NULL;
     }
 
-    Label* label;
+    if(!TTF_WasInit() && TTF_Init() == -1) {
+        printf("Label_Init: %s\n", TTF_GetError());
+        free(label);
+        return NULL;
+    }
 
     TTF_Font* ttf_font = TTF_OpenFont(font, size_font);
     if (!ttf_font) {
         printf("Label_Init: %s\n", TTF_GetError());
         TTF_CloseFont(ttf_font);
+        free(label);
         return NULL;
     }
 
-    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(ttf_font, text, *color_font);
-    if (!surfaceMessage) {
-        printf("Label_Init: Erreur création surface\n");
-        return NULL;
+    if (transform->scale == 0) {
+        transform->scale = 1.0;
     }
 
-    SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
-    if (!message) {
-        printf("Label_Init: Erreur création texture\n");
-        return NULL;
-    }
-
-    label->rect = rect;
+    label->transform = transform;
     label->color = color_font;
     label->font = ttf_font;
     label->text = text;
 
     return label;
-}
-
-void Label_SetFont(Label* label, char* font, int size_font) {
-
-    if(size_font <= 1) {
-        size_font = 1;
-    }
-
-    label->font = TTF_OpenFont(font, size_font);
-
-}
-
-void Label_SetColor(Label* label, SDL_Color* color_font) {
-
-    label->color = color_font;
-
-}
-
-void Label_SetMessage(Label* label, char* message) {
-
-    label->text = message;
-
-}
-
-void Label_SetRect(Label* label) {
-
-    int new_w = (int)(label->rect->w * label->scale);
-    int new_h = (int)(label->rect->h * label->scale);
-
-    if (new_w >= 1) {
-        label->rect->w = (int)new_w;
-    }
-    if (new_h >= 1) {
-        label->rect->h = (int)new_h;
-    }
-
 }
 
 void Label_Renderer(Label* label, SDL_Renderer* renderer) {
@@ -112,6 +69,6 @@ void Label_Renderer(Label* label, SDL_Renderer* renderer) {
         printf("Label_Renderer: Erreur création texture\n");
     }
 
-    SDL_RenderCopy(renderer, message, NULL, label->rect);
+    SDL_RenderCopy(renderer, message, NULL, Transform_GetScaledBounds(label->transform));
 
 }

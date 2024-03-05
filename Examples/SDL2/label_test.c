@@ -1,18 +1,12 @@
 //  gcc -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lm && ./button_test
 // gcc -O3 -g -Wall -Wextra -std=c89 -pedantic -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./button_test
 
-// gcc -I/usr/include/SDL2 -o label_test Examples/SDL2/label_test.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./label_test
+// gcc -I/usr/include/SDL2 -o label_test Examples/SDL2/label_test.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c Core/Graphics/src/transform.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./label_test
 
-/*
-#include <math.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-*/
-
-#include "../../Core/Graphics/include/label.h"
 #include "../../Core/Graphics/include/window.h"
+#include "../../Core/Graphics/include/label.h"
 #include "../../Core/Graphics/include/sprite.h"
+#include "../../Core/Graphics/include/transform.h"
 
 
 /****************************
@@ -32,15 +26,13 @@ int main(int argc, char* argv[]) {
     /****************************
         Bloc de code pour afficher une fenêtre
     ***************************/
-    Window* window = Window_Init("Window Test", &(SDL_Rect){0, 0, 720, 480}, "Assets/Image/background1.jpg", &(SDL_Point){360, 240}, 1.0, 0.0);
+    Transform* transform_window = Transform_Init(&(SDL_Rect){0, 0, 720, 480}, &(SDL_Point){360, 240}, 1.0, 0.0);
+    Window* window = Window_Init("Window Test", transform_window, "Assets/Image/background1.jpg");
+
+    Transform* transform_label = Transform_Init(&(SDL_Rect){50, 50, 200, 100}, &(SDL_Point){360, 240}, 1.0, 0.0);
+    Label* label = Label_Init(transform_label, &(SDL_Color){255, 255, 0}, "Assets/Fonts/Open_Sans/OpenSans-Regular.ttf", "Ceci est un texte", 25);  
+
     SDL_Renderer* renderer = Window_GetRenderer(window);
-    
-    //Window* window = Window_Create("Window Test", (SDL_Rect){0, 0, 720, 480});
-    //SDL_Renderer* renderer = Window_CreateRenderer(window);
-    
-    Label* label = Label_Init(renderer, &(SDL_Rect){50, 50, 100, 100}, &(SDL_Point){360, 240}, &(SDL_Color){255, 255, 0}, "Assets/Fonts/Open_Sans/OpenSans-Regular.ttf", "Ceci est un texte", 25, 1.0, 0.0);
-    
-    //printf("Button : \n\tx:%d, y:%d, w:%d, h:%d\n", button->sprite->rect->x, button->sprite->rect->y, button->sprite->rect->w, button->sprite->rect->h);
 
     int isRunning = 1;
     SDL_Event event;
@@ -48,9 +40,9 @@ int main(int argc, char* argv[]) {
     while (isRunning) {
    
         while ( SDL_PollEvent(&event) )  {
-            switch (event.type) {
-                case SDL_QUIT: 
-                    isRunning = 0;
+
+            if (event.type == SDL_QUIT) {
+               isRunning = 0;
             }
         }
 
@@ -60,21 +52,17 @@ int main(int argc, char* argv[]) {
         On affiche tous les sprites
         On met à jour l'écran
     ***************************/
-        SDL_RenderClear(renderer);
+        SDL_RenderClear(window->renderer);
 
-        printf("tst 1\n");
-        
         Sprite_RenderStatic(window->sprite, renderer);
+        Label_Renderer(label, window->renderer);
 
-
-        Label_Renderer(label, renderer);
-
-        SDL_RenderPresent(renderer);        
+        SDL_RenderPresent(window->renderer);        
 
         SDL_Delay(100);
     }
 
-    SDL_DestroyRenderer(renderer);
+    SDL_DestroyRenderer(window->renderer);
     SDL_DestroyWindow(window->window);
     SDL_Quit();
 

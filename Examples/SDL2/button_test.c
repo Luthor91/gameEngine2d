@@ -26,11 +26,11 @@ int main(int argc, char* argv[]) {
     /****************************
         Bloc de code pour afficher une fenêtre
     ***************************/
-    Window* window = Window_Init("Window Test", (SDL_Rect){0, 0, 720, 480}, "Assets/Image/background1.jpg", (SDL_Point){360, 240}, 1.0, 0.0);
+    Window* window = Window_Init("Window Test", &(SDL_Rect){0, 0, 720, 480}, "Assets/Image/background1.jpg", &(SDL_Point){360, 240}, 1.0, 0.0);
     SDL_Renderer* renderer = Window_GetRenderer(window);
     
     int total_button = 5;
-    int x = 0, y = 0;
+    int x = 0; int y = 0;
     Sprite** sprites = malloc(total_button * sizeof(Sprite*));
     Button** buttons = malloc(total_button * sizeof(Button*));
     
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
             y = y + 50;
         }
 
-        Sprite* sprite = Sprite_Init(renderer, "Assets/Image/button2.png", (SDL_Rect){200, 200, 30, 30}, (SDL_Point){360, 240}, 1, 1.0*i);
+        Sprite* sprite = Sprite_Init(renderer, "Assets/Image/button2.png", &(SDL_Rect){200, 200, 30, 30}, &(SDL_Point){360, 240}, 1, 1.0*i);
         Button* button = Button_InheritSprite(sprite, onClick, (void*)i);
         
         sprites[i] = button->sprite;
@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
     ***************************/
         SDL_RenderClear(renderer);
         Sprite_RenderStatic(window->sprite, renderer);
-        Sprites_RenderTransformable(sprites, total_button, renderer, (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL));
+        Sprites_RenderTransformable(sprites, total_button, renderer, &(SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL));
         SDL_RenderPresent(renderer);        
 
         SDL_Delay(100);
