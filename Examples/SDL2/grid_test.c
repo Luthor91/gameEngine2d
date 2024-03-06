@@ -1,7 +1,7 @@
 //  gcc -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lm && ./button_test
 // gcc -O3 -g -Wall -Wextra -std=c89 -pedantic -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./button_test
 
-// gcc -I/usr/include/SDL2 -o label_test Examples/SDL2/label_test.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c Core/Graphics/src/transform.c Core/Graphics/src/font.c Core/Graphics/src/cell.c Core/Graphics/src/grid.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./label_test
+// gcc -I/usr/include/SDL2 -o grid_test Examples/SDL2/grid_test.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c Core/Graphics/src/transform.c Core/Graphics/src/font.c Core/Graphics/src/cell.c Core/Graphics/src/grid.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./grid_test
 
 #include "../../Core/Graphics/include/window.h"
 #include "../../Core/Graphics/include/label.h"
@@ -14,9 +14,6 @@
 /****************************
     Fonction utilisé lors de l'appuie du bouton
 ***************************/
-void onClick(void* data) {
-    printf("Button pressed, data : %ld\n", (long)data);
-}
 
 int main(int argc, char* argv[]) {
 
@@ -36,11 +33,18 @@ int main(int argc, char* argv[]) {
     Transform* transform_window = Transform_Init(&(SDL_Rect){0, 0, 720, 480}, &(SDL_Point){360, 240}, 1.0, 0.0);
     Window* window = Window_Init("Window Test", transform_window, "Assets/Image/background1.jpg");
 
-    Font* font = Font_Init(&(SDL_Color){255, 255, 0}, "Assets/Fonts/Open_Sans/OpenSans-Regular.ttf", 25);
-    Transform* transform_label = Transform_Init(&(SDL_Rect){32, 32, 50, 50}, &(SDL_Point){360, 240}, 5.0, 1.0);
-    Label* label = Label_Init(transform_label, font, "0");  
-
     SDL_Renderer* renderer = Window_GetRenderer(window);
+    
+    Grid* grid = Grid_Init(5, 5);
+    Grid_Generate(grid);
+    
+    int max_cells = grid->number_cells;
+    for (int i = 0; i < max_cells; i++) {
+        
+        Sprite* sprite = Sprite_Init(renderer, NULL, "Assets/Image/background1.jpg");
+        Cell_SetSprite(grid->cells[i], sprite);
+        
+    }
 
     int isRunning = 1;
     SDL_Event event;
@@ -63,8 +67,8 @@ int main(int argc, char* argv[]) {
         SDL_RenderClear(window->renderer);
 
         Sprite_RenderStatic(window->sprite, renderer);
-        Label_RendererTransformable(label, window->renderer, SDL_FLIP_NONE);
-
+        
+        Grid_Render(grid, renderer);
         SDL_RenderPresent(window->renderer);        
 
         SDL_Delay(100);

@@ -45,7 +45,20 @@ Window* Window_Init(const char* title, Transform* transform, const char* sprite_
     }
 
     window->window = sdl_window;
+
     window->transform = transform;
+    if (!window->transform->bounds){
+        printf("Window_Init: Erreur bounds invalide\n\t%s\n", SDL_GetError());
+        return NULL;
+    }
+    if (window->transform->bounds->w < 0){
+        printf("Window_Init: Erreur largeur invalide\n\t%s\n", SDL_GetError());
+        return NULL;
+    }
+    if (window->transform->bounds->h < 0){
+        printf("Window_Init: Erreur hauteur invalide\n\t%s\n", SDL_GetError());
+        return NULL;
+    }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {

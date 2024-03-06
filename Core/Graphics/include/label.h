@@ -6,23 +6,23 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "transform.h"
+#include "font.h"
 
 typedef struct Label {
-    SDL_Renderer* renderer;
     SDL_Surface* texture;
     Transform* transform;
-    SDL_Color* color;
-    TTF_Font* font;
-    int font_size;
+    Font* font;
     char* text;
+    
 } Label;
 
 /**************************
     Initialisation du label
 ***************************/
 
-Label* Label_Init(Transform* transform, SDL_Color* color_font, const char* font, char* text, int size_font);
+Label* Label_Init(Transform* transform, Font* font, char* text);
 
-void Label_Renderer(Label* label, SDL_Renderer* renderer);
+void Label_RendererStatic(Label* label, SDL_Renderer* renderer);
+void Label_RendererTransformable(Label* label, SDL_Renderer* renderer, SDL_RendererFlip flip );
 
 #endif // LABEL_H
