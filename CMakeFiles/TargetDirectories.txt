@@ -1,0 +1,3 @@
+/home/user/dev/gameEngine2d/CMakeFiles/gameEngine.dir
+/home/user/dev/gameEngine2d/CMakeFiles/edit_cache.dir
+/home/user/dev/gameEngine2d/CMakeFiles/rebuild_cache.dir
