@@ -1,4 +1,6 @@
-//  gcc -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/renderer.c -lSDL2 -lSDL2_image -lm && ./button_test
+//  gcc -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/transform.c Core/Graphics/src/label.c  Core/Graphics/src/font.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./button_test
+
+// gcc -O3 -g -Wall -Wextra -std=c89 -pedantic -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./button_test
 
 #include <math.h>
 #include <SDL2/SDL.h>
@@ -7,6 +9,7 @@
 #include "../../Core/Graphics/include/window.h"
 #include "../../Core/Graphics/include/button.h"
 #include "../../Core/Graphics/include/sprite.h"
+#include "../../Core/Graphics/include/transform.h"
 
 /****************************
     Fonction utilisé lors de l'appuie du bouton
@@ -23,59 +26,49 @@ int main(int argc, char* argv[]) {
     }
 
     /****************************
-        La création du renderer est obligatoire pour chaque fenêtre
-    ***************************/
-    Window* window = Window_Create("Window Test", 0, 0, 720, 480);
-    SDL_Renderer* renderer = Window_CreateRenderer(window);
-    
-    /****************************
         Bloc de code pour afficher une fenêtre
     ***************************/
-    Window_SetSprite(window, renderer, "Assets/Image/background1.jpg");
-    Sprite_SetRectangle(window->sprite, (SDL_Rect){ 0, 0, 720, 480} );
-    Window_SyncRectWithSprite(window);
-
-
-    int total_button = 63; // Nombre de bouton = total_button - 1
-    int x = 0;
-    int y = 0;
+    Transform* transform_window = Transform_Init(&(SDL_Rect){0, 0, 720, 480}, &(SDL_Point){360, 240}, 1.0, 0.0);
+    Window* window = Window_Init("Window Test", transform_window, "Assets/Image/background1.jpg");
+    SDL_Renderer* renderer = Window_GetRenderer(window);
+    
+    int total_button = 5;
+    int x = 0; int y = 0;
     Sprite** sprites = malloc(total_button * sizeof(Sprite*));
     Button** buttons = malloc(total_button * sizeof(Button*));
     
     // x=x+35 permet d'incrémenter la position des nouveaux élements
-    for (long i = 0; i < total_button; i++, x=x+100) {
+    printf("Window : \n\tx:%d, y:%d, w:%d, h:%d\n", window->sprite->transform->bounds->x, window->sprite->transform->bounds->y, window->sprite->transform->bounds->w, window->sprite->transform->bounds->h);
 
-        Button* button = Button_Create(0, 0, 10, 10);
-        Button_SetSprite(button, renderer, "Assets/Image/button2.png");
+    for (long i = 0; i < total_button; i++, x=x+100) {
 
         if (i % 7 == 0 && i != 0) {
             x = 0;
             y = y + 50;
         }
-
-        Sprite_SetRectangle(button->sprite, (SDL_Rect){ x, y, 30, 30} );
-        Sprite_SetScale(button->sprite, i/20);
-        Button_SetOnClick(button, onClick, (void*)i);
-        Button_SyncRectWithSprite(button);
-
+        Transform* transform_sprite = Transform_Init(&(SDL_Rect){200+10*i, 200, 30, 30}, &(SDL_Point){360, 240}, 1, 1.0);
+        Sprite* sprite = Sprite_Init(renderer, transform_sprite, "Assets/Image/button2.png");
+        Button* button = Button_InheritSprite(sprite, onClick, (void*)i);
+        
         sprites[i] = button->sprite;
         buttons[i] = button;
 
+        printf("Button : \n\tx:%d, y:%d, w:%d, h:%d\n", button->sprite->transform->bounds->x, button->sprite->transform->bounds->y, button->sprite->transform->bounds->w, button->sprite->transform->bounds->h);
+
     }
 
-    int running = 1;
+    int isRunning = 1;
     SDL_Event event;
 
-    while (running) {
+    while (isRunning) {
    
         while ( SDL_PollEvent(&event) )  {
             switch (event.type) {
-                case SDL_WINDOWEVENT:
-                    if (event.window.event==SDL_WINDOWEVENT_CLOSE) {
-                        running = 0;
-                    }
+                case SDL_QUIT: 
+                    isRunning = 0;
                 case SDL_MOUSEBUTTONDOWN:
                     for (int i = 0; i < total_button; i++) {
+                        // Attention, la rotation de l'élement n'est pas prise en compte pour le moment pour le clic !
                         Button_IsPressed(buttons[i], event.button.x,event.button.y);
                     }
             }
@@ -88,13 +81,19 @@ int main(int argc, char* argv[]) {
         On met à jour l'écran
     ***************************/
         SDL_RenderClear(renderer);
-        Window_Render(window, renderer);
-        Sprite_RenderRotAll(sprites, total_button, renderer);
+        Sprite_RenderStatic(window->sprite, renderer);
+        
+        for (size_t i = 0; i < total_button; i++) {
+            Sprite_Render(sprites[i], renderer, (SDL_FLIP_HORIZONTAL | SDL_FLIP_VERTICAL));
+        }
+        
         SDL_RenderPresent(renderer);        
 
-        SDL_Delay(10);
+        SDL_Delay(100);
     }
 
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window->window);
     SDL_Quit();
 
     return 0;

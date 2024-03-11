@@ -1,43 +1,81 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
 #include "../include/window.h"
-#include "../include/sprite.h"
 
-Window* Window_Create(const char* title, int x, int y, int width, int height) {
+Window* Window_Create(const char* title, Transform* transform) {
     Window* window = (Window*)malloc(sizeof(Window));
     if (!window) {
         fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
         return NULL;
     }
 
-    SDL_Window* sdl_window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, transform->bounds->x, transform->bounds->y, transform->bounds->w, transform->bounds->h, SDL_WINDOW_SHOWN);
     if (!sdl_window) {
         fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
-        Window_Destroy(window);
+        free(window);
         return NULL;
     }
 
     window->window = sdl_window;
-    window->rect.x = x;
-    window->rect.y = y;
-    window->rect.w = width;
-    window->rect.h = height;
+    window->transform = transform;
 
     return window;
 }
 
-void Window_Destroy(Window* window) {
+Window* Window_Init(const char* title, Transform* transform, const char* sprite_path) {
 
-    if (!window) {
-        return;
+    if (!sprite_path) {
+        fprintf(stderr, "Window_Init: Sprite invalide\n");
+        return NULL;
+    }
+    
+    if (transform->scale <= 0.0) {
+        transform->scale = 1.0;
     }
 
-    SDL_DestroyTexture(window->sprite->texture);
-    SDL_DestroyRenderer(window->sprite->renderer);
-    SDL_DestroyWindow(window->window);
+    Window* window = (Window*)malloc(sizeof(Window));
+    if (!window) {
+        fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
+        return NULL;
+    }
 
-    free(window);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, transform->bounds->x, transform->bounds->y, transform->bounds->w, transform->bounds->h, SDL_WINDOW_SHOWN);
+    if (!sdl_window) {
+        fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
+        free(window);
+        return NULL;
+    }
+
+    window->window = sdl_window;
+
+    window->transform = transform;
+    if (!window->transform->bounds){
+        printf("Window_Init: Erreur bounds invalide\n\t%s\n", SDL_GetError());
+        return NULL;
+    }
+    if (window->transform->bounds->w < 0){
+        printf("Window_Init: Erreur largeur invalide\n\t%s\n", SDL_GetError());
+        return NULL;
+    }
+    if (window->transform->bounds->h < 0){
+        printf("Window_Init: Erreur hauteur invalide\n\t%s\n", SDL_GetError());
+        return NULL;
+    }
+
+    SDL_Renderer* renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer) {
+        fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
+        free(window);
+        return NULL;
+    }
+    window->renderer = renderer;
+    
+    window->sprite = Sprite_Init(window->renderer, window->transform, sprite_path);
+    if (!window->sprite) {
+        fprintf(stderr, "Window_Init: Erreur création du sprite\n");
+        free(window);
+        return NULL;
+    }
+    
+    return window;
 }
 
 int Window_SetIcon(Window* window, const char* filename) {
@@ -54,27 +92,6 @@ int Window_SetIcon(Window* window, const char* filename) {
     return 1;
 }
 
-int Window_SetPosition(Window* window, int x, int y) {
-
-    SDL_SetWindowPosition(window->window, x, y);
-    
-    return 1;
-}
-
-int Window_SetSize(Window* window, int width, int height) {
-
-    SDL_SetWindowSize(window->window, width, height);
-    SDL_RenderSetLogicalSize(window->sprite->renderer, width, height);
-
-    return 1;
-}
-
-int Window_SyncRectWithSprite(Window* window) {
-
-    window->rect = window->sprite->rect;
-    return 1;
-}
-
 SDL_Renderer* Window_CreateRenderer(Window* window) {
     SDL_Renderer* renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
@@ -85,25 +102,20 @@ SDL_Renderer* Window_CreateRenderer(Window* window) {
 }
 
 SDL_Renderer* Window_GetRenderer(Window* window) {
-    if (!window->sprite->renderer) {
+    if (!window->renderer) {
         fprintf(stderr, "Window_GetRenderer: Invalid renderer\n");
     }
     
-    return window->sprite->renderer;
+    return window->renderer;
 }
 
-
-int Window_SetSprite(Window* window, SDL_Renderer* renderer, const char* path) {
+int Window_SetSprite(Window* window, const SDL_Renderer* renderer, const char* path) {
     if (!renderer) {
         fprintf(stderr, "Window_SetSprite: %s\n", IMG_GetError());
         return 0;
     }
-    window->sprite = Sprite_Create(renderer, path);
+
+    window->sprite = Sprite_Init(window->renderer, window->transform, path);
     
     return 1;
-}
-
-void Window_Render(Window* window, SDL_Renderer* renderer){
-    //SDL_RenderCopy(renderer, window->sprite->texture, NULL, &window->sprite->rect);
-    Sprite_Render(window->sprite);
 }
