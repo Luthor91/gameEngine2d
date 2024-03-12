@@ -28,8 +28,10 @@ Animation* Animation_Init(SDL_Renderer* renderer, Sprite* sprite, int tile_width
     for (int y = 0; y < num_cols; y++) {
         for (int x = 0; x < num_rows; x++) {
             if (id >=  max_sprite) {
+                y = num_cols; // instant exit first for loop
                 break;
             }
+            
 
             Frame* frame = (Frame*)malloc(sizeof(Frame));
             if (!frame) {
@@ -37,12 +39,13 @@ Animation* Animation_Init(SDL_Renderer* renderer, Sprite* sprite, int tile_width
                 return NULL;
             }
              
-             frame->bounds = &(SDL_Rect) {x * tile_width, y * tile_height, tile_width, tile_height};
-
-printf("tst\n");
+            //frame->bounds = &(SDL_Rect) {x * tile_width, y * tile_height, tile_width, tile_height};
+            frame->bounds = &(SDL_Rect) {x * 0, y * 0, tile_width, tile_height};
+            printf("x:%d; y:%d; w:%d; h:%d\n", x * tile_width, y * tile_height, tile_width, tile_height);
             SDL_Texture* frame_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, tile_width, tile_height);
              
             SDL_SetRenderTarget(renderer, frame_texture);
+            // Copie la texture originelle aux coordonnées 
             SDL_RenderCopy(renderer, sprite->texture, frame->bounds, NULL);
             SDL_SetRenderTarget(renderer, NULL);
 
@@ -74,6 +77,6 @@ void Animation_Render(Animation* animation, SDL_Renderer* renderer) {
     Frame* curr_frame = animation->frames[animation->currentFrame];
 
     SDL_RenderCopy(renderer, curr_frame->texture, NULL, curr_frame->bounds);
-
+    //printf("Animation_Render: current frame : %d\n", animation->currentFrame);
     animation->currentFrame++;
 }
