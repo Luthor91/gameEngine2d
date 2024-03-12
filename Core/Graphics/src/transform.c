@@ -8,26 +8,35 @@ Transform* Transform_Init(SDL_Rect* bounds, SDL_Point* center, double angle, dou
         scale = 1.0;
     }
 
+    if (!bounds){
+        printf("Transform_Init: Erreur bounds invalide\n\t%s\n", SDL_GetError());
+        free(transform);
+        return NULL;
+    }
+    if (bounds->w < 0){
+        printf("Transform_Init: Erreur largeur invalide\n\t%s\n", SDL_GetError());
+        free(transform);
+        return NULL;
+    }
+    if (bounds->h < 0){
+        printf("Transform_Init: Erreur hauteur invalide\n\t%s\n", SDL_GetError());
+        free(transform);
+        return NULL;
+    }
+
+    if (!center){
+        printf("Transform_Init: Erreur center invalide\n\t%s\n", SDL_GetError());
+        free(transform);
+        return NULL;
+    }
+
     transform->bounds = bounds;
     transform->center = center;
     transform->angle = angle;
     transform->scale = scale;
 
-    if (!transform->bounds){
-        printf("Transform_Init: Erreur bounds invalide\n\t%s\n", SDL_GetError());
-        free(transform);
-        return NULL;
-    }
-    if (transform->bounds->w < 0){
-        printf("Transform_Init: Erreur largeur invalide\n\t%s\n", SDL_GetError());
-        free(transform);
-        return NULL;
-    }
-    if (transform->bounds->h < 0){
-        printf("Transform_Init: Erreur hauteur invalide\n\t%s\n", SDL_GetError());
-        free(transform);
-        return NULL;
-    }
+
+
 
     return transform;
 

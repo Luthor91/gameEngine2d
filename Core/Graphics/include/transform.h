@@ -5,6 +5,7 @@
 
 typedef struct {
     SDL_Rect* bounds;
+    SDL_Color* color;
     SDL_Point* center;
     double angle;
     double scale;

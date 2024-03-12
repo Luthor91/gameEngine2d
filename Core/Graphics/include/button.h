@@ -11,7 +11,6 @@ typedef struct Button {
     void (*on_click)(void*);
     void* data; 
 } Button;
-#include "../include/button.h"
 
 Button* Button_Create(int x, int y, int width, int height);
 Button* Button_Init(Transform* transform, Sprite* sprite, void (*on_click)(void*), void* data);
