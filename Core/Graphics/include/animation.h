@@ -17,6 +17,4 @@ Animation* Animation_Init(SDL_Renderer* renderer, Sprite* sprite, int tile_width
 void Animation_Delay(Animation* animation);
 void Animation_Render(Animation* animation, SDL_Renderer* renderer);
 
-
-
 #endif // ANIMATION_H

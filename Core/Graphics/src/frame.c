@@ -30,22 +30,22 @@ Frame* Frame_Init(SDL_Rect* bounds, SDL_Texture* texture, int id) {
 
 }
 
-void Frame_SetBounds(Frame* frame, SDL_Rect* bounds) {
+void Frame_SetBounds(Frame* frame, SDL_Rect* origin) {
 
     if (!frame) {
         printf("Frame_SetBounds: frame inexistant\n");
         return;
     }
-    if (!bounds) {
-        printf("Frame_SetBounds: bounds inexistant\n");
+    if (!origin) {
+        printf("Frame_SetBounds: origin inexistant\n");
         return;
     }  
-    frame->bounds = bounds;
+    frame->origin = origin;
 
     return;
 
 }
 
 void Frame_Render(Frame* frame, SDL_Renderer* renderer) {
-    SDL_RenderCopy(renderer, frame->texture, NULL, frame->bounds);
+    SDL_RenderCopy(renderer, frame->texture, frame->bounds, frame->origin);
 }

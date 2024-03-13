@@ -18,16 +18,6 @@
 #define NUM_SPRITES 8
 #define ANIMATION_SPEED 100
 
-
-void Animation_SetPos(Animation* animation, SDL_Rect** bounds) {
-
-    for(int i = 0; i < animation->max_sprite; i++) {
-        animation->frames[i]->bounds = bounds[i];
-
-    }
-
-}
-
 int main(int argc, char* argv[]) {
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
@@ -53,15 +43,13 @@ int main(int argc, char* argv[]) {
     Tilemap* tilemap = Tilemap_Init(sprite, SPRITE_WIDTH, SPRITE_HEIGHT);
     Animation* animation = Animation_Init(tilemap, 8, 100);
     */
-    Animation* animation = Animation_Init(renderer, sprite, 32, 32, 8, 100);
+    Animation* animation = Animation_Init(renderer, sprite, 32, 32, 8, 500);
 
     SDL_Rect** bounds = (SDL_Rect**)malloc( animation->max_sprite * sizeof(SDL_Rect*));
     for(int i = 0; i < animation->max_sprite; i++) {
         bounds[i] = &(SDL_Rect){32, 32, 32, 32};
 
     }
-    //Animation_SetPos(animation, bounds);
-
 
     SDL_Event event;
     int quit = 0;
@@ -72,14 +60,14 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        Animation_Delay(animation);
+        //Animation_Delay(animation);
 
         SDL_RenderClear(renderer);
         Sprite_RenderStatic(window->sprite, renderer);
         Animation_Render(animation, renderer);
         SDL_RenderPresent(renderer);
-
-        SDL_Delay(100); // Delay to limit frame rate
+        
+        SDL_Delay(250); // Delay to limit frame rate
     }
     //SDL_DestroyTexture(tilemap->texture);
     SDL_DestroyRenderer(renderer);
