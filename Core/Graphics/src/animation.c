@@ -80,6 +80,12 @@ Animation* Animation_Init(SDL_Renderer* renderer, Sprite* sprite, int tile_width
             frames[frame_index] = frame;
         }
     }
+    animation->render_semaphore = SDL_CreateSemaphore(0);
+    if (animation->render_semaphore == NULL) {
+        printf("Animation_Init: Failed to create semaphore: \n\t%s\n", SDL_GetError());
+        free(animation);
+        return NULL;
+    }
     animation->frames = frames;
 
     return animation;
@@ -94,18 +100,41 @@ void Animation_Delay(Animation* animation) {
 }
 
 void Animation_Render(Animation* animation, SDL_Renderer* renderer) {
-    // Vérifie si l'animation est arrivée à la dernière frame
-    if (animation->currentFrame >= animation->max_sprite) {
-        printf("reset frame\n");
-        animation->currentFrame = 0; // Réinitialise à la première frame
-    }
-    
     // Obtient la frame actuelle
-    
-    animation->currentFrame = (animation->currentFrame + 1) % animation->max_sprite;
     Frame* curr_frame = animation->frames[animation->currentFrame];
 
-    printf("curr:%d; id:%d; x:%d; y:%d; w:%d; h:%d\n", animation->currentFrame, curr_frame->id, curr_frame->origin->x, curr_frame->origin->y, curr_frame->origin->w, curr_frame->origin->h);
+    // Rend la frame actuelle
     SDL_RenderCopy(renderer, curr_frame->texture, NULL, curr_frame->target);
 
+    // Attend le délai avant de passer à la frame suivante
+    int current_time = SDL_GetTicks();
+    int elapsed_time = current_time - animation->lastFrameTime;
+    if (elapsed_time < animation->speed) {
+        SDL_Delay(animation->speed - elapsed_time);
+    }
+    animation->lastFrameTime = SDL_GetTicks();
+}
+
+int Animation_Render_Thread(void* data) {
+    Animation_Wrapper* animation_wrapper = (Animation_Wrapper*)data;
+    Animation* animation = animation_wrapper->animation;
+    SDL_Renderer* renderer = animation_wrapper->renderer;
+    int repeat = animation_wrapper->repeat;
+    SDL_cond* render_cond = animation_wrapper->render_cond; // Récupérer la variable de condition
+
+    int i = 0;
+    while (i < repeat) {   
+        Animation_Render(animation, renderer);
+
+        // Signal au thread principal qu'une nouvelle frame est prête
+        if (SDL_CondSignal(render_cond) != 0) {
+            printf("Animation_Render_Thread: error signaling render condition: %s\n", SDL_GetError());
+            return 0;
+        }
+
+        i++;
+        printf("repeat : %d\n", i);
+    }
+
+    return 1;
 }

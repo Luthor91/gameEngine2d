@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_thread.h>
 
 #include "../../Core/Graphics/include/sprite.h"
 #include "../../Core/Graphics/include/tilemap.h"
@@ -43,7 +44,7 @@ int main(int argc, char* argv[]) {
     Tilemap* tilemap = Tilemap_Init(sprite, SPRITE_WIDTH, SPRITE_HEIGHT);
     Animation* animation = Animation_Init(tilemap, 8, 100);
     */
-    Animation* animation = Animation_Init(renderer, sprite, 32, 32, 8, 500);
+    Animation* animation = Animation_Init(renderer, sprite, 32, 32, 8, 100);
 
     SDL_Rect** bounds = (SDL_Rect**)malloc( animation->max_sprite * sizeof(SDL_Rect*));
     for(int i = 0; i < animation->max_sprite; i++) {
@@ -53,6 +54,22 @@ int main(int argc, char* argv[]) {
 
     SDL_Event event;
     int quit = 0;
+
+    SDL_cond* render_cond = SDL_CreateCond();
+    if (!render_cond) {
+        printf("Main: Failed to create render condition: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    Animation_Wrapper animation_wrapper = {animation, renderer, 1, render_cond};
+    SDL_Thread* threadID = SDL_CreateThread(Animation_Render_Thread, "Animation Render Thread", &animation_wrapper);
+    if (!threadID) {
+        printf("Main: Failed to create thread: \n\t%s\n", SDL_GetError());
+        free(threadID);
+        return 1;
+    }
+    SDL_DetachThread(threadID);
+    
     while (!quit) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -60,15 +77,23 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        //Animation_Delay(animation);
-
         SDL_RenderClear(renderer);
-        Sprite_RenderStatic(window->sprite, renderer);
-        Animation_Render(animation, renderer);
+        Sprite_RenderStatic(window->sprite, renderer);  
+
+        // Attendre que la variable de condition soit signalée
+        if (SDL_CondWait(animation_wrapper.render_cond, NULL) != 0) {
+            printf("Main: error waiting for render condition: %s\n", SDL_GetError());
+            break;
+        }
+
+        // Copier la frame rendue dans le renderer principal
+        SDL_Rect dest_rect = {0, 0, animation->frames[animation->currentFrame]->target->w, animation->frames[animation->currentFrame]->target->h};
+        SDL_RenderCopy(renderer, animation->frames[animation->currentFrame]->texture, NULL, &dest_rect);
         SDL_RenderPresent(renderer);
         
-        SDL_Delay(250); // Delay to limit frame rate
+        SDL_Delay(10); // Delay to limit frame rate
     }
+
     //SDL_DestroyTexture(tilemap->texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window->window);
