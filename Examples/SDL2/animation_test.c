@@ -55,21 +55,27 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
     int quit = 0;
 
-    SDL_cond* render_cond = SDL_CreateCond();
-    if (!render_cond) {
+    SDL_cond* condition = SDL_CreateCond();
+    if (!condition) {
         printf("Main: Failed to create render condition: %s\n", SDL_GetError());
         return 1;
     }
+    SDL_mutex* mutex = SDL_CreateMutex();
+    if (!mutex) {
+        printf("Main: Failed to create mutex: %s\n", SDL_GetError());
+        return 1;
+    }
 
-    Animation_Wrapper animation_wrapper = {animation, renderer, 1, render_cond};
+    Animation_Wrapper animation_wrapper = {animation, renderer, 100, condition, mutex};
     SDL_Thread* threadID = SDL_CreateThread(Animation_Render_Thread, "Animation Render Thread", &animation_wrapper);
     if (!threadID) {
         printf("Main: Failed to create thread: \n\t%s\n", SDL_GetError());
         free(threadID);
         return 1;
     }
+
     SDL_DetachThread(threadID);
-    
+
     while (!quit) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -81,14 +87,9 @@ int main(int argc, char* argv[]) {
         Sprite_RenderStatic(window->sprite, renderer);  
 
         // Attendre que la variable de condition soit signalée
-        if (SDL_CondWait(animation_wrapper.render_cond, NULL) != 0) {
-            printf("Main: error waiting for render condition: %s\n", SDL_GetError());
-            break;
-        }
+        SDL_CondWait(animation_wrapper.condition, animation_wrapper.mutex);
 
-        // Copier la frame rendue dans le renderer principal
-        SDL_Rect dest_rect = {0, 0, animation->frames[animation->currentFrame]->target->w, animation->frames[animation->currentFrame]->target->h};
-        SDL_RenderCopy(renderer, animation->frames[animation->currentFrame]->texture, NULL, &dest_rect);
+        SDL_RenderCopy(renderer, animation->frames[animation->currentFrame]->texture, NULL, animation->frames[animation->currentFrame]->target);
         SDL_RenderPresent(renderer);
         
         SDL_Delay(10); // Delay to limit frame rate
