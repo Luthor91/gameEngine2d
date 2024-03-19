@@ -19,7 +19,8 @@ typedef struct Animation_Wrapper {
     Animation* animation;
     SDL_Renderer* renderer;
     int repeat;
-    SDL_cond* render_cond;
+    SDL_cond* condition;
+    SDL_mutex* mutex; // Mutex pour la synchronisation
 } Animation_Wrapper;
 
 Animation* Animation_Init(SDL_Renderer* renderer, Sprite* sprite, int tile_width, int tile_height, int max_sprite, int speed);

@@ -100,19 +100,21 @@ void Animation_Delay(Animation* animation) {
 }
 
 void Animation_Render(Animation* animation, SDL_Renderer* renderer) {
-    // Obtient la frame actuelle
+    if (animation->currentFrame >= animation->max_sprite) {
+        return;
+    }
     Frame* curr_frame = animation->frames[animation->currentFrame];
-
-    // Rend la frame actuelle
     SDL_RenderCopy(renderer, curr_frame->texture, NULL, curr_frame->target);
 
-    // Attend le délai avant de passer à la frame suivante
+    // Attendre le délai nécessaire pour passer à la frame suivante
     int current_time = SDL_GetTicks();
     int elapsed_time = current_time - animation->lastFrameTime;
     if (elapsed_time < animation->speed) {
         SDL_Delay(animation->speed - elapsed_time);
     }
+    
     animation->lastFrameTime = SDL_GetTicks();
+    
 }
 
 int Animation_Render_Thread(void* data) {
@@ -120,21 +122,17 @@ int Animation_Render_Thread(void* data) {
     Animation* animation = animation_wrapper->animation;
     SDL_Renderer* renderer = animation_wrapper->renderer;
     int repeat = animation_wrapper->repeat;
-    SDL_cond* render_cond = animation_wrapper->render_cond; // Récupérer la variable de condition
-
+    SDL_cond* condition = animation_wrapper->condition; // Récupérer la variable de condition
     int i = 0;
-    while (i < repeat) {   
+    while (i < repeat) {
         Animation_Render(animation, renderer);
-
         // Signal au thread principal qu'une nouvelle frame est prête
-        if (SDL_CondSignal(render_cond) != 0) {
-            printf("Animation_Render_Thread: error signaling render condition: %s\n", SDL_GetError());
-            return 0;
-        }
-
+        
+        SDL_CondSignal(condition);
+        
         i++;
         printf("repeat : %d\n", i);
     }
-
+    printf("fin Thread 1\n");
     return 1;
 }
