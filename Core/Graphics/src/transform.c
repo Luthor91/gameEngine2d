@@ -35,9 +35,6 @@ Transform* Transform_Init(SDL_Rect* bounds, SDL_Point* center, double angle, dou
     transform->angle = angle;
     transform->scale = scale;
 
-
-
-
     return transform;
 
 }

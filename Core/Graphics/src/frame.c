@@ -3,49 +3,59 @@
 /**************************
     Initialisation du sprite
 ***************************/
-Frame* Frame_Init(SDL_Rect* bounds, SDL_Texture* texture, int id) {
+Frame* Frame_Init(SDL_Rect* origin, SDL_Rect* target, SDL_Texture* texture, int id) {
 
     if (!texture) {
         printf("Frame_Init: texture inexistant\n");
-        return;
+        return NULL;
     }
-    if (!bounds) {
-        printf("Frame_Init: bounds inexistant\n");
-        return;
+    if (!origin) {
+        printf("Frame_Init: origin inexistant\n");
+        return NULL;
+    }  
+    if (!target) {
+        printf("Frame_Init: target inexistant\n");
+        return NULL;
     }  
     
     Frame* frame = malloc(sizeof(Frame));
     if (!frame) {
         printf("Frame_Init: frame inexistant\n");
-        return;
+        return NULL;
     } 
 
-    bounds->x = 0;
-    bounds->y = 0;
     frame->texture = texture;
-    frame->bounds = bounds;
+    frame->origin = origin;
+    frame->target = target;
     frame->id = id;
 
     return frame;
 
 }
 
-void Frame_SetBounds(Frame* frame, SDL_Rect* bounds) {
+void Frame_SetOrigin(Frame* frame, SDL_Rect* origin) {
 
     if (!frame) {
-        printf("Frame_SetBounds: frame inexistant\n");
+        printf("Frame_SetOrigin: frame inexistant\n");
         return;
     }
-    if (!bounds) {
-        printf("Frame_SetBounds: bounds inexistant\n");
+    if (!origin) {
+        printf("Frame_SetOrigin: origin inexistant\n");
         return;
     }  
-    frame->bounds = bounds;
+    frame->origin = origin;
 
     return;
 
 }
 
 void Frame_Render(Frame* frame, SDL_Renderer* renderer) {
-    SDL_RenderCopy(renderer, frame->texture, NULL, frame->bounds);
+    SDL_RenderCopy(renderer, frame->texture, frame->origin, frame->origin);
+}
+
+void Frame_Render_Debug(Frame* frame, SDL_Renderer* renderer) {
+    int texW = 0, texH = 0;
+    SDL_QueryTexture(frame->texture, NULL, NULL, &texW, &texH);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderDrawRect(renderer, frame->target);
 }

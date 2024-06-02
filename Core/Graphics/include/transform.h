@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-typedef struct {
+typedef struct Transform {
     SDL_Rect* bounds;
     SDL_Color* color;
     SDL_Point* center;

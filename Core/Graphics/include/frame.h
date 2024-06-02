@@ -5,11 +5,14 @@
 
 typedef struct Frame {
     int id;
-    SDL_Rect* bounds;
+    SDL_Rect* origin; // Position de la Frame dans le spritesheet
+    SDL_Rect* target; // Position à l'écran
     SDL_Texture* texture;
 } Frame;
 
-Frame* Frame_Init(SDL_Rect* bounds, SDL_Texture* texture, int id);
+Frame* Frame_Init(SDL_Rect* origin, SDL_Rect* target, SDL_Texture* texture, int id);
+void Frame_SetOrigin(Frame* frame, SDL_Rect* origin);
 void Frame_Render(Frame* frame, SDL_Renderer* renderer);
+void Frame_Render_Debug(Frame* frame, SDL_Renderer* renderer);
 
 #endif // FRAME_H

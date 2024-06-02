@@ -1,9 +1,10 @@
-// gcc -I/usr/include/SDL2 -o animation_test Examples/SDL2/animation_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/transform.c Core/Graphics/src/window.c Core/Graphics/src/animation.c -lSDL2 -lSDL2_image -lm && ./animation_test
+// gcc -I/usr/include/SDL2 -o animation_test Examples/SDL2/animation_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/transform.c Core/Graphics/src/window.c Core/Graphics/src/animation.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./animation_test
 
 
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_thread.h>
 
 #include "../../Core/Graphics/include/sprite.h"
 #include "../../Core/Graphics/include/tilemap.h"
@@ -17,16 +18,6 @@
 #define SPRITE_HEIGHT 32
 #define NUM_SPRITES 8
 #define ANIMATION_SPEED 100
-
-
-void Animation_SetPos(Animation* animation, SDL_Rect** bounds) {
-
-    for(int i = 0; i < animation->max_sprite; i++) {
-        animation->frames[i]->bounds = bounds[i];
-
-    }
-
-}
 
 int main(int argc, char* argv[]) {
 
@@ -47,24 +38,18 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    Transform* transform_sprite = Transform_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
-    Sprite* sprite = Sprite_Init(renderer, transform_sprite, "Assets/Image/arrows.png");
-    /* Init via tilemap
-    Tilemap* tilemap = Tilemap_Init(sprite, SPRITE_WIDTH, SPRITE_HEIGHT);
-    Animation* animation = Animation_Init(tilemap, 8, 100);
-    */
-    Animation* animation = Animation_Init(renderer, sprite, 32, 32, 4, 100);
+    Transform* transform_sprite0 = Transform_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
+    Transform* transform_sprite1 = Transform_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
 
-    SDL_Rect** bounds = (SDL_Rect**)malloc( animation->max_sprite * sizeof(SDL_Rect*));
-    for(int i = 0; i < animation->max_sprite; i++) {
-        bounds[i] = &(SDL_Rect){32, 32, 32, 32};
+    Sprite* sprite0 = Sprite_Init(renderer, transform_sprite0, "Assets/Image/arrows.png");
+    Sprite* sprite1 = Sprite_Init(renderer, transform_sprite1, "Assets/Image/arrows.png");
 
-    }
-    //Animation_SetPos(animation, bounds);
-
+    Animation* animation0 = Animation_Init(renderer, sprite0, &(SDL_Rect){0, 0, 32, 32}, 32, 32, 8, 100);
+    Animation* animation1 = Animation_Init(renderer, sprite1, &(SDL_Rect){32, 32, 64, 64}, 32, 32, 8, 100);
 
     SDL_Event event;
     int quit = 0;
+
     while (!quit) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -72,15 +57,16 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        Animation_Delay(animation);
-
         SDL_RenderClear(renderer);
-        Sprite_RenderStatic(window->sprite, renderer);
-        Animation_Render(animation, renderer);
-        SDL_RenderPresent(renderer);
+        Sprite_RenderStatic(window->sprite, renderer);  
 
-        SDL_Delay(100); // Delay to limit frame rate
+        Animation_Render(animation0, renderer);
+        Animation_Render(animation1, renderer);
+
+        SDL_RenderPresent(renderer);
+        SDL_Delay(10); // Delay to limit frame rate
     }
+
     //SDL_DestroyTexture(tilemap->texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window->window);
