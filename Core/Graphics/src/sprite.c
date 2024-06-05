@@ -6,7 +6,7 @@
 Sprite* Sprite_Init(SDL_Renderer* renderer, Transform* transform, const char* filepath) {
 
     if (!transform) {
-        transform = Transform_Init(&(SDL_Rect){0, 0, 0, 0}, &(SDL_Point){0, 0}, 0.0, 1.0);
+        transform = Transform_Init(&(SDL_Rect){0, 0, 0, 0}, &(SDL_Point){0, 0}, 0.0, 0.0);
     }
 
     Sprite* sprite = malloc(sizeof(Sprite));

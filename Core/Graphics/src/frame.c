@@ -3,7 +3,7 @@
 /**************************
     Initialisation du sprite
 ***************************/
-Frame* Frame_Init(SDL_Rect* origin, SDL_Rect* target, SDL_Texture* texture, int id) {
+Frame* Frame_Init(SDL_Rect* origin, SDL_Rect* target, SDL_Texture* texture, float delay, int id) {
 
     if (!texture) {
         printf("Frame_Init: texture inexistant\n");
@@ -27,6 +27,7 @@ Frame* Frame_Init(SDL_Rect* origin, SDL_Rect* target, SDL_Texture* texture, int 
     frame->texture = texture;
     frame->origin = origin;
     frame->target = target;
+    frame->delay = delay;
     frame->id = id;
 
     return frame;
