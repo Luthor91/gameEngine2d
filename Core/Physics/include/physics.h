@@ -5,14 +5,13 @@
 #include "characterbody.h"
 #include "staticbody.h"
 #include "collision.h"
+#include "material_physics.h"
 
 typedef struct Physics {
-    float mass;
-    float friction;
-    float restitution;
     Acceleration* acceleration;
     Force* force;
     Velocity* velocity;
+    MaterialPhysics* material;
 } Physics;
 
 typedef struct Acceleration {
