@@ -46,11 +46,10 @@ int main(int argc, char* argv[]) {
 
     for (size_t i = 0; i < MAX_ANIMATION; i++) {
         Transform* transform_sprite = Transform_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
-        Sprite* sprite = Sprite_Init(renderer, transform_sprite, "Assets/Image/black_cubes.png");
-
         Transform* start = Transform_Init(&(SDL_Rect){0 + i * 50, 0, 32, 32}, &(SDL_Point){0, 0}, 0.0, 0.0);
-        Transform* end = Transform_Init(&(SDL_Rect){0 + i * 50, 512, 32, 32}, &(SDL_Point){0, 0}, 0.0, 0.0);
+        Transform* end = Transform_Init(&(SDL_Rect){0 + i * 50, 512, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
 
+        Sprite* sprite = Sprite_Init(renderer, transform_sprite, "Assets/Image/black_cubes.png");
         AnimatedSprite* animated_sprite = AnimatedSprite_Init(renderer, sprite, start, end, 1000 + i * 50);
         AnimatedSpriteManager_Add(manager, animated_sprite);
     }
@@ -66,8 +65,10 @@ int main(int argc, char* argv[]) {
         }
 
         SDL_RenderClear(renderer);
+
         Sprite_RenderStatic(window->sprite, renderer);  
         AnimatedSpriteManager_Render(manager, renderer);
+
         SDL_RenderPresent(renderer);
         SDL_Delay(FPS_LIMIT_RATE); // Delay to limit frame rate
     }

@@ -60,8 +60,6 @@ void AnimatedSprite_Render(AnimatedSprite* animated_sprite, SDL_Renderer* render
     // Progression proportionnelle à l'animation
     float progress = (float)elapsed_time / animated_sprite->speed;
 
-    printf("progress : %f\n", progress);
-
     // Calculer les positions interpolées entre start et end
     SDL_Rect interpolated_position;
     interpolated_position.x = animated_sprite->start->bounds->x + (int)((animated_sprite->end->bounds->x - animated_sprite->start->bounds->x) * progress);

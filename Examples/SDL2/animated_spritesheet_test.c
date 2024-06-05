@@ -1,6 +1,5 @@
 // gcc -I/usr/include/SDL2 -o animated_spritesheet_test Examples/SDL2/animated_spritesheet_test.c Core/Graphics/src/transform.c Core/Graphics/src/window.c Core/Graphics/src/frame.c Core/Graphics/src/sprite.c Core/Graphics/src/spritesheet.c Core/Graphics/src/animated_spritesheet.c -lSDL2 -lSDL2_image -lm && ./animated_spritesheet_test
 
-
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -39,12 +38,13 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    
-
     Transform* transform_sprite = Transform_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
+    Transform* start = Transform_Init(&(SDL_Rect){0, 0, 32, 32}, &(SDL_Point){0, 0}, 0.0, 0.0);
+    Transform* end = Transform_Init(&(SDL_Rect){512, 512, 32, 32}, &(SDL_Point){0, 0}, 0.0, 0.0);
+
     Sprite* sprite = Sprite_Init(renderer, transform_sprite, "Assets/Image/arrows.png");
     SpriteSheet* spritesheet = SpriteSheet_Init(renderer, sprite, 32, 32, 8);
-    AnimatedSpriteSheet* animated_sprite = AnimatedSpriteSheet_Init(renderer, spritesheet, &(SDL_Rect){0, 0, 32, 32}, &(SDL_Rect){512, 512, 32, 32}, 2500, 1);
+    AnimatedSpriteSheet* animated_sprite = AnimatedSpriteSheet_Init(renderer, spritesheet, start, end, 2500, 1);
 
     SDL_Event event;
     int quit = 0;

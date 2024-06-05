@@ -11,7 +11,7 @@ typedef struct Transform {
     double scale;
 } Transform;
 
-Transform* Transform_Init(SDL_Rect* bounds, SDL_Point* center, double angle, double scale);
+Transform* Transform_Init(const SDL_Rect* bounds, const SDL_Point* center, double angle, double scale);
 SDL_Rect* Transform_GetScaledBounds(const Transform* transform);
 
 #endif // TRANSFORM_H
