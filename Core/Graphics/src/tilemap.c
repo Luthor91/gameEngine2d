@@ -9,8 +9,8 @@ Tilemap* Tilemap_Init(Sprite* sprite, int tile_width, int tile_height) {
         return NULL;
     }
     
-    int num_cols = sprite->transform->bounds->w / tile_width;
-    int num_rows = sprite->transform->bounds->h / tile_height;
+    int num_cols = sprite->aspect->bounds->w / tile_width;
+    int num_rows = sprite->aspect->bounds->h / tile_height;
 
     // Allocation de mémoire pour le Tilemap
     Tilemap* tilemap = (Tilemap*)malloc(sizeof(Tilemap));

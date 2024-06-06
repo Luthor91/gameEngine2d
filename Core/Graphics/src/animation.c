@@ -1,4 +1,4 @@
-// gcc -I/usr/include/SDL2 -o animation_test Examples/SDL2/animation_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/transform.c Core/Graphics/src/window.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./animation_test
+// gcc -I/usr/include/SDL2 -o animation_test Examples/SDL2/animation_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/aspect.c Core/Graphics/src/window.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./animation_test
 
 #include "../include/animation.h"
 
@@ -8,8 +8,8 @@ Animation* Animation_Init(SDL_Renderer* renderer, Sprite* sprite, SDL_Rect* targ
         return NULL;
     }
 
-    int num_cols = sprite->transform->bounds->w / tile_width;
-    int num_rows = sprite->transform->bounds->h / tile_height;
+    int num_cols = sprite->aspect->bounds->w / tile_width;
+    int num_rows = sprite->aspect->bounds->h / tile_height;
 
     Animation* animation = (Animation*)malloc(sizeof(Animation));
     if (!animation) {

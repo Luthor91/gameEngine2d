@@ -5,11 +5,11 @@
 
 #include "frame.h"
 #include "sprite.h"
-#include "transform.h"
+#include "aspect.h"
 
 typedef struct AnimatedSprite {
-    Transform* start;
-    Transform* end;
+    Aspect* start;
+    Aspect* end;
     Sprite* sprite;
     int speed;
     int currentFrame;
@@ -24,7 +24,7 @@ typedef struct AnimatedSpriteManager {
 } AnimatedSpriteManager;
 
 AnimatedSpriteManager* AnimatedSpriteManager_Init();
-AnimatedSprite* AnimatedSprite_Init(SDL_Renderer* renderer, Sprite* sprite, Transform* start, Transform* end, int speed);
+AnimatedSprite* AnimatedSprite_Init(SDL_Renderer* renderer, Sprite* sprite, Aspect* start, Aspect* end, int speed);
 
 void AnimatedSpriteManager_Add(AnimatedSpriteManager* manager, AnimatedSprite* animated_sprite);
 

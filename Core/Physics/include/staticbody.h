@@ -1,11 +1,11 @@
 #ifndef STATICBODY_H
 #define STATICBODY_H
 
-#include "../../Graphics/include/transform.h"
+#include "transform.h"
 #include "physics.h"
 
 typedef struct StaticBody {
-    Physics physics;
+    Physics* physics;
     Transform* transform;
 } StaticBody;
 

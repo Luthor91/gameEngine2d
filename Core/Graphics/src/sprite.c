@@ -3,10 +3,10 @@
 /**************************
     Initialisation du sprite
 ***************************/
-Sprite* Sprite_Init(SDL_Renderer* renderer, Transform* transform, const char* filepath) {
+Sprite* Sprite_Init(SDL_Renderer* renderer, Aspect* aspect, const char* filepath) {
 
-    if (!transform) {
-        transform = Transform_Init(&(SDL_Rect){0, 0, 0, 0}, &(SDL_Point){0, 0}, 0.0, 0.0);
+    if (!aspect) {
+        aspect = Aspect_Init(&(SDL_Rect){0, 0, 0, 0}, &(SDL_Point){0, 0}, 0.0, 0.0);
     }
 
     Sprite* sprite = malloc(sizeof(Sprite));
@@ -30,7 +30,7 @@ Sprite* Sprite_Init(SDL_Renderer* renderer, Transform* transform, const char* fi
         return 0;
     }
 
-    sprite->transform = transform;
+    sprite->aspect = aspect;
 
     return sprite;
 }
@@ -45,7 +45,7 @@ void Sprite_RenderStatic(Sprite* sprite, SDL_Renderer* renderer) {
         return;
     }
 
-    SDL_RenderCopy(renderer, sprite->texture, NULL, Transform_GetScaledBounds(sprite->transform));
+    SDL_RenderCopy(renderer, sprite->texture, NULL, Aspect_GetScaledBounds(sprite->aspect));
 
 }
 
@@ -55,7 +55,7 @@ void Sprite_Render(Sprite* sprite, SDL_Renderer* renderer, SDL_RendererFlip flip
         return;
     }
 
-    SDL_RenderCopyEx(renderer, sprite->texture, NULL, Transform_GetScaledBounds(sprite->transform), sprite->transform->angle, sprite->transform->center, flip);
+    SDL_RenderCopyEx(renderer, sprite->texture, NULL, Aspect_GetScaledBounds(sprite->aspect), sprite->aspect->angle, sprite->aspect->center, flip);
 
 }
 
@@ -65,13 +65,13 @@ void Sprite_RenderCut(Sprite* sprite, SDL_Renderer* renderer, SDL_Rect* src) {
         return;
     }
 
-    SDL_RenderCopy(renderer, sprite->texture, src, Transform_GetScaledBounds(sprite->transform));
+    SDL_RenderCopy(renderer, sprite->texture, src, Aspect_GetScaledBounds(sprite->aspect));
 
 }
 
-void Sprites_RenderTransformable(Sprite** sprites, int numSprites, SDL_Renderer* renderer, SDL_RendererFlip flip ) {
+void Sprites_RenderAspectable(Sprite** sprites, int numSprites, SDL_Renderer* renderer, SDL_RendererFlip flip ) {
     for (int i = 0; i < numSprites; i++) {
-        SDL_RenderCopyEx(renderer, sprites[i]->texture, NULL, Transform_GetScaledBounds(sprites[i]->transform), sprites[i]->transform->angle, sprites[i]->transform->center, flip);
+        SDL_RenderCopyEx(renderer, sprites[i]->texture, NULL, Aspect_GetScaledBounds(sprites[i]->aspect), sprites[i]->aspect->angle, sprites[i]->aspect->center, flip);
     }
 }
 

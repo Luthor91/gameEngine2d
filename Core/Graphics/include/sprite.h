@@ -4,11 +4,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-#include "transform.h"
+#include "aspect.h"
 
 typedef struct Sprite {
     SDL_Texture* texture;
-    Transform* transform;
+    Aspect* aspect;
     char* path;
 } Sprite;
 
@@ -16,7 +16,7 @@ typedef struct Sprite {
     Initialisation du sprite
 ***************************/
 
-Sprite* Sprite_Init(SDL_Renderer* renderer, Transform* transform, const char* filepath);
+Sprite* Sprite_Init(SDL_Renderer* renderer, Aspect* aspect, const char* filepath);
 
 void Sprite_RenderStatic(Sprite* sprite, SDL_Renderer* renderer);
 void Sprite_RenderCut(Sprite* sprite, SDL_Renderer* renderer, SDL_Rect* src);

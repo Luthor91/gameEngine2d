@@ -1,4 +1,4 @@
-// gcc -I/usr/include/SDL2 -o AnimatedSpriteSheetSheet_test Examples/SDL2/AnimatedSpriteSheetSheet_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/transform.c Core/Graphics/src/window.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./AnimatedSpriteSheetSheet_test
+// gcc -I/usr/include/SDL2 -o AnimatedSpriteSheetSheet_test Examples/SDL2/AnimatedSpriteSheetSheet_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/aspect.c Core/Graphics/src/window.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./AnimatedSpriteSheetSheet_test
 
 #include "../include/animated_spritesheet.h"
 
@@ -8,7 +8,7 @@
 /**
  * speed : temps total de l'animation en milisecondes
 */
-AnimatedSpriteSheet* AnimatedSpriteSheet_Init(SDL_Renderer* renderer, SpriteSheet* spritesheet, Transform* start, Transform* end, int speed, int repeat) {
+AnimatedSpriteSheet* AnimatedSpriteSheet_Init(SDL_Renderer* renderer, SpriteSheet* spritesheet, Aspect* start, Aspect* end, int speed, int repeat) {
     if (!spritesheet) {
         printf("AnimatedSpriteSheet_Init: Erreur lors de la création de la texture\n");
         return NULL;

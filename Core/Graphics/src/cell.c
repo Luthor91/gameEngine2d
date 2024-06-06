@@ -25,7 +25,7 @@ void Cell_SetSprite(Cell* cell, Sprite* sprite) {
     }
 
     cell->sprite = sprite;
-    cell->sprite->transform->bounds = cell->bounds;
+    cell->sprite->aspect->bounds = cell->bounds;
 
     return;
 

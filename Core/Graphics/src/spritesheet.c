@@ -6,8 +6,8 @@ SpriteSheet* SpriteSheet_Init(SDL_Renderer* renderer, Sprite* sprite, int tile_w
         return NULL;
     }
 
-    int num_cols = sprite->transform->bounds->w / tile_width;
-    int num_rows = sprite->transform->bounds->h / tile_height;
+    int num_cols = sprite->aspect->bounds->w / tile_width;
+    int num_rows = sprite->aspect->bounds->h / tile_height;
 
     SpriteSheet* spritesheet = (SpriteSheet*)malloc(sizeof(SpriteSheet));
     if (!spritesheet) {

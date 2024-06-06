@@ -1,11 +1,11 @@
 #ifndef CHARACTERBODY_H
 #define CHARACTERBODY_H
 
-#include "../../Graphics/include/transform.h"
+#include "transform.h"
 #include "physics.h"
 
 typedef struct CharacterBody {
-    Physics physics;
+    Physics* physics;
     Transform* transform;
 } CharacterBody;
 

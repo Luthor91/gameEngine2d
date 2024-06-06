@@ -1,4 +1,4 @@
-// gcc -I/usr/include/SDL2 -o AnimatedSprite_test Examples/SDL2/AnimatedSprite_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/transform.c Core/Graphics/src/window.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./AnimatedSprite_test
+// gcc -I/usr/include/SDL2 -o AnimatedSprite_test Examples/SDL2/AnimatedSprite_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/aspect.c Core/Graphics/src/window.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./AnimatedSprite_test
 
 #include "../include/animated_sprite.h"
 
@@ -17,7 +17,7 @@ AnimatedSpriteManager* AnimatedSpriteManager_Init(int max_anim) {
 }
 
 // speed : temps total de l'animation en milisecondes
-AnimatedSprite* AnimatedSprite_Init(SDL_Renderer* renderer, Sprite* sprite, Transform* start, Transform* end, int speed) {
+AnimatedSprite* AnimatedSprite_Init(SDL_Renderer* renderer, Sprite* sprite, Aspect* start, Aspect* end, int speed) {
     if (!sprite || !sprite->texture) {
         printf("AnimatedSprite_Init: Erreur lors de la création de la texture\n");
         return NULL;

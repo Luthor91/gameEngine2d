@@ -2,17 +2,17 @@
 #define WINDOW_H
 
 #include "sprite.h"
-#include "transform.h"
+#include "aspect.h"
 
 typedef struct Window {
     SDL_Window* window;
     SDL_Renderer* renderer;
-    Transform* transform;
+    Aspect* aspect;
     Sprite* sprite;
 } Window;
 
-Window* Window_Create(const char* title, Transform* transform);
-Window* Window_Init(const char* title, Transform* transform, const char* sprite_path);
+Window* Window_Create(const char* title, Aspect* aspect);
+Window* Window_Init(const char* title, Aspect* aspect, const char* sprite_path);
 int Window_SetIcon(Window* window, const char* filename);
 SDL_Renderer* Window_CreateRenderer(Window* window);
 SDL_Renderer* Window_GetRenderer(Window* window);

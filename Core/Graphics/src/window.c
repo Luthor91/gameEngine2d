@@ -1,13 +1,13 @@
 #include "../include/window.h"
 
-Window* Window_Create(const char* title, Transform* transform) {
+Window* Window_Create(const char* title, Aspect* aspect) {
     Window* window = (Window*)malloc(sizeof(Window));
     if (!window) {
         fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
         return NULL;
     }
 
-    SDL_Window* sdl_window = SDL_CreateWindow(title, transform->bounds->x, transform->bounds->y, transform->bounds->w, transform->bounds->h, SDL_WINDOW_SHOWN);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, aspect->bounds->x, aspect->bounds->y, aspect->bounds->w, aspect->bounds->h, SDL_WINDOW_SHOWN);
     if (!sdl_window) {
         fprintf(stderr, "Window_Create: %s\n", IMG_GetError());
         free(window);
@@ -15,20 +15,20 @@ Window* Window_Create(const char* title, Transform* transform) {
     }
 
     window->window = sdl_window;
-    window->transform = transform;
+    window->aspect = aspect;
 
     return window;
 }
 
-Window* Window_Init(const char* title, Transform* transform, const char* sprite_path) {
+Window* Window_Init(const char* title, Aspect* aspect, const char* sprite_path) {
 
     if (!sprite_path) {
         fprintf(stderr, "Window_Init: Sprite invalide\n");
         return NULL;
     }
     
-    if (transform->scale <= 0.0) {
-        transform->scale = 1.0;
+    if (aspect->scale <= 0.0) {
+        aspect->scale = 1.0;
     }
 
     Window* window = (Window*)malloc(sizeof(Window));
@@ -37,7 +37,7 @@ Window* Window_Init(const char* title, Transform* transform, const char* sprite_
         return NULL;
     }
 
-    SDL_Window* sdl_window = SDL_CreateWindow(title, transform->bounds->x, transform->bounds->y, transform->bounds->w, transform->bounds->h, SDL_WINDOW_SHOWN);
+    SDL_Window* sdl_window = SDL_CreateWindow(title, aspect->bounds->x, aspect->bounds->y, aspect->bounds->w, aspect->bounds->h, SDL_WINDOW_SHOWN);
     if (!sdl_window) {
         fprintf(stderr, "Window_Init: %s\n", IMG_GetError());
         free(window);
@@ -46,16 +46,16 @@ Window* Window_Init(const char* title, Transform* transform, const char* sprite_
 
     window->window = sdl_window;
 
-    window->transform = transform;
-    if (!window->transform->bounds){
+    window->aspect = aspect;
+    if (!window->aspect->bounds){
         printf("Window_Init: Erreur bounds invalide\n\t%s\n", SDL_GetError());
         return NULL;
     }
-    if (window->transform->bounds->w < 0){
+    if (window->aspect->bounds->w < 0){
         printf("Window_Init: Erreur largeur invalide\n\t%s\n", SDL_GetError());
         return NULL;
     }
-    if (window->transform->bounds->h < 0){
+    if (window->aspect->bounds->h < 0){
         printf("Window_Init: Erreur hauteur invalide\n\t%s\n", SDL_GetError());
         return NULL;
     }
@@ -68,7 +68,7 @@ Window* Window_Init(const char* title, Transform* transform, const char* sprite_
     }
     window->renderer = renderer;
     
-    window->sprite = Sprite_Init(window->renderer, window->transform, sprite_path);
+    window->sprite = Sprite_Init(window->renderer, window->aspect, sprite_path);
     if (!window->sprite) {
         fprintf(stderr, "Window_Init: Erreur création du sprite\n");
         free(window);
@@ -115,7 +115,7 @@ int Window_SetSprite(Window* window, const SDL_Renderer* renderer, const char* p
         return 0;
     }
 
-    window->sprite = Sprite_Init(window->renderer, window->transform, path);
+    window->sprite = Sprite_Init(window->renderer, window->aspect, path);
     
     return 1;
 }

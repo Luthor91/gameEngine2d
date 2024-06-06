@@ -8,17 +8,17 @@ Button* Button_Create(int x, int y, int width, int height) {
         return NULL;
     }
 
-    button->transform->bounds->x = x;
-    button->transform->bounds->y = y;
-    button->transform->bounds->w = width;
-    button->transform->bounds->h = height;
+    button->aspect->bounds->x = x;
+    button->aspect->bounds->y = y;
+    button->aspect->bounds->w = width;
+    button->aspect->bounds->h = height;
     button->pressed = 0;
 
     return button;
 }
 
 // Fonction pour créer un bouton
-Button* Button_Init(Transform* transform, Sprite* sprite, void (*on_click)(void*), void* data) {
+Button* Button_Init(Aspect* aspect, Sprite* sprite, void (*on_click)(void*), void* data) {
     Button* button = (Button*) malloc(sizeof(Button));
     if (!button) {
         fprintf(stderr, "Button_Init: %s\n", IMG_GetError());
@@ -31,7 +31,7 @@ Button* Button_Init(Transform* transform, Sprite* sprite, void (*on_click)(void*
     }
 
 
-    button->transform = transform;
+    button->aspect = aspect;
     button->pressed = 0;
     button->sprite = sprite;
     button->data = data;
@@ -53,7 +53,7 @@ Button* Button_InheritSprite(Sprite* sprite, void (*on_click)(void*), void* data
     }
 
 
-    button->transform = sprite->transform;
+    button->aspect = sprite->aspect;
     button->pressed = 0;
     button->sprite = sprite;
     button->data = data;
@@ -75,14 +75,14 @@ void Button_Destroy(Button* button) {
 
 int Button_SetPosition(Button* button, int x, int y) {
     // Set the button's position on the screen
-    button->transform->bounds->x = x;
-    button->transform->bounds->y = y;
+    button->aspect->bounds->x = x;
+    button->aspect->bounds->y = y;
     return 1;
 }
 
 int Button_SetSize(Button* button, int width, int height) {
-    button->transform->bounds->w = width;
-    button->transform->bounds->h = height;
+    button->aspect->bounds->w = width;
+    button->aspect->bounds->h = height;
 
     return 1;
 }
@@ -100,16 +100,16 @@ int Button_SetOnClick(Button* button, void (*on_click)(void*), void* data) {
     return 1;
 }
 
-int Button_SyncTransformWithSprite(Button* button) {
+int Button_SyncAspectWithSprite(Button* button) {
 
-    button->transform = button->sprite->transform;
+    button->aspect = button->sprite->aspect;
     return 1;
 }
 
 // Fonction pour vérifier si un bouton est pressé
 int Button_IsPressed(Button* button, int x, int y) {
 
-    if (x >= button->transform->bounds->x && x <= button->transform->bounds->x + button->transform->bounds->w && y >= button->transform->bounds->y && y <= button->transform->bounds->y + button->transform->bounds->h) {
+    if (x >= button->aspect->bounds->x && x <= button->aspect->bounds->x + button->aspect->bounds->w && y >= button->aspect->bounds->y && y <= button->aspect->bounds->y + button->aspect->bounds->h) {
 
         if (button->pressed) {
             return 0;
