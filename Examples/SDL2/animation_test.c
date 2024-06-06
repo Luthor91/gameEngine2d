@@ -1,4 +1,4 @@
-// gcc -I/usr/include/SDL2 -o animation_test Examples/SDL2/animation_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/transform.c Core/Graphics/src/window.c Core/Graphics/src/animation.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./animation_test
+// gcc -I/usr/include/SDL2 -o animation_test Examples/SDL2/animation_test.c Core/Graphics/src/sprite.c Core/Graphics/src/tilemap.c Core/Graphics/src/aspect.c Core/Graphics/src/window.c Core/Graphics/src/animation.c Core/Graphics/src/frame.c -lSDL2 -lSDL2_image -lm && ./animation_test
 
 
 #include <stdio.h>
@@ -8,7 +8,7 @@
 
 #include "../../Core/Graphics/include/sprite.h"
 #include "../../Core/Graphics/include/tilemap.h"
-#include "../../Core/Graphics/include/transform.h"
+#include "../../Core/Graphics/include/aspect.h"
 #include "../../Core/Graphics/include/animation.h"
 #include "../../Core/Graphics/include/window.h"
 
@@ -25,8 +25,8 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Main: %s\n", SDL_GetError());
         return 1;
     }
-    Transform* transform_window = Transform_Init(&(SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}, &(SDL_Point){0, 0}, 0.0, 0.0);
-    Window* window = Window_Init("Sprite Animation", transform_window, "Assets/Image/background1.jpg");
+    Aspect* aspect_window = Aspect_Init(&(SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}, &(SDL_Point){0, 0}, 0.0, 0.0);
+    Window* window = Window_Init("Sprite Animation", aspect_window, "Assets/Image/background1.jpg");
     if (!window) {
         printf("Window creation failed: %s\n", SDL_GetError());
         return 0;
@@ -38,11 +38,11 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    Transform* transform_sprite0 = Transform_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
-    Transform* transform_sprite1 = Transform_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
+    Aspect* aspect_sprite0 = Aspect_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
+    Aspect* aspect_sprite1 = Aspect_Init(&(SDL_Rect){0, 0, 128, 128}, &(SDL_Point){0, 0}, 0.0, 0.0);
 
-    Sprite* sprite0 = Sprite_Init(renderer, transform_sprite0, "Assets/Image/arrows.png");
-    Sprite* sprite1 = Sprite_Init(renderer, transform_sprite1, "Assets/Image/arrows.png");
+    Sprite* sprite0 = Sprite_Init(renderer, aspect_sprite0, "Assets/Image/arrows.png");
+    Sprite* sprite1 = Sprite_Init(renderer, aspect_sprite1, "Assets/Image/arrows.png");
 
     Animation* animation0 = Animation_Init(renderer, sprite0, &(SDL_Rect){0, 0, 32, 32}, 32, 32, 8, 100);
     Animation* animation1 = Animation_Init(renderer, sprite1, &(SDL_Rect){32, 32, 64, 64}, 32, 32, 8, 100);

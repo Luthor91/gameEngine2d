@@ -1,7 +1,7 @@
 //  gcc -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lm && ./button_test
 // gcc -O3 -g -Wall -Wextra -std=c89 -pedantic -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -I/usr/include/SDL2 -o button_test Examples/SDL2/button_test.c  Core/Graphics/src/button.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./button_test
 
-// gcc -I/usr/include/SDL2 -o grid_test Examples/SDL2/grid_test.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c Core/Graphics/src/transform.c Core/Graphics/src/font.c Core/Graphics/src/gridcell.c Core/Graphics/src/grid.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./grid_test
+// gcc -I/usr/include/SDL2 -o grid_test Examples/SDL2/grid_test.c Core/Graphics/src/window.c Core/Graphics/src/sprite.c Core/Graphics/src/label.c Core/Graphics/src/aspect.c Core/Graphics/src/font.c Core/Graphics/src/gridcell.c Core/Graphics/src/grid.c -lSDL2 -lSDL2_image -lSDL2_ttf -lm && ./grid_test
 
 #include "../../Core/Graphics/include/window.h"
 #include "../../Core/Graphics/include/label.h"
@@ -28,8 +28,8 @@ int main(int argc, char* argv[]) {
     /****************************
         Bloc de code pour afficher une fenêtre
     ***************************/
-    Transform* transform_window = Transform_Init(&(SDL_Rect){0, 0, 720, 480}, &(SDL_Point){360, 240}, 1.0, 0.0);
-    Window* window = Window_Init("Window Test", transform_window, "Assets/Image/background1.jpg");
+    Aspect* aspect_window = Aspect_Init(&(SDL_Rect){0, 0, 720, 480}, &(SDL_Point){360, 240}, 1.0, 0.0);
+    Window* window = Window_Init("Window Test", aspect_window, "Assets/Image/background1.jpg");
 
     SDL_Renderer* renderer = Window_GetRenderer(window);
     
