@@ -1,21 +1,21 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
-#include "core_physics.h"
-#include "rigidbody.h"
-#include "staticbody.h"
-#include "characterbody.h"
+#include <stdlib.h>
+
+#include "acceleration.h"
+#include "force.h"
+#include "velocity.h"
+#include "material.h"
 
 typedef struct Physics {
     Acceleration* acceleration;
     Force* force;
     Velocity* velocity;
-    MaterialPhysics* material;
+    Material* material;
     int isGrounded;
 } Physics;
 
-Physics* Physics_Init(Acceleration* acceleration, Force* force, Velocity* velocity, MaterialPhysics* material);
-void UpdatePhysics(RigidBodyManager* rigidBodies, CharacterBodyManager* characterBodies, StaticBodyManager* staticBodies, float deltaTime);
-void ApplyGravity(RigidBody* body, float deltaTime);
+Physics* Physics_Init(Acceleration* acceleration, Force* force, Velocity* velocity, Material* material);
 
 #endif // PHYSICS_H

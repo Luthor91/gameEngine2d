@@ -7,8 +7,8 @@
 #include "spritesheet.h"
 
 typedef struct AnimatedSpriteSheet {
-    Transform* start;
-    Transform* end;
+    Aspect* start;
+    Aspect* end;
     SpriteSheet* spritesheet;
     int speed;
     int currentFrame;
@@ -18,7 +18,7 @@ typedef struct AnimatedSpriteSheet {
     int repeat;
 } AnimatedSpriteSheet;
 
-AnimatedSpriteSheet* AnimatedSpriteSheet_Init(SDL_Renderer* renderer, SpriteSheet* spritesheet, Transform* start, Transform* end, int speed, int repeat);
+AnimatedSpriteSheet* AnimatedSpriteSheet_Init(SDL_Renderer* renderer, SpriteSheet* spritesheet, Aspect* start, Aspect* end, int speed, int repeat);
 void AnimatedSpriteSheet_Delay(AnimatedSpriteSheet* animation_sprite);
 void AnimatedSpriteSheet_Render(AnimatedSpriteSheet* animation_sprite, SDL_Renderer* renderer);
 

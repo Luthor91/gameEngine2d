@@ -11,7 +11,7 @@ typedef struct Aspect {
     double scale;
 } Aspect;
 
-Aspect* Aspect_Init(const SDL_Rect* bounds, const SDL_Point* center, double angle, double scale);
-SDL_Rect* Aspect_GetScaledBounds(const Aspect* aspect);
+Aspect* Aspect_Init(SDL_Rect* bounds, SDL_Point* center, double angle, double scale);
+SDL_Rect* Aspect_GetScaledBounds(Aspect* aspect);
 
 #endif // ASPECT_H

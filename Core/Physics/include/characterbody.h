@@ -15,6 +15,4 @@ typedef struct CharacterBodyManager {
     int index;
 } CharacterBodyManager;
 
-void UpdateCharacterBody(CharacterBody* body, float deltaTime);
-
 #endif // CHARACTERBODY_H
