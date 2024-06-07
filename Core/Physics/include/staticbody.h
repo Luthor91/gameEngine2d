@@ -10,7 +10,7 @@ typedef struct StaticBody {
 } StaticBody;
 
 typedef struct StaticBodyManager {
-    StaticBody* staticBodies;
+    StaticBody** staticBodies;
     int max_body;
     int index;
 } StaticBodyManager;

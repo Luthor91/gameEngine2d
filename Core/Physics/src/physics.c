@@ -1,6 +1,6 @@
 #include "../include/physics.h"
 
-Physics* Physics_Init(Acceleration* acceleration, Force* force, Velocity* velocity, Material* material) {
+Physics* Physics_Init(Acceleration* acceleration, ForceManager* force_manager, Velocity* velocity, Material* material) {
     Physics* physics = (Physics*)malloc(sizeof(Physics));
     if (physics == NULL) {
         return NULL;
@@ -13,17 +13,17 @@ Physics* Physics_Init(Acceleration* acceleration, Force* force, Velocity* veloci
     }
     physics->acceleration = acceleration;
 
-    physics->force = (Force*)malloc(sizeof(Force));
-    if (physics->force == NULL) {
+    physics->forces = (ForceManager*)malloc(sizeof(ForceManager));
+    if (physics->forces== NULL) {
         free(physics->acceleration);
         free(physics);
         return NULL;
     }
-    physics->force = force;
+    physics->forces = force_manager;
 
     physics->velocity = (Velocity*)malloc(sizeof(Velocity));
     if (physics->velocity == NULL) {
-        free(physics->force);
+        free(physics->forces);
         free(physics->acceleration);
         free(physics);
         return NULL;
@@ -33,7 +33,7 @@ Physics* Physics_Init(Acceleration* acceleration, Force* force, Velocity* veloci
 
     physics->material = (Material*)malloc(sizeof(Material));
     if (physics->material == NULL) {
-        free(physics->force);
+        free(physics->forces);
         free(physics->acceleration);
         free(physics->velocity);
         free(physics);

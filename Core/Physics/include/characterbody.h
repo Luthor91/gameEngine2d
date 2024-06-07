@@ -10,7 +10,7 @@ typedef struct CharacterBody {
 } CharacterBody;
 
 typedef struct CharacterBodyManager {
-    CharacterBody* characterBodies;
+    CharacterBody** characterBodies;
     int max_body;
     int index;
 } CharacterBodyManager;

@@ -12,7 +12,7 @@ typedef struct Material {
     float restitution;  // bounce
 } Material;
 
-Material* Material_Init(float friction, float restitution, float density);
+Material* Material_Init(float friction_coefficient, float restitution_coefficient, float density, float mass, float friction, float restitution);
 void Material_Destroy(Material* material);
 
 #endif // MATERIAL_H

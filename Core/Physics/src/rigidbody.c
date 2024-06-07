@@ -27,26 +27,31 @@ RigidBody* RigidBody_Init(Transform* transform, Physics* physics) {
 }
 
 void RigidBody_Update(RigidBody* body, float deltaTime) {
-    // Si le corps est au sol, ignorer l'accélération verticale due à la gravité
-    if (body->physics->isGrounded) {
-        body->physics->acceleration->y = 0;
+    // Vérifier si body->physics est NULL
+    if (body->physics == NULL) {
+        // Ne rien faire si body->physics est NULL
+        return;
     }
 
-    // Calculer les nouvelles accélérations en fonction de la force
-    body->physics->acceleration->x = body->physics->force->x / body->physics->material->mass;
-    body->physics->acceleration->y = body->physics->force->y / body->physics->material->mass;
+    // Définir des valeurs par défaut pour les propriétés matérielles
+    float default_mass = 1.0f;
+    float mass = (body->physics->material != NULL && body->physics->material->mass != 0.0f) ? body->physics->material->mass : default_mass;
 
-    // Calculer les nouvelles vitesses en fonction de l'accélération
+    // Calculer la force nette à partir des forces appliquées
+    Force* netForce = ForceManager_CalculateNetForce(body->physics->forces);
+
+    // Calculer l'accélération en fonction de la force et de la masse
+    body->physics->acceleration->x = netForce->magnitude * cos(netForce->direction) / mass;
+    body->physics->acceleration->y = netForce->magnitude * sin(netForce->direction) / mass;
+
+    // Mettre à jour la vitesse en fonction de l'accélération
     body->physics->velocity->x += body->physics->acceleration->x * deltaTime;
     body->physics->velocity->y += body->physics->acceleration->y * deltaTime;
 
-    // Calculer les nouvelles positions en fonction des vitesses et de l'accélération
+    // Mettre à jour la position en fonction de la vitesse et de l'accélération
     body->transform->position->x += body->physics->velocity->x * deltaTime + 0.5f * body->physics->acceleration->x * deltaTime * deltaTime;
     body->transform->position->y += body->physics->velocity->y * deltaTime + 0.5f * body->physics->acceleration->y * deltaTime * deltaTime;
 
-    // Réinitialiser la force après l'application
-    body->physics->force->x = 0;
-    body->physics->force->y = 0;
+    // Libérer la mémoire allouée pour netForce
+    free(netForce);
 }
-
-
