@@ -27,6 +27,15 @@ RigidBody* RigidBody_Init(Transform* transform, Physics* physics) {
 }
 
 void RigidBody_Update(RigidBody* body, float deltaTime) {
+    // Si le corps est au sol, ignorer l'accélération verticale due à la gravité
+    if (body->physics->isGrounded) {
+        body->physics->acceleration->y = 0;
+    }
+
+    // Calculer les nouvelles accélérations en fonction de la force
+    body->physics->acceleration->x = body->physics->force->x / body->physics->material->mass;
+    body->physics->acceleration->y = body->physics->force->y / body->physics->material->mass;
+
     // Calculer les nouvelles vitesses en fonction de l'accélération
     body->physics->velocity->x += body->physics->acceleration->x * deltaTime;
     body->physics->velocity->y += body->physics->acceleration->y * deltaTime;
@@ -34,5 +43,10 @@ void RigidBody_Update(RigidBody* body, float deltaTime) {
     // Calculer les nouvelles positions en fonction des vitesses et de l'accélération
     body->transform->position->x += body->physics->velocity->x * deltaTime + 0.5f * body->physics->acceleration->x * deltaTime * deltaTime;
     body->transform->position->y += body->physics->velocity->y * deltaTime + 0.5f * body->physics->acceleration->y * deltaTime * deltaTime;
+
+    // Réinitialiser la force après l'application
+    body->physics->force->x = 0;
+    body->physics->force->y = 0;
 }
+
 

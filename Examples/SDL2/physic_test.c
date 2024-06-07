@@ -64,6 +64,10 @@ int main(int argc, char* argv[]) {
         SDL_RenderClear(renderer);
         Sprite_RenderStatic(window->sprite, renderer);  
         RigidBody_Update(body, deltaTime);
+        
+        sprite->aspect->bounds->x = body->transform->position->x;
+        sprite->aspect->bounds->y = body->transform->position->y;
+
         Sprite_Render(sprite, renderer, SDL_FLIP_NONE);
 
         SDL_RenderPresent(renderer);
