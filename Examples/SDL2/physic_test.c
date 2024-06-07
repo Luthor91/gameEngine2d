@@ -11,7 +11,7 @@
 #include "../../Core/Physics/include/rigidbody.h"
 #include "../../Core/Physics/include/staticbody.h"
 #include "../../Core/Physics/include/characterbody.h"
-
+#include "../../Core/Physics/include/material.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -30,15 +30,20 @@ int main(int argc, char* argv[]) {
     SDL_Renderer* renderer = Window_GetRenderer(window);
     
     Aspect* aspect_sprite = Aspect_Init(&(SDL_Rect){0, 0, 32, 32}, &(SDL_Point){0, 0}, 0, 0);
-    Transform* transform_sprite = Transform_Init(&(Point2D){0, 0}, &(Size2D){32, 32} ,&(Point2D){16, 16}, 0, 0);
+    Transform* transform_sprite = Transform_Init(&(Point2D){0, 0}, &(Size2D){32, 32}, &(Point2D){16, 16}, 0, 0);
 
-    Acceleration accel = {0.0f, 9.81f};
-    Force force = {0.0f, 0.0f};
-    Velocity velocity = {1.0f, 0.0f};
-    Material material = {0.5f, 0.3f, 2.5f, 1.0f, 0.5f, 0.3f};
-    
-    Physics* physics = Physics_Init(&accel, &force, &velocity, &material);
+    Acceleration* accel = Acceleration_Init(0.0f, 0.0f);  // Accélération en m/s^2
+    ForceManager* forceManager = ForceManager_Init(2);
+    Force* gravity = Force_Init(9.81f, PI);
+    Force* externalForce = Force_Init(9.81f, 0.0f);
+    ForceManager_AddForce(forceManager, gravity);
+    ForceManager_AddForce(forceManager, externalForce);
+    Velocity* velocity = Velocity_Init(0.0f, 1.0f);  // Vitesse en m/s
+    Material* material = Material_Init(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);  // Propriétés matérielles, incluant la masse
+    Physics* physics = Physics_Init(accel, forceManager, velocity, material);
+
     RigidBody* body = RigidBody_Init(transform_sprite, physics);
+
     Sprite* sprite = Sprite_Init(renderer, aspect_sprite, "Assets/Image/black_cubes.png");
     
     SDL_Event event;
