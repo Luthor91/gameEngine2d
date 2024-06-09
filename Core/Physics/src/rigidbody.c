@@ -29,20 +29,62 @@ RigidBody* RigidBody_Init(Transform* transform, Physics* physics) {
 void RigidBody_Update(RigidBody* body, float deltaTime) {
     // Vérifier si body->physics est NULL
     if (body->physics == NULL) {
-        // Ne rien faire si body->physics est NULL
         return;
     }
 
-    // Définir des valeurs par défaut pour les propriétés matérielles
-    float default_mass = 1.0f;
-    float mass = (body->physics->material != NULL && body->physics->material->mass != 0.0f) ? body->physics->material->mass : default_mass;
+    // Définir la masse avec une valeur par défaut si nécessaire
+    float mass = (body->physics->material != NULL && body->physics->material->mass != 0.0f) ? body->physics->material->mass : 1.0f;
 
     // Calculer la force nette à partir des forces appliquées
     Force* netForce = ForceManager_CalculateNetForce(body->physics->forces);
 
-    // Calculer l'accélération en fonction de la force et de la masse
-    body->physics->acceleration->x = netForce->magnitude * cos(netForce->direction) / mass;
-    body->physics->acceleration->y = netForce->magnitude * sin(netForce->direction) / mass;
+    if (netForce == NULL) {
+        return; // Vérifier si netForce n'est pas NULL
+    }
+
+    // Calculer les composantes de la force nette
+    float netForceX = netForce->magnitude * cos(netForce->direction);
+    float netForceY = netForce->magnitude * sin(netForce->direction);
+
+    // Libérer la mémoire allouée pour netForce
+    free(netForce);
+
+    // Appliquer les impulsions si présentes et ajouter leurs composantes à la force nette
+    for (int i = 0; i < body->physics->impulses->index; i++) {
+        Impulse* impulse = body->physics->impulses->impulses[i];
+        
+        // Appliquer l'impulsion si elle est toujours active
+        if (impulse->timeElapsed < impulse->duration) {
+            float impulseX = impulse->magnitude * cos(impulse->direction);
+            float impulseY = impulse->magnitude * sin(impulse->direction);
+
+            // Appliquer l'impulsion instantanément à la vitesse
+            body->physics->velocity->x += (impulseX / mass) * (deltaTime / impulse->duration);
+            body->physics->velocity->y += (impulseY / mass) * (deltaTime / impulse->duration);
+
+            // Mettre à jour le temps écoulé
+            impulse->timeElapsed += deltaTime;
+
+            // Si l'impulsion est terminée, la détruire
+            if (impulse->timeElapsed >= impulse->duration) {
+                Impulse_Destroy(impulse);
+                body->physics->impulses->impulses[i] = NULL;
+            }
+        }
+    }
+
+    // Supprimer les impulsions terminées de la liste
+    int newIndex = 0;
+    for (int i = 0; i < body->physics->impulses->index; i++) {
+        if (body->physics->impulses->impulses[i] != NULL) {
+            body->physics->impulses->impulses[newIndex++] = body->physics->impulses->impulses[i];
+        }
+    }
+    body->physics->impulses->index = newIndex;
+
+    // Calculer l'accélération en fonction de la force nette et de la masse
+    body->physics->acceleration->x = netForceX / mass;
+    body->physics->acceleration->y = netForceY / mass;
 
     // Mettre à jour la vitesse en fonction de l'accélération
     body->physics->velocity->x += body->physics->acceleration->x * deltaTime;
@@ -51,7 +93,5 @@ void RigidBody_Update(RigidBody* body, float deltaTime) {
     // Mettre à jour la position en fonction de la vitesse et de l'accélération
     body->transform->position->x += body->physics->velocity->x * deltaTime + 0.5f * body->physics->acceleration->x * deltaTime * deltaTime;
     body->transform->position->y += body->physics->velocity->y * deltaTime + 0.5f * body->physics->acceleration->y * deltaTime * deltaTime;
-
-    // Libérer la mémoire allouée pour netForce
-    free(netForce);
 }
+

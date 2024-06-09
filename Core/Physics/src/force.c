@@ -37,21 +37,20 @@ void ForceManager_AddForce(ForceManager* manager, Force* force) {
 }
 
 Force* ForceManager_CalculateNetForce(ForceManager* manager) {
-    // Initialiser la force nette avec une magnitude nulle
-    float netMagnitude = 0.0f;
+    // Initialiser les composantes x et y de la force nette à zéro
     float netDirectionX = 0.0f;
     float netDirectionY = 0.0f;
 
-    // Calculer la somme des forces en tenant compte de leur direction et magnitude
+    // Calculer la somme des composantes x et y des forces
     for (int i = 0; i < manager->index; i++) {
         float magnitude = manager->forces[i]->magnitude;
         float direction = manager->forces[i]->direction;
-        netMagnitude += magnitude;
-        netDirectionX += magnitude * cos(direction); // Calculer les composantes x et y de la direction
+        netDirectionX += magnitude * cos(direction);
         netDirectionY += magnitude * sin(direction);
     }
 
-    // Calculer la direction totale
+    // Calculer la magnitude et la direction totale
+    float netMagnitude = sqrt(netDirectionX * netDirectionX + netDirectionY * netDirectionY);
     float netDirection = atan2(netDirectionY, netDirectionX);
 
     // Créer et retourner la force nette

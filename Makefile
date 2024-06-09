@@ -13,4 +13,4 @@ install:
 	sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 
 tst:
-	gcc -I/usr/include/SDL2 -o physic_test Examples/SDL2/physic_test.c Core/Graphics/src/animated_sprite.c Core/Graphics/src/sprite.c Core/Graphics/src/aspect.c Core/Graphics/src/window.c Core/Physics/src/rigidbody.c Core/Physics/src/transform.c Core/Physics/src/staticbody.c Core/Physics/src/characterbody.c Core/Physics/src/physics.c Core/Physics/src/acceleration.c Core/Physics/src/force.c Core/Physics/src/velocity.c Core/Physics/src/material.c Core/Physics/src/vector2.c -lSDL2 -lSDL2_image -lm && ./physic_test
+	gcc -I/usr/include/SDL2 -o physic_test Examples/SDL2/physic_test.c Core/Graphics/src/animated_sprite.c Core/Graphics/src/sprite.c Core/Graphics/src/aspect.c Core/Graphics/src/window.c Core/Physics/src/rigidbody.c Core/Physics/src/transform.c Core/Physics/src/staticbody.c Core/Physics/src/characterbody.c Core/Physics/src/physics.c Core/Physics/src/acceleration.c Core/Physics/src/force.c Core/Physics/src/velocity.c Core/Physics/src/material.c Core/Physics/src/impulse.c Core/Physics/src/vector2.c -lSDL2 -lSDL2_image -lm && ./physic_test

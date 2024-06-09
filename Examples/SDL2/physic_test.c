@@ -33,14 +33,18 @@ int main(int argc, char* argv[]) {
     Transform* transform_sprite = Transform_Init(&(Point2D){0, 0}, &(Size2D){32, 32}, &(Point2D){16, 16}, 0, 0);
 
     Acceleration* accel = Acceleration_Init(0.0f, 0.0f);  // Accélération en m/s^2
+
     ForceManager* forceManager = ForceManager_Init(2);
-    Force* gravity = Force_Init(9.81f, PI);
-    Force* externalForce = Force_Init(9.81f, 0.0f);
+    Force* gravity = Force_Init(9.81f, PI/2);
+    Force* externalForce = Force_Init(9.81f, 3*PI/2);
     ForceManager_AddForce(forceManager, gravity);
     ForceManager_AddForce(forceManager, externalForce);
+
+    ImpulseManager* impulseManager = ImpulseManager_Init(10);
+
     Velocity* velocity = Velocity_Init(0.0f, 1.0f);  // Vitesse en m/s
     Material* material = Material_Init(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);  // Propriétés matérielles, incluant la masse
-    Physics* physics = Physics_Init(accel, forceManager, velocity, material);
+    Physics* physics = Physics_Init(accel, forceManager, impulseManager, velocity, material);
 
     RigidBody* body = RigidBody_Init(transform_sprite, physics);
 
@@ -58,6 +62,12 @@ int main(int argc, char* argv[]) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 quit = 1;
+            } else if (event.type == SDL_KEYDOWN) {
+                if (event.key.keysym.sym == SDLK_SPACE) {
+                    // Créer une impulsion de 0.5 secondes vers l'Est (0 radians)
+                    Impulse* impulse = Impulse_Init(5.0f, 0.0f, 0.5f); // Vous pouvez ajuster la magnitude
+                    ImpulseManager_AddImpulse(body->physics->impulses, impulse);
+                }
             }
         }
 
