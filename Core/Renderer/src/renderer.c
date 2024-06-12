@@ -164,21 +164,21 @@ void Renderer_DynamicAnimation(Renderer* renderer, SDL_Renderer* sdl_renderer) {
 
 // Fonction de rendu pour les animations statiques
 void Renderer_StaticAnimation(Renderer* renderer, SDL_Renderer* sdl_renderer) {
-    printf("Renderer_StaticAnimation: Début de la fonction\n");
 
     StaticAnimation* static_animation = (StaticAnimation*)(renderer->object);
     if (!static_animation) {
-        fprintf(stderr, "Renderer_StaticAnimation: static_animation est NULL\n");
+        fprintf(stderr, "Renderer_StaticAnimation: static_animation is NULL\n");
         return;
     }
 
-    printf("Renderer_StaticAnimation: static_animation n'est pas NULL\n");
-
     AnimationSettings* animation_settings = static_animation->animation_settings;
+    if (static_animation->animation_settings != NULL) {
+        printf("Renderer_StaticAnimation: AnimationSettings - speed: %d, current_frame: %d, max_frame: %d, last_frame_time: %d\n", 
+        animation_settings->speed, animation_settings->current_frame, animation_settings->max_frame, animation_settings->start_time);
 
-    printf("Renderer_StaticAnimation: animation_settings n'est pas NULL\n");
-    printf("Renderer_StaticAnimation: AnimationSettings - speed: %d, current_frame: %d, max_frame: %d, last_frame_time: %d\n", 
-           animation_settings->speed, animation_settings->current_frame, animation_settings->max_frame, animation_settings->start_time);
+    } else {
+        printf("Renderer_StaticAnimation: Error settings empty\n");
+    }
 
     int current_time = SDL_GetTicks();
     int elapsed_time = current_time - animation_settings->last_frame_time;
