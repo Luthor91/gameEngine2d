@@ -345,6 +345,7 @@ void Renderer_StaticAnimationManager(Renderer* renderer, SDL_Renderer* sdl_rende
     StaticAnimationManager* manager = (StaticAnimationManager*)(renderer->object);
     for (int i = 0; i < manager->index; ++i) {
         printf("Renderer_StaticAnimationManager : rendering %d/%d\n", i, manager->index-1);
+        printf("HERE => Renderer_StaticAnimationManager : speed : %d\n", manager->static_animations[i]->animation_settings->speed);
         Renderer_StaticAnimation(renderer, sdl_renderer);
     }
 }

@@ -9,7 +9,7 @@ typedef struct StaticAnimation  {
 } StaticAnimation;
 
 typedef struct StaticAnimationManager {
-    StaticAnimation** dynamic_animation;
+    StaticAnimation** static_animations;
     int max_animation;
     int index;
 } StaticAnimationManager;

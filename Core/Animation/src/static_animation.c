@@ -9,7 +9,7 @@
 StaticAnimationManager* StaticAnimationManager_Init(int max_animation) {
     StaticAnimationManager* manager = (StaticAnimationManager*)malloc(sizeof(StaticAnimationManager));
     if (manager) {
-        manager->dynamic_animation = (StaticAnimation**)malloc(sizeof(StaticAnimation*) * max_animation);
+        manager->static_animations = (StaticAnimation**)malloc(sizeof(StaticAnimation*) * max_animation);
         manager->max_animation = max_animation;
         manager->index = 0;
     }
@@ -24,7 +24,7 @@ StaticAnimationManager* StaticAnimationManager_Init(int max_animation) {
  */
 void StaticAnimationManager_Add(StaticAnimationManager* manager, StaticAnimation* static_animation) {
     if (manager->index < manager->max_animation) {
-        manager->dynamic_animation[manager->index++] = static_animation;
+        manager->static_animations[manager->index++] = static_animation;
     }
 }
 
@@ -38,9 +38,9 @@ void StaticAnimationManager_Remove(StaticAnimationManager* manager, int index) {
     if (index < 0 || index >= manager->index) {
         return;
     }
-    StaticAnimation_Destroy(manager->dynamic_animation[index]);
+    StaticAnimation_Destroy(manager->static_animations[index]);
     for (int i = index; i < manager->index - 1; i++) {
-        manager->dynamic_animation[i] = manager->dynamic_animation[i + 1];
+        manager->static_animations[i] = manager->static_animations[i + 1];
     }
     manager->index--;
 }
