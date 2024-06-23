@@ -30,3 +30,6 @@ t_window:
 
 t_animation:
 	$(CC) $(SDL2) $(SYMBOL) test_animation Examples/animation.c $(AllFiles) $(LDFLAGS) && ./test_animation
+
+t_sprites:
+	$(CC) $(SDL2) $(SYMBOL) test_sprites Examples/sprites.c $(AllFiles) $(LDFLAGS) && ./test_sprites
