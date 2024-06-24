@@ -19,5 +19,7 @@ Sur WSL :
 - sudo nano .bashrc
 - export DISPLAY=$(ip route show to 0.0.0.0/0 | awk '{ print $3 }'):0
 - export XDG_RUNTIME_DIR=$(ip route show to 0.0.0.0/0 | awk '{ print $3 }'):0
+- export DISPLAY=$(ip route show to 0.0.0.0/0 | awk '{ print $3 }'):0
+- export SDL_VIDEODRIVER=x11
 - sauvegarder et exit
 - source ~/.bashrc

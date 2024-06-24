@@ -2,7 +2,7 @@
 CC := gcc
 L_SDL2 := -I/usr/include/SDL2
 L_LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lm
-W_LDFLAGS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lm
+W_LDFLAGS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lX11 -lm
 
 SYMBOL := -g -o
 
@@ -31,12 +31,32 @@ winstall:
 	choco install -y manaplus
 
 
-# Cible pour compiler et exécuter un exemple spécifique
-t_window:
+##############################################
+#
+#		LINUX
+#
+##############################################
+
+lt_window:
 	$(CC) $(L_SDL2) $(SYMBOL) test_window Examples/window.c $(AllFiles) $(L_LDFLAGS) && ./test_window
 
-t_animation:
+lt_animation:
 	$(CC) $(L_SDL2) $(SYMBOL) test_animation Examples/animation.c $(AllFiles) $(L_LDFLAGS) && ./test_animation
 
-t_sprites:
+lt_sprites:
 	$(CC) $(L_SDL2) $(SYMBOL) test_sprites Examples/sprites.c $(AllFiles) $(L_LDFLAGS) && ./test_sprites
+
+##############################################
+#
+#		WINDOWS
+#
+##############################################
+
+wt_window:
+	$(CC) $(W_SDL2) $(SYMBOL) test_window Examples/window.c $(AllFiles) $(W_LDFLAGS) && ./test_window
+
+wt_animation:
+	$(CC) $(W_SDL2) $(SYMBOL) test_animation Examples/animation.c $(AllFiles) $(W_LDFLAGS) && ./test_animation
+
+wt_sprites:
+	$(CC) $(W_SDL2) $(SYMBOL) test_sprites Examples/sprites.c $(AllFiles) $(L_WDFLAGS) && ./test_sprites
