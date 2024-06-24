@@ -1,9 +1,9 @@
-args = `arg="$(filter-out $@,$(MAKECMDGOALS))" && echo $${arg:-${1}}`
-
 # Définition des variables
 CC := gcc
-SDL2 := -I/usr/include/SDL2
-LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lm
+L_SDL2 := -I/usr/include/SDL2
+L_LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lm
+W_LDFLAGS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lm
+
 SYMBOL := -g -o
 
 Animation := $(wildcard Core/Animation/src/*.c)
@@ -21,15 +21,22 @@ Utilities := $(wildcard Core/Utilities/src/*.c)
 AllFiles := $(Animation) $(Events) $(Font) $(Graphics) $(Physics) $(Renderer) $(Shape) $(Spatial) $(Tilemap) $(UI) $(Utilities)
 
 
-install: 
+linstall: 
+	sudo apt update
 	sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev gdb
+
+winstall:
+	choco upgrade chocolatey
+	choco install -y mingw --version 12.2.0.03042023 --allow-downgrade
+	choco install -y manaplus
+
 
 # Cible pour compiler et exécuter un exemple spécifique
 t_window:
-	$(CC) $(SDL2) $(SYMBOL) test_window Examples/window.c $(AllFiles) $(LDFLAGS) && ./test_window
+	$(CC) $(L_SDL2) $(SYMBOL) test_window Examples/window.c $(AllFiles) $(L_LDFLAGS) && ./test_window
 
 t_animation:
-	$(CC) $(SDL2) $(SYMBOL) test_animation Examples/animation.c $(AllFiles) $(LDFLAGS) && ./test_animation
+	$(CC) $(L_SDL2) $(SYMBOL) test_animation Examples/animation.c $(AllFiles) $(L_LDFLAGS) && ./test_animation
 
 t_sprites:
-	$(CC) $(SDL2) $(SYMBOL) test_sprites Examples/sprites.c $(AllFiles) $(LDFLAGS) && ./test_sprites
+	$(CC) $(L_SDL2) $(SYMBOL) test_sprites Examples/sprites.c $(AllFiles) $(L_LDFLAGS) && ./test_sprites
