@@ -30,8 +30,6 @@ typedef struct RendererManager {
     int current_renderer_count;
 } RendererManager;
 
-#include "../include/renderer.h"
-
 RendererManager* RendererManager_Init(SDL_Renderer* sdl_renderer, int max_renderers);
 Renderer* Renderer_Init(void* renderFunction, void* object, int z_index);
 
