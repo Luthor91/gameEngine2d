@@ -1,8 +1,8 @@
-# Game Engine
+# Game Engine 2D
 
 ## Introduction
 
-Welcome to the Game Engine project! This engine is designed to provide a robust and flexible library for developing 2D games in C. It includes features such as sprite rendering, basic animations, and simple physics.
+Welcome to the Game Engine project! This engine is designed to provide a robust and flexible library for developing 2D games and apps in C. It includes features such as sprite rendering, basic animations, and simple physics.
 
 The engine is designed to be easy to use and understand, with a simple API that allows developers to easily create games and apps, even if it's for C projects only so good luck.
 
