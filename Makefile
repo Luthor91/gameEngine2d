@@ -30,6 +30,9 @@ winstall:
 	choco install -y mingw --version 12.2.0.03042023 --allow-downgrade
 	choco install -y manaplus
 
+ainstall:
+	sudo pacman -Syu
+	sudo pacman -S sdl2 sdl2_image sdl2_ttf gdb
 
 ##############################################
 #

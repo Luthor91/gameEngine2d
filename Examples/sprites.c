@@ -48,13 +48,12 @@ int main(int argc, char* argv[]) {
     }
     
     RendererManager_Sort(manager);
-    RendererManager_Flatten(manager);
+    //RendererManager_Flatten(manager);
 
     int quit = 0;
     printf("INITIALISATION : delai de %f seconds\n",Time_CalculateDeltaTime(Time_GetCurrentTime(), start));
 
     while (!quit) {
-        break;
         Event_Exit(&quit);
 
         Uint32 start = Time_GetCurrentTime();
