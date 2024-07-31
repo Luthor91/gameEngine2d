@@ -78,3 +78,14 @@ void CheckTextFit(Font* font, char* text, int maxWidth, int maxHeight) {
     }
 }
 
+
+int is_percentage(const char* str) {
+    return str[strlen(str) - 1] == '%';
+}
+
+int parse_percentage(const char* str, int max_value) {
+    int percentage;
+    sscanf(str, "%d%%", &percentage);
+    
+    return (percentage * max_value) / 100;
+}

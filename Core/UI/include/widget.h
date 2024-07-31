@@ -4,9 +4,9 @@
 #include "../../Graphics/include/texture.h"
 #include "../../Spatial/include/transform.h"
 #include "../../Utilities/include/string.h"
+#include "../../Utilities/include/global.h"
 
-#define DEFAULT_WIDGET_WIDTH 128
-#define DEFAULT_WIDGET_HEIGHT 128
+
 
 typedef struct Widget {
     Transform* transform;

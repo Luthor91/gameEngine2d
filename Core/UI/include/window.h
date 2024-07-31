@@ -5,9 +5,9 @@
 #include <SDL2/SDL_render.h>
 #include "../../Graphics/include/texture.h"
 #include "../../Spatial/include/transform.h"
+#include "../../Utilities/include/global.h"
 
-#define DEFAULT_WINDOW_WIDTH 600 ///< Largeur par défaut de la fenêtre.
-#define DEFAULT_WINDOW_HEIGHT 400 ///< Hauteur par défaut de la fenêtre.
+
 
 /**
  * @brief Structure représentant une fenêtre.

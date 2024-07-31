@@ -6,10 +6,7 @@
 #include "../../Graphics/include/texture.h"
 #include "../../Font/include/font.h"
 #include "../../Utilities/include/string.h"
-
-#define DEFAULT_INPUT_WIDTH 128
-#define DEFAULT_INPUT_HEIGHT 64
-#define DEFAULT_MAX_LENGHT_INPUT 1024
+#include "../../Utilities/include/global.h"
 
 /**
  * @brief Structure représentant un champ de saisie (InputField) graphique.

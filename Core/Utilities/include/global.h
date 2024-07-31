@@ -1,4 +1,31 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#define DEFAULT_SPRITE_WIDTH 64
+#define DEFAULT_SPRITE_HEIGHT 64
+
+#define DEFAULT_BUTTON_WIDTH 128
+#define DEFAULT_BUTTON_HEIGHT 64
+
+#define DEFAULT_INPUT_WIDTH 128
+#define DEFAULT_INPUT_HEIGHT 64
+#define DEFAULT_MAX_LENGHT_INPUT 1024
+
+#define DEFAULT_LABEL_WIDTH 128
+#define DEFAULT_LABEL_HEIGHT 64
+#define DEFAULT_MAX_LENGHT_LABEL 1024
+
+#define DEFAULT_PANEL_WIDTH 128
+#define DEFAULT_PANEL_HEIGHT 128
+
+#define DEFAULT_TOOLTIP_WIDTH 32 ///< Largeur par défaut de la fenêtre.
+#define DEFAULT_TOOLTIP_HEIGHT 32 ///< Hauteur par défaut de la fenêtre.
+#define DEFAULT_MAX_LENGHT_TOOLTIP 1024
+
+#define DEFAULT_WIDGET_WIDTH 128
+#define DEFAULT_WIDGET_HEIGHT 128
+
+#define DEFAULT_WINDOW_WIDTH 600 ///< Largeur par défaut de la fenêtre.
+#define DEFAULT_WINDOW_HEIGHT 400 ///< Hauteur par défaut de la fenêtre.
+
 #endif // GLOBAL_H

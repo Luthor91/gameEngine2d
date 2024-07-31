@@ -40,9 +40,64 @@ void Sprite_Set(Sprite* sprite, const char* params) {
             clean_param_name(param_name);
 
             if (strcmp(param_name, "position") == 0) {
-                int x, y;
-                if (sscanf(param_value, "%d,%d", &x, &y) == 2) {
+                char x_str[16], y_str[16];
+                if (sscanf(param_value, "%15[^,],%15[^,]", x_str, y_str) == 2) {
+                    int x, y;
+                    if (strcmp(x_str, "left") == 0) {
+                        x = 0;
+                    } else if (strcmp(x_str, "right") == 0) {
+                        x = DEFAULT_WINDOW_WIDTH - sprite->transform->size->width;
+                    } else if (strcmp(x_str, "center") == 0) {
+                        x = DEFAULT_WINDOW_WIDTH / 2 - sprite->transform->size->width;
+                    } else if (is_percentage(x_str)) {
+                        x = parse_percentage(x_str, DEFAULT_WINDOW_WIDTH);
+                    } else {
+                        x = atoi(x_str);
+                    }
+
+                    if (strcmp(y_str, "top") == 0) {
+                        y = 0;
+                    } else if (strcmp(y_str, "bottom") == 0) {
+                        y = DEFAULT_WINDOW_HEIGHT - sprite->transform->size->height;
+                    } else if (strcmp(y_str, "center") == 0) {
+                        y = DEFAULT_WINDOW_HEIGHT / 2 - sprite->transform->size->height;
+                    } else if (is_percentage(y_str)) {
+                        y = parse_percentage(y_str, DEFAULT_WINDOW_HEIGHT);
+                    } else {
+                        y = atoi(y_str);
+                    }
+
                     Sprite_SetPosition(sprite, x, y);
+                }
+            } else if (strcmp(param_name, "centerposition") == 0) {
+                char x_str[16], y_str[16];
+                if (sscanf(param_value, "%15[^,],%15[^,]", x_str, y_str) == 2) {
+                    int x, y;
+                    if (strcmp(x_str, "left") == 0) {
+                        x = sprite->transform->size->width / 2;
+                    } else if (strcmp(x_str, "right") == 0) {
+                        x = DEFAULT_WINDOW_WIDTH - sprite->transform->size->width / 2;
+                    } else if (strcmp(x_str, "center") == 0) {
+                        x = DEFAULT_WINDOW_WIDTH / 2 - sprite->transform->size->width / 2;
+                    } else if (is_percentage(x_str)) {
+                        x = parse_percentage(x_str, DEFAULT_WINDOW_WIDTH);
+                    } else {
+                        x = atoi(x_str);
+                    }
+
+                    if (strcmp(y_str, "top") == 0) {
+                        y = sprite->transform->size->height / 2;
+                    } else if (strcmp(y_str, "bottom") == 0) {
+                        y = DEFAULT_WINDOW_HEIGHT - sprite->transform->size->height / 2;
+                    } else if (strcmp(y_str, "center") == 0) {
+                        y = DEFAULT_WINDOW_HEIGHT / 2 - sprite->transform->size->height / 2;
+                    } else if (is_percentage(y_str)) {
+                        y = parse_percentage(y_str, DEFAULT_WINDOW_HEIGHT);
+                    } else {
+                        y = atoi(y_str);
+                    }
+
+                    Sprite_SetPosition(sprite, x - sprite->transform->size->width / 2, y - sprite->transform->size->height / 2);
                 }
             } else if (strcmp(param_name, "size") == 0) {
                 int width, height;
@@ -52,21 +107,21 @@ void Sprite_Set(Sprite* sprite, const char* params) {
             } else if (strcmp(param_name, "backgroundcolor") == 0) {
                 Color color;
                 if (strcmp(param_value, "RED") == 0) {
-                    color = COLOR_RED;
+                    color = (Color){255, 0, 0, 255};
                 } else if (strcmp(param_value, "GREEN") == 0) {
-                    color = COLOR_GREEN;
+                    color = (Color){0, 255, 0, 255};
                 } else if (strcmp(param_value, "BLUE") == 0) {
-                    color = COLOR_BLUE;
+                    color = (Color){0, 0, 255, 255};
                 } else if (strcmp(param_value, "WHITE") == 0) {
-                    color = COLOR_WHITE;
+                    color = (Color){255, 255, 255, 255};
                 } else if (strcmp(param_value, "BLACK") == 0) {
-                    color = COLOR_BLACK;
+                    color = (Color){0, 0, 0, 255};
                 } else if (strcmp(param_value, "YELLOW") == 0) {
-                    color = COLOR_YELLOW;
+                    color = (Color){255, 255, 0, 255};
                 } else if (strcmp(param_value, "CYAN") == 0) {
-                    color = COLOR_CYAN;
+                    color = (Color){0, 255, 255, 255};
                 } else if (strcmp(param_value, "MAGENTA") == 0) {
-                    color = COLOR_MAGENTA;
+                    color = (Color){255, 0, 255, 255};
                 } else if (sscanf(param_value, "%hhd,%hhd,%hhd,%hhd", &color.r, &color.g, &color.b, &color.a) == 4) {
                     // Successfully parsed RGBA color
                 } else {

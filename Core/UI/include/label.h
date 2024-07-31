@@ -9,10 +9,7 @@
 #include "../../Font/include/font.h"
 #include "../../Graphics/include/texture.h"
 #include "../../Graphics/include/color.h"
-
-#define DEFAULT_LABEL_WIDTH 128
-#define DEFAULT_LABEL_HEIGHT 64
-#define DEFAULT_MAX_LENGHT_LABEL 1024
+#include "../../Utilities/include/global.h"
 
 /**
  * @brief Structure représentant un Label.

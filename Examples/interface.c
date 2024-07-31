@@ -35,9 +35,10 @@ int main(int argc, char* argv[]) {
     Tooltip* tooltip = Tooltip_Init(NULL, NULL, NULL, NULL, NULL);
 
     Sprite_Set(sprite_colored, 
-        "position:138,0     \
-        backgroundcolor:RED"
+        "position:100,100;     \
+        backgroundcolor:RED;"
     );
+
     Widget_Set(widget,"position:212,-1");
 
     Button_Set(button,"position:350,0");
@@ -79,7 +80,8 @@ int main(int argc, char* argv[]) {
     Event* event_tooltip = Event_Init(tooltip, Event_Tooltip_Hovered);
 
     // Ajout des renderers au gestionnaire de rendu.
-    RendererManager_Add(manager, renderer_window, renderer_panel, renderer_sprite, renderer_sprite_colored, renderer_input, renderer_label, renderer_button, renderer_widget, renderer_tooltip, NULL);
+    //RendererManager_Add(manager, renderer_window, renderer_panel, renderer_sprite, renderer_sprite_colored, renderer_input, renderer_label, renderer_button, renderer_widget, renderer_tooltip, NULL);
+    RendererManager_Add(manager, renderer_window, renderer_sprite_colored, NULL);
     EventManager_Add(event_manager, event_input_field, event_button_clicked, event_widget_dragged, event_tooltip, NULL);
 
     RendererManager_Sort(manager);

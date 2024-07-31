@@ -6,9 +6,9 @@
 #include "../../Spatial/include/transform.h"
 #include "../../Graphics/include/texture.h"
 #include "../../Utilities/include/string.h"
+#include "../../Utilities/include/global.h"
 
-#define DEFAULT_SPRITE_WIDTH 64
-#define DEFAULT_SPRITE_HEIGHT 64
+
 
 /**
  * Représente un sprite, qui est une image affichée à l'écran avec une position et une taille spécifiques.

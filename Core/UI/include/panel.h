@@ -5,9 +5,8 @@
 #include "../../Graphics/include/texture.h"
 #include "../../Spatial/include/transform.h"
 #include "../../Utilities/include/string.h"
+#include "../../Utilities/include/global.h"
 
-#define DEFAULT_PANEL_WIDTH 128
-#define DEFAULT_PANEL_HEIGHT 128
 
 /**
  * @brief Structure représentant un Panel.

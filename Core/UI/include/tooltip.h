@@ -9,10 +9,7 @@
 #include "../../Spatial/include/area2d.h"
 #include "../../Font/include/font.h"
 #include "../../Utilities/include/string.h"
-
-#define DEFAULT_TOOLTIP_WIDTH 32 ///< Largeur par défaut de la fenêtre.
-#define DEFAULT_TOOLTIP_HEIGHT 32 ///< Hauteur par défaut de la fenêtre.
-#define DEFAULT_MAX_LENGHT_TOOLTIP 1024
+#include "../../Utilities/include/global.h"
 
 /**
  * @brief Structure représentant une fenêtre.

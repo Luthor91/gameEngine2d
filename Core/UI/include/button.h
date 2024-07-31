@@ -5,9 +5,8 @@
 #include "../../Spatial/include/transform.h"
 #include "../../Graphics/include/texture.h"
 #include "../../Utilities/include/string.h"
+#include "../../Utilities/include/global.h"
 
-#define DEFAULT_BUTTON_WIDTH 128
-#define DEFAULT_BUTTON_HEIGHT 64
 
 /**
  * @brief Structure représentant un bouton interactif.

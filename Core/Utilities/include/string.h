@@ -21,4 +21,8 @@ void clean_param_name(char* param_name);
 
 void CheckTextFit(Font* font, char* text, int maxWidth, int maxHeight);
 
+int is_percentage(const char* str);
+
+int parse_percentage(const char* str, int max_value);
+
 #endif // STRING_H
