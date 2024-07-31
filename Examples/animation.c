@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <stdlib.h> // Pour rand() et srand()
+#include <time.h>   // Pour time()
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -17,8 +20,10 @@
 
 #define WINDOW_WIDTH 600
 #define WINDOW_HEIGHT 400
+#define CURRENT_RENDERED_ANIMATIONS 15000
 
 int main(int argc, char* argv[]) {
+    Uint32 start = Time_GetCurrentTime();
     Init_Env(".env");
 
     if (Init_All() != 0) {
@@ -32,50 +37,61 @@ int main(int argc, char* argv[]) {
     Texture* texture_animation = Texture_Init(window->renderer, "Assets/Image/arrows_lgbt.png");
     Tilemap* tilemap_arrows = Tilemap_Init(window->renderer, 2, 4, &(Size2D){32, 32}, texture_animation);
 
-    // Différentes positions de l'animation
-    Transform* transforms[] = {
-        Transform_Init(&(Point2D){0, 0}, NULL, NULL, 0, 0),
-        Transform_Init(&(Point2D){550, 0}, NULL, NULL, 0, 0),
-        Transform_Init(&(Point2D){0, 350}, NULL, NULL, 0, 0),
-        Transform_Init(&(Point2D){550, 350}, NULL, NULL, 0, 0),
-        Transform_Init(&(Point2D){550, 0}, NULL, NULL, 0, 0),
-        Transform_Init(&(Point2D){0, 0}, NULL, NULL, 0, 0),
-        Transform_Init(&(Point2D){0, 350}, NULL, NULL, 0, 0),
-        Transform_Init(&(Point2D){300, 200}, NULL, NULL, 0, 0)
-    };
-
-    // Création de l'animation
-    AnimationFrame** animation_frames = AnimationFrames_GenerateWithTransform(tilemap_arrows, transforms);
-    AnimationSettings* animation_settings = AnimationSettings_Init(500, 8, 0);
-    StaticAnimation* static_animation = StaticAnimation_Init(animation_frames, animation_settings);
-
-    // Dispensable, utile seulement quand on a plusieurs animations du même type à afficher sur le même plan
-    StaticAnimationManager* animation_manager = StaticAnimationManager_Init(1);
-    StaticAnimationManager_Add(animation_manager, static_animation);
-
-    // Permet de gérer l'affichage des objets affichables
-    RendererManager* manager = RendererManager_Init(window->renderer, 10);
+    RendererManager* manager = RendererManager_Init(window->renderer, CURRENT_RENDERED_ANIMATIONS + 1);
     Renderer* renderer_window = Renderer_Init(Renderer_Window, window, 0);
-    Renderer* renderer_static_animation = Renderer_Init(Renderer_StaticAnimationManager, animation_manager, 1);
+    RendererManager_Add(manager, 1, renderer_window);
 
-    // On ajoute tous les renderer au "manager"
-    RendererManager_Add(manager, 2, renderer_window, renderer_static_animation);
+    // Initialiser le générateur de nombres aléatoires
+    srand((unsigned int)time(NULL));
+
+    // Création d'un tableau pour les animations
+    StaticAnimation* static_animations[CURRENT_RENDERED_ANIMATIONS];
+
+    for (int i = 0; i < CURRENT_RENDERED_ANIMATIONS; i++) {
+        // Générer des positions aléatoires
+        int x = rand() % (WINDOW_WIDTH - 32);
+        int y = rand() % (WINDOW_HEIGHT - 32);
+
+        // Différentes positions de l'animation
+        Transform* transforms[] = {
+            Transform_Init(&(Point2D){x, y}, NULL, NULL, 0, 0),
+            Transform_Init(&(Point2D){x + 32, y}, NULL, NULL, 0, 0),
+            Transform_Init(&(Point2D){x, y + 32}, NULL, NULL, 0, 0),
+            Transform_Init(&(Point2D){x + 32, y + 32}, NULL, NULL, 0, 0),
+            Transform_Init(&(Point2D){x + 32, y}, NULL, NULL, 0, 0),
+            Transform_Init(&(Point2D){x, y}, NULL, NULL, 0, 0),
+            Transform_Init(&(Point2D){x, y + 32}, NULL, NULL, 0, 0),
+            Transform_Init(&(Point2D){x + 16, y + 16}, NULL, NULL, 0, 0)
+        };
+
+        // Création de l'animation
+        AnimationFrame** animation_frames = AnimationFrames_GenerateWithTransform(tilemap_arrows, transforms);
+        AnimationSettings* animation_settings = AnimationSettings_Init(125, 8, 3); // 3ème paramètre à 2 pour reboucler à l'infini
+        static_animations[i] = StaticAnimation_Init(animation_frames, animation_settings);
+
+        // Initialiser les renderers pour les animations
+        Renderer* renderer = Renderer_Init(Renderer_StaticAnimation, static_animations[i], i + 1);
+        RendererManager_Add(manager, 1, renderer);
+    }
+
     // On tri, ça permet de pouvoir afficher toutes les animations dans le bon ordre
     RendererManager_Sort(manager);
 
     SDL_Event event;
     int quit = 0;
+    printf("INITIALISATION : %d objects in %f seconds\n", CURRENT_RENDERED_ANIMATIONS, Time_CalculateDeltaTime(Time_GetCurrentTime(), start));
 
     while (!quit) {
-
         Event_Exit(&quit);
-        RendererManager_Render(manager); 
+
+        Uint32 start = Time_GetCurrentTime();
+        RendererManager_Render(manager);
+        printf("RENDU : nb object:%d ; frametime:%fs ; fps:%2f\n", CURRENT_RENDERED_ANIMATIONS, Time_CalculateDeltaTime(Time_GetCurrentTime(), start), Time_GetFPS());
+
         Time_SetFPSLimit(60);
-        
     }
 
     Exit_All(window);
 
     return 0;
 }
-

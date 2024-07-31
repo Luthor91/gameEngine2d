@@ -1,47 +1,54 @@
-#include <stdio.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include "../Core/Utilities/include/core.h"
 
-#include "../Core/UI/include/window.h"
-#include "../Core/Graphics/include/texture.h"
-#include "../Core/Spatial/include/transform.h"
-#include "../Core/Renderer/include/renderer.h"
-#include "../Core/Utilities/include/time.h"
-#include "../Core/Utilities/include/init.h"
-#include "../Core/Utilities/include/string.h"
-
-#define WINDOW_WIDTH 600
-#define WINDOW_HEIGHT 400
-
+/**
+ * Programme d'exemple pour afficher une fenêtre vide avec les assets de base.
+ * 
+ * Ce programme initialise tous les composants nécessaires pour créer une fenêtre SDL,
+ * configure un gestionnaire de rendu pour afficher le contenu, et entre dans une boucle
+ * principale où il rend le contenu à chaque frame tout en vérifiant les événements.
+ * La boucle principale continue jusqu'à ce que l'utilisateur déclenche une action de sortie.
+ * 
+ * Chaque ajout de composant affichable dans le code se fait de la manière suivant :
+ *  - Initialisation de l'élement
+ *  - Initialisation de son renderer
+ *  - Ajout du renderer dans le gestionnaire de rendu
+ * 
+ */
 int main(int argc, char* argv[]) {
 
-    Init_Env(".env");
-
-    if (Init_All() != 0) {
-        fprintf(stderr, "Main: %s\n", SDL_GetError());
-        return 1;
-    }
-    Transform* transform_window = Transform_Init(&(Point2D){0, 0}, &(Size2D){WINDOW_WIDTH, WINDOW_HEIGHT}, &(Point2D){0, 0}, 0.0, 1.0);
-    Window* window = Window_Init("Titre de la fenêtre.", transform_window, "Assets/Image/background1.jpg");
-
-    RendererManager* manager = RendererManager_Init(window->renderer, 10);
-    Renderer* renderer = Renderer_Init(Renderer_Window, window, 0);
-    RendererManager_Add(manager, 1, renderer);
+    // Initialisation de tous les composants nécessaires pour le programme.
+    if (Init_All() != 0) return 1;
     
-    SDL_Event event;
-    int quit = 0;
+    // Initialisation d'une fenêtre avec les paramètres par défaut.
+    Window* window = Window_Init(NULL, NULL, NULL);
 
+    // Initialisation du gestionnaire de rendu avec la taille maximale des objets à rendre.
+    RendererManager* manager = RendererManager_Init(window->renderer, DEFAULT_MAX_RENDERER);
+
+    // Création et initialisation d'un renderer pour afficher la fenêtre.
+    Renderer* renderer = Renderer_Init(Renderer_Window, window, 0);
+
+    // Ajout du renderer au gestionnaire de rendu.
+    RendererManager_Add(manager, 1, renderer); 
+    
+    int quit = 0; // Variable pour contrôler la boucle principale du programme.
+
+    // Boucle principale du programme.
     while (!quit) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
-                quit = 1;
-            }
-        }
-        RendererManager_Render(manager);
-        Time_SetFPSLimit(60);
+        
+        Event_Exit(&quit); // Vérifie l'event de sortie du programme
+
+        /**
+         *  Si vous voulez ajouter des fonctionnalités
+         *  Idéalement le code devrait se situer à la place de ce commentaire
+         */
+
+        RendererManager_Render(manager); // Rend le contenu à afficher en utilisant le gestionnaire de rendu.
+
+        Time_SetFPSLimit(60); // Définit la limite de frames par seconde (FPS) pour contrôler la vitesse de rafraîchissement.
     }
 
-    Exit_All(window);
+    Exit_All(window); // Nettoie et ferme tous les composants
 
     return 0;
 }
