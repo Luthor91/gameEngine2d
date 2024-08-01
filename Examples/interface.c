@@ -35,30 +35,31 @@ int main(int argc, char* argv[]) {
     Tooltip* tooltip = Tooltip_Init(NULL, NULL, NULL, NULL, NULL);
 
     Sprite_Set(sprite_colored, 
-        "position:100,100;     \
-        backgroundcolor:RED;"
+        "position:right,bottom;     \
+        size:128,128; \
+        backgroundcolor:GREEN;"
     );
+/*
+    Widget_Set(widget,"position:212,-1;");
 
-    Widget_Set(widget,"position:212,-1");
-
-    Button_Set(button,"position:350,0");
-    Tooltip_Set(tooltip,"position:150,100");
+    Button_Set(button,"position:350,0;");
+    Tooltip_Set(tooltip,"position:150,100;");
 
     InputField_Set(input_field, 
         "position:0,150;    \
         textcolor:BLUE;      \
         backgroundcolor:RED;\
         textsize:22;          \
-        size:100,100"
+        size:100,100;"
     );
     Label_Set(label, 
         "position:0,300;    \
         textcolor:255,0,0,255;       \
         backgroundcolor:BLUE;\
         textsize:22;          \
-        size:100,100"
+        size:100,100;"
     );
-
+*/
     // Initialisation du gestionnaire de rendu avec la taille maximale des objets à rendre.
     RendererManager* manager = RendererManager_Init(NULL, DEFAULT_MAX_RENDERER);
     EventManager* event_manager = EventManager_Init(DEFAULT_MAX_EVENT);
@@ -80,8 +81,7 @@ int main(int argc, char* argv[]) {
     Event* event_tooltip = Event_Init(tooltip, Event_Tooltip_Hovered);
 
     // Ajout des renderers au gestionnaire de rendu.
-    //RendererManager_Add(manager, renderer_window, renderer_panel, renderer_sprite, renderer_sprite_colored, renderer_input, renderer_label, renderer_button, renderer_widget, renderer_tooltip, NULL);
-    RendererManager_Add(manager, renderer_window, renderer_sprite_colored, NULL);
+    RendererManager_Add(manager, renderer_window, renderer_panel, renderer_sprite, renderer_sprite_colored, renderer_input, renderer_label, renderer_button, renderer_widget, renderer_tooltip, NULL);
     EventManager_Add(event_manager, event_input_field, event_button_clicked, event_widget_dragged, event_tooltip, NULL);
 
     RendererManager_Sort(manager);

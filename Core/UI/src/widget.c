@@ -26,63 +26,8 @@ Widget* Widget_Init(Transform* transform, Texture* texture) {
 }
 
 void Widget_Set(Widget* widget, const char* params) {
-    if (!widget || !params) return;
-
-    char* params_copy = strdup(params);
-    if (!params_copy) return;
-
-    char* param = strtok(params_copy, ";");
-    while (param != NULL) {
-        char* delimiter_pos = strchr(param, ':');
-        if (delimiter_pos) {
-            *delimiter_pos = '\0';
-            char* param_name = param;
-            char* param_value = delimiter_pos + 1;
-            clean_param_name(param_name);
-
-            if (strcmp(param_name, "position") == 0) {
-                int x, y;
-                if (sscanf(param_value, "%d,%d", &x, &y) == 2) {
-                    Widget_SetPosition(widget, x, y);
-                }
-            } else if (strcmp(param_name, "size") == 0) {
-                int width, height;
-                if (sscanf(param_value, "%d,%d", &width, &height) == 2) {
-                    Widget_SetSize(widget, width, height);
-                }
-            } else if (strcmp(param_name, "backgroundcolor") == 0) {
-                Color color;
-                if (strcmp(param_value, "RED") == 0) {
-                    color = COLOR_RED;
-                } else if (strcmp(param_value, "GREEN") == 0) {
-                    color = COLOR_GREEN;
-                } else if (strcmp(param_value, "BLUE") == 0) {
-                    color = COLOR_BLUE;
-                } else if (strcmp(param_value, "WHITE") == 0) {
-                    color = COLOR_WHITE;
-                } else if (strcmp(param_value, "BLACK") == 0) {
-                    color = COLOR_BLACK;
-                } else if (strcmp(param_value, "YELLOW") == 0) {
-                    color = COLOR_YELLOW;
-                } else if (strcmp(param_value, "CYAN") == 0) {
-                    color = COLOR_CYAN;
-                } else if (strcmp(param_value, "MAGENTA") == 0) {
-                    color = COLOR_MAGENTA;
-                } else if (sscanf(param_value, "%hhd,%hhd,%hhd,%hhd", &color.r, &color.g, &color.b, &color.a) == 4) {
-                    // Successfully parsed RGBA color
-                } else {
-                    // Handle invalid color format if necessary
-                    free(params_copy);
-                    return;
-                }
-                widget->texture = Texture_Init_Color(NULL, &color, widget->transform->size);
-            }  
-        }
-        param = strtok(NULL, ";");
-    }
-    free(params_copy);
+    Object_Set(widget, params, "Widget");
 }
-
 
 void Widget_SetPosition(Widget* widget, int x, int y) {
 

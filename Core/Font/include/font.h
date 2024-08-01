@@ -23,6 +23,8 @@ typedef struct Font {
  */
 int Font_Start();
 
+Font* Font_SetSize(Font* font, int size);
+
 /**
  * Crée et initialise une nouvelle police de caractères.
  *

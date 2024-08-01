@@ -39,6 +39,9 @@ typedef struct Color {
  */
 Color* Color_Init(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
+// Fonction de parsing pour les couleurs
+int Color_Parsing(Color* color, const char* str);
+
 /**
  * Convertit une couleur définie en `Color` vers une couleur SDL2 (`SDL_Color`).
  *

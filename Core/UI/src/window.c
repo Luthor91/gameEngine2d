@@ -68,6 +68,10 @@ Window* Window_Init(char* title, Transform* transform, char* background_path) {
     return window;
 }
 
+void Window_Set(Window* window, const char* params) {
+    Object_Set(window, params, "Window");
+}
+
 int Window_SetIcon(Window* window, const char* filename) {
     SDL_Surface* icon = SDL_LoadBMP(filename);
     if (!icon) {

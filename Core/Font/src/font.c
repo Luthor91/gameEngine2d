@@ -9,6 +9,18 @@ int Font_Start() {
     return 1;
 }
 
+Font* Font_SetSize(Font* font, int size) {
+    if (!font || size <= 0) return NULL;
+
+    TTF_CloseFont(font->sdl_font);
+    font->sdl_font = TTF_OpenFont(font->path, size);
+    if (!font->sdl_font) {
+        printf("Font_SetSize : Échec de la modification de la taille du texte: %s\n", TTF_GetError());
+    }
+
+    return font;
+}
+
 Font* Font_Init(Color* color, char* path, int size) {
 
     if (path == NULL ) {

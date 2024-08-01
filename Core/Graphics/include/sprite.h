@@ -7,8 +7,7 @@
 #include "../../Graphics/include/texture.h"
 #include "../../Utilities/include/string.h"
 #include "../../Utilities/include/global.h"
-
-
+#include "../../Utilities/include/object.h"
 
 /**
  * Représente un sprite, qui est une image affichée à l'écran avec une position et une taille spécifiques.

@@ -9,6 +9,7 @@
 #include "../../Utilities/include/string.h"
 #include "../../Utilities/include/init.h"
 #include "../../Utilities/include/time.h"
+#include "../../Utilities/include/object.h"
 
 #include "../../Graphics/include/texture.h"
 #include "../../Graphics/include/sprite.h"

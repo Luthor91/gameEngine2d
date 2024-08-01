@@ -5,8 +5,7 @@
 #include "../../Spatial/include/transform.h"
 #include "../../Utilities/include/string.h"
 #include "../../Utilities/include/global.h"
-
-
+#include "../../Utilities/include/object.h"
 
 typedef struct Widget {
     Transform* transform;

@@ -18,6 +18,8 @@ typedef struct Point2D {
  */
 Point2D* Point2D_Init(int x, int y);
 
+Point2D* Point2D_Set(Point2D* point, int x, int y);
+
 /**
  * @brief Détruit un point 2D et libère les ressources associées.
  * 

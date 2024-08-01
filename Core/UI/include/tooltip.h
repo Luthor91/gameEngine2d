@@ -10,6 +10,7 @@
 #include "../../Font/include/font.h"
 #include "../../Utilities/include/string.h"
 #include "../../Utilities/include/global.h"
+#include "../../Utilities/include/object.h"
 
 /**
  * @brief Structure représentant une fenêtre.

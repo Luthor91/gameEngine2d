@@ -10,6 +10,7 @@
 #include "../../Graphics/include/texture.h"
 #include "../../Graphics/include/color.h"
 #include "../../Utilities/include/global.h"
+#include "../../Utilities/include/object.h"
 
 /**
  * @brief Structure représentant un Label.

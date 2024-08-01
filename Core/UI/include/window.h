@@ -6,8 +6,7 @@
 #include "../../Graphics/include/texture.h"
 #include "../../Spatial/include/transform.h"
 #include "../../Utilities/include/global.h"
-
-
+#include "../../Utilities/include/object.h"
 
 /**
  * @brief Structure représentant une fenêtre.
@@ -28,6 +27,8 @@ typedef struct Window {
  * @return Un pointeur vers la fenêtre nouvellement créée, ou NULL en cas d'échec.
  */
 Window* Window_Init(char* title, Transform* transform, char* sprite_path);
+
+void Window_Set(Window* window, const char* params);
 
 /**
  * @brief Définit l'icône de la fenêtre à partir d'un fichier image.
