@@ -256,31 +256,32 @@ void Object_Set(void* object, const char* params, const char* type_str) {
                     }
                 }
             } else if (strcmp(param_name, "size") == 0) {
-                if (sscanf(param_value, "%d,%d", &width, &height) == 2) {
+                char width_str[16], height_str[16];
+                if (sscanf(param_value, "%15[^,],%15[^,]", width_str, height_str) == 2) {
                     if (sprite) {
-                        sprite->transform->size->width = width;
-                        sprite->transform->size->height = height;
+                        sprite->transform->size->width = parse_dimension(width_str, DEFAULT_WINDOW_WIDTH, sprite->transform->size->width);
+                        sprite->transform->size->height = parse_dimension(height_str, DEFAULT_WINDOW_HEIGHT, sprite->transform->size->height);
                     } else if (button) {
-                        button->transform->size->width = width;
-                        button->transform->size->height = height;
+                        button->transform->size->width = parse_dimension(width_str, DEFAULT_WINDOW_WIDTH, button->transform->size->width);
+                        button->transform->size->height = parse_dimension(height_str, DEFAULT_WINDOW_HEIGHT, button->transform->size->height);
                     } else if (inputfield) {
-                        inputfield->transform->size->width = width;
-                        inputfield->transform->size->height = height;
+                        inputfield->transform->size->width = parse_dimension(width_str, DEFAULT_WINDOW_WIDTH, inputfield->transform->size->width);
+                        inputfield->transform->size->height = parse_dimension(height_str, DEFAULT_WINDOW_HEIGHT, inputfield->transform->size->height);
                     } else if (label) {
-                        label->transform->size->width = width;
-                        label->transform->size->height = height;
+                        label->transform->size->width = parse_dimension(width_str, DEFAULT_WINDOW_WIDTH, label->transform->size->width);
+                        label->transform->size->height = parse_dimension(height_str, DEFAULT_WINDOW_HEIGHT, label->transform->size->height);
                     } else if (panel) {
-                        panel->transform->size->width = width;
-                        panel->transform->size->height = height;
+                        panel->transform->size->width = parse_dimension(width_str, DEFAULT_WINDOW_WIDTH, panel->transform->size->width);
+                        panel->transform->size->height = parse_dimension(height_str, DEFAULT_WINDOW_HEIGHT, panel->transform->size->height);
                     } else if (tooltip) {
-                        tooltip->transform->size->width = width;
-                        tooltip->transform->size->height = height;
+                        tooltip->transform->size->width = parse_dimension(width_str, DEFAULT_WINDOW_WIDTH, tooltip->transform->size->width);
+                        tooltip->transform->size->height = parse_dimension(height_str, DEFAULT_WINDOW_HEIGHT, tooltip->transform->size->height);
                     } else if (widget) {
-                        widget->transform->size->width = width;
-                        widget->transform->size->height = height;
+                        widget->transform->size->width = parse_dimension(width_str, DEFAULT_WINDOW_WIDTH, widget->transform->size->width);
+                        widget->transform->size->height = parse_dimension(height_str, DEFAULT_WINDOW_HEIGHT, widget->transform->size->height);
                     } else if (window) {
-                        window->transform->size->width = width;
-                        window->transform->size->height = height;
+                        window->transform->size->width = parse_dimension(width_str, DEFAULT_WINDOW_WIDTH, window->transform->size->width);
+                        window->transform->size->height = parse_dimension(height_str, DEFAULT_WINDOW_HEIGHT, window->transform->size->height);
                     }
                 }
             } else if (strcmp(param_name, "backgroundcolor") == 0) {

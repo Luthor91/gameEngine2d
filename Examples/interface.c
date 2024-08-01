@@ -35,8 +35,8 @@ int main(int argc, char* argv[]) {
     Tooltip* tooltip = Tooltip_Init(NULL, NULL, NULL, NULL, NULL);
 
     Sprite_Set(sprite_colored, 
-        "position:right,bottom;     \
-        size:128,128; \
+        "size:50%,128; \
+        position:center,center;     \
         backgroundcolor:GREEN;"
     );
 /*

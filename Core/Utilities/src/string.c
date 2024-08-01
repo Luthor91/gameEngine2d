@@ -89,3 +89,13 @@ int parse_percentage(const char* str, int max_value) {
     
     return (percentage * max_value) / 100;
 }
+
+int parse_dimension(const char* str, int default_value, int base_size) {
+    if (str[0] == 'w') {
+        return parse_percentage(str + 1, DEFAULT_WINDOW_WIDTH);
+    } else if (is_percentage(str)) {
+        return parse_percentage(str, base_size);
+    } else {
+        return atoi(str);
+    }
+}

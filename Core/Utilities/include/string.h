@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "global.h"
 #include "../../Font/include/font.h"
 
 /**
@@ -24,5 +25,7 @@ void CheckTextFit(Font* font, char* text, int maxWidth, int maxHeight);
 int is_percentage(const char* str);
 
 int parse_percentage(const char* str, int max_value);
+
+int parse_dimension(const char* str, int default_value, int base_size);
 
 #endif // STRING_H
