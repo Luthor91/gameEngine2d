@@ -34,12 +34,22 @@ int main(int argc, char* argv[]) {
     Widget* widget = Widget_Init(NULL, NULL);
     Tooltip* tooltip = Tooltip_Init(NULL, NULL, NULL, NULL, NULL);
 
-    Sprite_Set(sprite_colored, 
-        "size:50%,128; \
-        position:center,center;     \
-        backgroundcolor:GREEN;"
-    );
+    int object_value = 50; // Exemple de valeur d'objet
+    
+    // Test de la fonction avec différentes chaînes d'argument
+    printf("Result: %d\n", Parse_Expression("w50%+&30", object_value));
+    printf("Result: %d\n", Parse_Expression("h50%-20", object_value));
+    printf("Result: %d\n", Parse_Expression("w50%+&30-h20", object_value));
+    
+
 /*
+    Sprite_Set(sprite_colored, 
+        "size:w90%,h90%; \
+        position:center-10,5%;     \
+        backgroundcolor:GREEN; \
+        textsize:32;"
+    );
+
     Widget_Set(widget,"position:212,-1;");
 
     Button_Set(button,"position:350,0;");
