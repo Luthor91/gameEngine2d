@@ -91,7 +91,6 @@ Texture* Texture_Init_Color(SDL_Renderer* renderer, Color* color, Size2D* size) 
     return texture;
 }
 
-
 Texture* Texture_Crop(Texture* original, SDL_Renderer* renderer, Point2D* pos, Size2D* size) {
     // Vérifiez les paramètres d'entrée
     if (!original || !renderer || !pos || !size) {
@@ -160,4 +159,14 @@ Texture* Texture_Crop(Texture* original, SDL_Renderer* renderer, Point2D* pos, S
     new_texture->size->height = size->height;
 
     return new_texture;
+}
+
+// Fonction pour libérer une texture
+void Texture_Destroy(Texture* texture) {
+    if (texture) {
+        if (texture->sdl_texture) {
+            SDL_DestroyTexture(texture->sdl_texture);
+        }
+        free(texture);
+    }
 }

@@ -17,19 +17,6 @@ char* String_Concat(const char* str1, const char* str2) {
     return result;
 }
 
-void clean_param_name(char* param_name) {
-    char* read_ptr = param_name;
-    char* write_ptr = param_name;
-
-    while (*read_ptr) {
-        if (*read_ptr != ' ' && *read_ptr != '\\') {
-            *write_ptr++ = *read_ptr;
-        }
-        read_ptr++;
-    }
-    *write_ptr = '\0';
-}
-
 void CheckTextFit(Font* font, char* text, int maxWidth, int maxHeight) {
     if (!font || !text) return;
 
@@ -75,27 +62,5 @@ void CheckTextFit(Font* font, char* text, int maxWidth, int maxHeight) {
             text[i] = '\0';
             break;
         }
-    }
-}
-
-
-int is_percentage(const char* str) {
-    return str[strlen(str) - 1] == '%';
-}
-
-int parse_percentage(const char* str, int max_value) {
-    int percentage;
-    sscanf(str, "%d%%", &percentage);
-    
-    return (percentage * max_value) / 100;
-}
-
-int parse_dimension(const char* str, int default_value, int base_size) {
-    if (str[0] == 'w') {
-        return parse_percentage(str + 1, DEFAULT_WINDOW_WIDTH);
-    } else if (is_percentage(str)) {
-        return parse_percentage(str, base_size);
-    } else {
-        return atoi(str);
     }
 }

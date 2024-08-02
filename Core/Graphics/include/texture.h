@@ -48,4 +48,6 @@ Texture* Texture_Init_Color(SDL_Renderer* renderer, Color* color, Size2D* size);
  */
 Texture* Texture_Crop(Texture* original, SDL_Renderer* renderer, Point2D* pos, Size2D* size);
 
+void Texture_Destroy(Texture* texture);
+
 #endif // TEXTURE_H
