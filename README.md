@@ -47,7 +47,8 @@ Contains all the logic of the engine.
 
 ## Current Tasks
 
-- **Rendering Order Management**: Manage the rendering order of each object.
+- **Simplifying Positionning**: SImplifying the pseudo-CSS created to help positionning UI elements
+- **Events and Rendering**: Both are already functionnal but we maybe need to simplifying the writing of those functionnality
 - **Rendering Optimization**: Optimize the rendering procedure for better performance.
 
 ## Planned Features
@@ -193,6 +194,14 @@ After building the project, you can run the test codes. Note that test codes are
     make lt_sprites
     ```
     This code will display multiple images.
+
+  
+- **Interface Test**: 
+
+    ```sh
+    make lt_interface
+    ```
+    This code will display some UI elements such as button, widget, image and input fields.
 
 ## Usage
 
