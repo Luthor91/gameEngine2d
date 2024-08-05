@@ -18,14 +18,6 @@
  */
 char* String_Concat(const char* str1, const char* str2);
 
-void clean_param_name(char* param_name);
-
 void CheckTextFit(Font* font, char* text, int maxWidth, int maxHeight);
-
-int is_percentage(const char* str);
-
-int parse_percentage(const char* str, int max_value);
-
-int parse_dimension(const char* str, int default_value, int base_size);
 
 #endif // STRING_H
