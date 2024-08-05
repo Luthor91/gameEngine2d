@@ -1,5 +1,12 @@
 #include "../include/object.h"
 
+/**
+ * posy = position sur l'axe Y
+ * posx = position sur l'axe X
+ * cposy = position sur l'axe Y, l'objet sera centré
+ * cposx = position sur l'axe X, l'objet sera centré
+ */
+
 ObjectType Object_GetType(const char* type_str) {
 
     if (strcmp(type_str, "Sprite") == 0) {
@@ -103,22 +110,22 @@ void Object_Set(void* object, const char* params, const char* type_str) {
             if (strcmp(param_name, "position") == 0) {
                 char x_str[16], y_str[16];
                 if (sscanf(param_value, "%15[^,],%15[^,]", x_str, y_str) == 2) {
-                    x = Parse_Expression(x_str, transform->size->width);
-                    y = Parse_Expression(y_str, transform->size->height);
+                    x = Parse_Expression(x_str, transform->size->width, "posx");
+                    y = Parse_Expression(y_str, transform->size->height, "posy");
                     transform->position = Point2D_Set(transform->position, x, y);
                 }
             } else if (strcmp(param_name, "centerposition") == 0) {
                 char x_str[16], y_str[16];
                 if (sscanf(param_value, "%15[^,],%15[^,]", x_str, y_str) == 2) {
-                    x = Parse_Expression(x_str, transform->size->width);
-                    y = Parse_Expression(y_str, transform->size->height);
+                    x = Parse_Expression(x_str, transform->size->width, "cposx");
+                    y = Parse_Expression(y_str, transform->size->height, "cposy");
                     transform->position = Point2D_Set(transform->position, x, y);
                 }
             } else if (strcmp(param_name, "size") == 0) {
                 char width_str[16], height_str[16];
                 if (sscanf(param_value, "%15[^,],%15[^,]", width_str, height_str) == 2) {
-                    transform->size->width = Parse_Expression(width_str, transform->size->width);
-                    transform->size->height = Parse_Expression(height_str, transform->size->height);
+                    transform->size->width = Parse_Expression(width_str, transform->size->width, param_name);
+                    transform->size->height = Parse_Expression(height_str, transform->size->height, param_name);
                 }
             } else if (strcmp(param_name, "backgroundcolor") == 0) {
                 if (Parse_Color(color, param_value)) {
