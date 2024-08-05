@@ -34,28 +34,33 @@ int main(int argc, char* argv[]) {
     Widget* widget = Widget_Init(NULL, NULL);
     Tooltip* tooltip = Tooltip_Init(NULL, NULL, NULL, NULL, NULL);
 
+/*
     int object_value = 50; // Exemple de valeur d'objet
     
     // Test de la fonction avec différentes chaînes d'argument
-    printf("Result: %d\n", Parse_Expression("w50%+&30", object_value));
-    printf("Result: %d\n", Parse_Expression("h50%-20", object_value));
-    printf("Result: %d\n", Parse_Expression("w50%+&30-h20", object_value));
-    
+    printf("Result: %d, expected : 150\n", Parse_Expression("150", object_value, NULL));
+    printf("Result: %d, expected : 300\n", Parse_Expression("w90%", object_value, NULL));
+    printf("Result: %d, expected : 180\n", Parse_Expression("h50%-20", object_value, NULL));
+    printf("Result: %d, expected : 315\n", Parse_Expression("w50%+&30%", object_value, NULL));
+    printf("Result: %d, expected : 310\n", Parse_Expression("w50%+&30-h20", object_value, NULL));
+    printf("Result: %d, expected : 275\n", Parse_Expression("w50%+&30%-h20%", object_value, NULL));
+    printf("Result: %d, expected : 275\n", Parse_Expression("centery", object_value, NULL));
+*/  
 
-/*
+
     Sprite_Set(sprite_colored, 
-        "size:w90%,h90%; \
-        position:center-10,5%;     \
+        "position:center+20,20%; size:w90%,w90%; \
         backgroundcolor:GREEN; \
         textsize:32;"
     );
-
-    Widget_Set(widget,"position:212,-1;");
+    printf("Main: (w,h):(%d,%d)\n", sprite_colored->transform->size->width, sprite_colored->transform->size->height);
+    printf("Main: (x,y):(%d,%d)\n", sprite_colored->transform->position->x, sprite_colored->transform->position->y);
+    Widget_Set(widget,"position:212,;");
 
     Button_Set(button,"position:350,0;");
     Tooltip_Set(tooltip,"position:150,100;");
 
-    InputField_Set(input_field, 
+    InputField_Set(input_field,         
         "position:0,150;    \
         textcolor:BLUE;      \
         backgroundcolor:RED;\
@@ -69,7 +74,7 @@ int main(int argc, char* argv[]) {
         textsize:22;          \
         size:100,100;"
     );
-*/
+
     // Initialisation du gestionnaire de rendu avec la taille maximale des objets à rendre.
     RendererManager* manager = RendererManager_Init(NULL, DEFAULT_MAX_RENDERER);
     EventManager* event_manager = EventManager_Init(DEFAULT_MAX_EVENT);
