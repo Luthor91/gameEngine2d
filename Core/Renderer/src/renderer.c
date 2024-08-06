@@ -487,14 +487,12 @@ void Renderer_Label(Renderer* renderer, SDL_Renderer* sdl_renderer) {
     // Dessiner le texte
     if (label->text && label->text[0] != '\0') {
         SDL_Color sdl_color = Color_GetSDL(*label->font->color);
-        //printf("RENDERER_LABEL_SDL_Color: r=%u, g=%u, b=%u, a=%u\n", sdl_color.r, sdl_color.g, sdl_color.b, sdl_color.a);
         char* text = label->text;
         char* line_start = text;
         char* line_end = NULL;
         int line_height = TTF_FontHeight(label->font->sdl_font);
         int y_offset = target.y;
 
-        // Compter le nombre de lignes pour centrer verticalement
         int num_lines = 0;
         while ((line_end = strchr(line_start, '\n')) != NULL) {
             num_lines++;
@@ -505,7 +503,7 @@ void Renderer_Label(Renderer* renderer, SDL_Renderer* sdl_renderer) {
         }
 
         int total_text_height = num_lines * line_height;
-        y_offset = target.y; 
+        y_offset = target.y;
         line_start = text;
 
         while ((line_end = strchr(line_start, '\n')) != NULL) {
@@ -572,6 +570,39 @@ void Renderer_Label(Renderer* renderer, SDL_Renderer* sdl_renderer) {
 }
 
 
+void Renderer_ProgressBar(Renderer* renderer, SDL_Renderer* sdl_renderer) {
+    if (!renderer || !renderer->object) {
+        printf("Renderer_Label: Renderer ou objet invalide\n\t%s\n", SDL_GetError());
+        return;
+    }
+
+    ProgressBar* progress_bar = (ProgressBar*)(renderer->object);
+
+    // Dessiner l'arrière-plan
+    SDL_SetRenderDrawColor(sdl_renderer, progress_bar->background_color->r, progress_bar->background_color->g, progress_bar->background_color->b, progress_bar->background_color->a);
+    SDL_Rect background_rect = { progress_bar->transform->position->x, progress_bar->transform->position->y, progress_bar->transform->size->width, progress_bar->transform->size->height };
+    SDL_RenderFillRect(sdl_renderer, &background_rect);
+
+    // Dessiner la partie remplie
+    float progress_ratio = (float)progress_bar->current_value / progress_bar->max_value;
+    int fill_width = (int)(progress_ratio * progress_bar->transform->size->width);
+    SDL_SetRenderDrawColor(sdl_renderer, progress_bar->foreground_color->r, progress_bar->foreground_color->g, progress_bar->foreground_color->b, progress_bar->foreground_color->a);
+    SDL_Rect fill_rect = { progress_bar->transform->position->x, progress_bar->transform->position->y, fill_width, progress_bar->transform->size->height };
+    SDL_RenderFillRect(sdl_renderer, &fill_rect);
+
+    // Dessiner la bordure (optionnel)
+    if (progress_bar->border_thickness > 0) {
+        SDL_SetRenderDrawColor(sdl_renderer, progress_bar->border_color->r, progress_bar->border_color->g, progress_bar->border_color->b, progress_bar->border_color->a);
+        SDL_Rect border_rect = { progress_bar->transform->position->x, progress_bar->transform->position->y, progress_bar->transform->size->width, progress_bar->transform->size->height };
+        for (int i = 0; i < progress_bar->border_thickness; i++) {
+            SDL_RenderDrawRect(sdl_renderer, &border_rect);
+            border_rect.x++;
+            border_rect.y++;
+            border_rect.w -= 2;
+            border_rect.h -= 2;
+        }
+    }
+}
 
 void Renderer_Button(Renderer* renderer, SDL_Renderer* sdl_renderer) {
     if (!renderer || !renderer->object) {
@@ -647,7 +678,6 @@ void Renderer_InputField(Renderer* renderer, SDL_Renderer* sdl_renderer) {
             num_lines++;
         }
 
-        // Centrer verticalement
         int total_text_height = num_lines * line_height;
         int y_start = target.y + 5;
 
@@ -758,7 +788,6 @@ void Renderer_Tooltip(Renderer* renderer, SDL_Renderer* sdl_renderer) {
         SDL_DestroyTexture(text_texture);
     }
 }
-
 
 void Renderer_Window(Renderer* renderer, SDL_Renderer* sdl_renderer) {
 

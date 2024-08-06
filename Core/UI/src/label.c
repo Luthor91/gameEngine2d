@@ -26,15 +26,8 @@ Label* Label_Init(Transform* transform, Texture* texture, Font* font, char* text
     label->texture = texture;
     label->transform = transform;
     label->font = font;
-
-    label->text = strdup(text);
-    if (label->text == NULL) {
-        printf("Label_Init: Échec de l'allocation de mémoire pour le texte.\n");
-        free(label);
-        return NULL;
-    }
-
-    CheckTextFit(label->font, label->text, label->transform->size->width - 5, label->transform->size->height);
+    label->max_length = DEFAULT_MAX_LENGHT_LABEL;
+    Label_SetText(label, text);
 
     return label;
 }
@@ -44,9 +37,26 @@ void Label_Set(Label* label, const char* params) {
 }
 
 void Label_SetText(Label* label, const char* text) {
+    if (!label || !text) {
+        return; // Gérer les cas où l'étiquette ou le texte est NULL
+    }
+
+    // Si `label->text` est NULL ou si la taille de l'allocation est insuffisante
+    if (label->text == NULL) {
+        // Allouer de la mémoire pour `label->text` avec une taille adaptée
+        label->text = (char*)malloc((label->max_length + 1) * sizeof(char));
+        if (label->text == NULL) {
+            fprintf(stderr, "Memory allocation failed\n");
+            return;
+        }
+    }
+
+    // Copier le texte dans `label->text`, en s'assurant de la null-termination
     strncpy(label->text, text, label->max_length);
     label->text[label->max_length] = '\0'; // S'assurer que le texte est null-terminated
-    CheckTextFit(label->font, label->text, label->transform->size->width - 5, label->transform->size->height);
+
+    // Vérifier l'adaptation du texte
+    CheckTextFit(label->font, label->text, label->transform->size->width, label->transform->size->height);
 }
 
 void Label_SetTextSize(Label* label, int size) {

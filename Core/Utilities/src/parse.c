@@ -72,7 +72,6 @@ int Parse_Expression(const char* expr, int object_value, const char* param_name)
     int window_width = DEFAULT_WINDOW_WIDTH;
     int window_height = DEFAULT_WINDOW_HEIGHT;
 
-    // Check if the expression contains any operators
     int contains_operator = 0;
     for (int k = 0; expr[k] != '\0'; k++) {
         if (expr[k] == '+' || expr[k] == '-') {
@@ -84,35 +83,46 @@ int Parse_Expression(const char* expr, int object_value, const char* param_name)
     while (expr[i] != '\0') {
         if (expr[i] == '+' || expr[i] == '-') {
             // Apply the previous operation
-            apply_operator(operator, &result, current_value);
+            if (operator == '+') {
+                result += current_value;
+            } else if (operator == '-') {
+                result -= current_value;
+            }
             operator = expr[i];
             current_value = 0;
+            i++;
         } else {
             int j = 0;
-            memset(buf, 0, sizeof(buf)); // Clear buffer
-
+            memset(buf, 0, sizeof(buf));
             if (expr[i] == '&') {
                 i++;
                 while (isdigit(expr[i])) {
                     buf[j++] = expr[i++];
                 }
-                buf[j] = '\0';
-                current_value = atoi(buf);
                 if (expr[i] == '%') {
-                    current_value = object_value * current_value / 100;
+                    buf[j] = '\0';
+                    current_value = object_value * atoi(buf) / 100;
                     i++;
+                } else {
+                    buf[j] = '\0';
+                    current_value = atoi(buf);
                 }
             } else if (expr[i] == 'w' || expr[i] == 'h') {
                 char dimension = expr[i++];
                 while (isdigit(expr[i])) {
                     buf[j++] = expr[i++];
                 }
-                buf[j] = '\0';
-                int percent = atoi(buf);
                 if (expr[i] == '%') {
-                    handle_percentage(param_name, percent, object_value, &current_value, window_width, window_height);
+                    buf[j] = '\0';
+                    int percent = atoi(buf);
+                    if (dimension == 'w') {
+                        current_value = window_width * percent / 100;
+                    } else if (dimension == 'h') {
+                        current_value = window_height * percent / 100;
+                    }
                     i++;
                 } else {
+                    buf[j] = '\0';
                     current_value = atoi(buf);
                 }
             } else if (strncmp(&expr[i], "right", 5) == 0) {
@@ -156,31 +166,34 @@ int Parse_Expression(const char* expr, int object_value, const char* param_name)
                 while (isdigit(expr[i])) {
                     buf[j++] = expr[i++];
                 }
-                buf[j] = '\0';
-                int percent = atoi(buf);
                 if (expr[i] == '%') {
-                    handle_percentage(param_name, percent, object_value, &current_value, window_width, window_height);
+                    buf[j] = '\0';
+                    int percent = atoi(buf);
+                    if (strcmp(param_name, "size") == 0) {
+                        current_value = object_value * percent / 100;
+                    } else if (strcmp(param_name, "posx") == 0 || strcmp(param_name, "cposx") == 0) {
+                        current_value = window_width * percent / 100 - (strcmp(param_name, "cposx") == 0 ? object_value / 2 : 0);
+                    } else if (strcmp(param_name, "posy") == 0 || strcmp(param_name, "cposy") == 0) {
+                        current_value = window_height * percent / 100 - (strcmp(param_name, "cposy") == 0 ? object_value / 2 : 0);
+                    }
                     i++;
                 } else {
+                    buf[j] = '\0';
                     current_value = atoi(buf);
                 }
             }
-
-            // Check for operators immediately following the value
-            if (expr[i] == '+' || expr[i] == '-') {
-                apply_operator(operator, &result, current_value);
-                operator = expr[i];
-                current_value = 0;
-            } else if (!contains_operator) {
-                return current_value;
-            }
         }
-        i++;
     }
 
-    // Apply the last operation, if necessary
+    // Apply the last operation if necessary
     if (contains_operator) {
-        apply_operator(operator, &result, current_value);
+        if (operator == '+') {
+            result += current_value;
+        } else if (operator == '-') {
+            result -= current_value;
+        }
+    } else if (i == 0) {
+        result = object_value;
     } else {
         result = current_value;
     }

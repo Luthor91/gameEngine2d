@@ -20,8 +20,9 @@ char* String_Concat(const char* str1, const char* str2) {
 void CheckTextFit(Font* font, char* text, int maxWidth, int maxHeight) {
     if (!font || !text) return;
 
-    int charHeight;
-    TTF_SizeText(font->sdl_font, "A", NULL, &charHeight);
+    // Variables pour les dimensions des caractères
+    int charWidth, charHeight;
+    TTF_SizeText(font->sdl_font, "A", &charWidth, &charHeight);
 
     int lineHeight = charHeight;
     int maxLines = maxHeight / lineHeight;
@@ -30,37 +31,42 @@ void CheckTextFit(Font* font, char* text, int maxWidth, int maxHeight) {
     int lastSpaceIndex = -1;
     int lastSpaceLineWidth = 0;
 
-    for (int i = 0; text[i] != '\0'; i++) {
-        int advanceWidth;
-        char temp[2] = {text[i], '\0'};
-        TTF_SizeText(font->sdl_font, temp, &advanceWidth, NULL);
+    int length = strlen(text);
+    char temp_text[length + 1];
+    strcpy(temp_text, text);
 
-        if (text[i] == ' ') {
+    for (int i = 0; i < length; i++) {
+        char currentChar[2] = { temp_text[i], '\0' }; // Convertir le caractère en chaîne
+        TTF_SizeText(font->sdl_font, currentChar, &charWidth, NULL);
+
+        if (temp_text[i] == ' ') {
             lastSpaceIndex = i;
             lastSpaceLineWidth = currentLineWidth;
         }
 
-        currentLineWidth += advanceWidth;
+        currentLineWidth += charWidth;
 
-        if (text[i] == '\n' || currentLineWidth > maxWidth) {
-            if (text[i] != '\n' && lastSpaceIndex != -1) {
-                text[lastSpaceIndex] = '\n';
+        if (temp_text[i] == '\n' || currentLineWidth > maxWidth - 5) {
+            if (temp_text[i] != '\n' && lastSpaceIndex != -1) {
+                temp_text[lastSpaceIndex] = '\n';
                 i = lastSpaceIndex;
                 currentLineWidth = currentLineWidth - lastSpaceLineWidth;
                 lastSpaceIndex = -1;
             } else {
-                if (text[i] != '\n') {
-                    memmove(&text[i + 1], &text[i], strlen(&text[i]) + 1);
-                    text[i] = '\n';
+                if (temp_text[i] != '\n') {
+                    memmove(&temp_text[i + 1], &temp_text[i], strlen(&temp_text[i]) + 1);
+                    temp_text[i] = '\n';
                 }
-                currentLineWidth = 0;
+                currentLineWidth = charWidth; // Commencer la nouvelle ligne avec le caractère courant
             }
             currentLine++;
         }
 
         if (currentLine > maxLines) {
-            text[i] = '\0';
+            temp_text[i] = '\0';
             break;
         }
     }
+
+    strcpy(text, temp_text);
 }

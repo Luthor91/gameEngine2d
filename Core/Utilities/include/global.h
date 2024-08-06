@@ -28,6 +28,9 @@
 #define DEFAULT_WIDGET_WIDTH 128
 #define DEFAULT_WIDGET_HEIGHT 128
 
+#define DEFAULT_PROGRESSBAR_WIDTH 128
+#define DEFAULT_PROGRESSBAR_HEIGHT 32
+
 #define DEFAULT_WINDOW_WIDTH 600 ///< Largeur par défaut de la fenêtre.
 #define DEFAULT_WINDOW_HEIGHT 400 ///< Hauteur par défaut de la fenêtre.
 

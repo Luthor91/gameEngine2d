@@ -28,6 +28,7 @@
 #include "../../UI/include/widget.h"
 #include "../../UI/include/tooltip.h"
 #include "../../UI/include/image.h"
+#include "../../UI/include/progressbar.h"
 
 #include "../../Events/include/timer_manager.h"
 #include "../../Events/include/signal_manager.h"

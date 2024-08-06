@@ -11,6 +11,7 @@
 #include "../../UI/include/widget.h"
 #include "../../UI/include/tooltip.h"
 #include "../../UI/include/image.h"
+#include "../../UI/include/progressbar.h"
 
 typedef enum ObjectType {
     OBJECT_TYPE_SPRITE,
@@ -22,11 +23,13 @@ typedef enum ObjectType {
     OBJECT_TYPE_TOOLTIP,
     OBJECT_TYPE_WIDGET,
     OBJECT_TYPE_WINDOW,
+    OBJECT_TYPE_PROGRESSBAR,
     OBJECT_TYPE_UNKNOWN
 } ObjectType;
 
 ObjectType Object_GetType(const char* type_str);
 void Object_Set(void* object, const char* params, const char* type_str);    
 void Object_ApplyTexture(void* object, Texture* new_texture, const char* type_str);
+void Object_Print(void* object, const char* type_object);
 
 #endif // OBJECT_H

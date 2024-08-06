@@ -27,6 +27,8 @@ ObjectType Object_GetType(const char* type_str) {
         return OBJECT_TYPE_WIDGET;
     } else if (strcmp(type_str, "Window") == 0) {
         return OBJECT_TYPE_WINDOW;
+    } else if (strcmp(type_str, "ProgressBar") == 0) {
+        return OBJECT_TYPE_PROGRESSBAR;
     }
     // Type non reconnu
     return OBJECT_TYPE_UNKNOWN;
@@ -41,6 +43,8 @@ void Object_Set(void* object, const char* params, const char* type_str) {
     Font* font = NULL;
     char* text = NULL;
     int max_length = 0;
+    float current_value = 0;
+    float max_value = 0;
 
     switch (type) {
         case OBJECT_TYPE_SPRITE:
@@ -88,6 +92,11 @@ void Object_Set(void* object, const char* params, const char* type_str) {
             transform = ((Window*)object)->transform;
             texture = ((Window*)object)->texture;
             break;
+        case OBJECT_TYPE_PROGRESSBAR:
+            transform = ((ProgressBar*)object)->transform;
+            current_value = ((ProgressBar*)object)->current_value;
+            max_value = ((ProgressBar*)object)->max_value;
+            break;
         default:
             return;
     }
@@ -127,6 +136,16 @@ void Object_Set(void* object, const char* params, const char* type_str) {
                     transform->size->width = Parse_Expression(width_str, transform->size->width, param_name);
                     transform->size->height = Parse_Expression(height_str, transform->size->height, param_name);
                 }
+            } else if (strcmp(param_name, "max") == 0) {
+                int max = 0;
+                if (sscanf(param_value, "%d", &max) == 1) {
+                    max_value = max;
+                }
+            } else if (strcmp(param_name, "value") == 0) {
+                int value = 0;
+                if (sscanf(param_value, "%d", &value) == 1) {
+                    current_value = value;
+                }
             } else if (strcmp(param_name, "backgroundcolor") == 0) {
                 if (Parse_Color(color, param_value)) {
                     Texture* new_texture = Texture_Init_Color(NULL, color, NULL);
@@ -142,14 +161,26 @@ void Object_Set(void* object, const char* params, const char* type_str) {
                     font = Font_SetSize(font, size);
                 }
             } else if (strcmp(param_name, "text") == 0 && text) {
-                strncpy(text, param_value, max_length);
-                text[max_length] = '\0';
+                const char* const_text = param_value;
+                if (max_length > 0) {
+                    if (text == NULL) {
+                        text = (char*)malloc((max_length + 1) * sizeof(char));
+                        if (text == NULL) {
+                            fprintf(stderr, "Memory allocation failed\n");
+                            free(params_copy);
+                            return;
+                        }
+                    }
+                    strncpy(text, const_text, max_length);
+                    text[max_length - 1] = '\0';
+                }
             }
         }
         param = strtok(NULL, ";");
     }
     free(params_copy);
 }
+
 
 void Object_ApplyTexture(void* object, Texture* new_texture, const char* type_str) {
     if (!object || !new_texture || !type_str) return;
@@ -215,8 +246,128 @@ void Object_ApplyTexture(void* object, Texture* new_texture, const char* type_st
             window->texture = new_texture;
             break;
         }
+        case OBJECT_TYPE_LABEL: {
+            Label* label = (Label*)object;
+            if (label->texture) {
+                Texture_Destroy(label->texture);
+            }
+            label->texture = new_texture;
+            break;
+        }
+        case OBJECT_TYPE_INPUTFIELD: {
+            InputField* input_field = (InputField*)object;
+            if (input_field->texture) {
+                Texture_Destroy(input_field->texture);
+            }
+            input_field->texture = new_texture;
+            break;
+        }
         default:
-            printf("Object_ApplyTexture : Type d'objet inconnu.\n");
+            printf("Object_ApplyTexture : Type d'objet [%s] inconnu.\n", type_str);
             break;
     }
+}
+
+void Object_Print(void* object, const char* type_object) {
+    if (!object || !type_object) return;
+
+    ObjectType type = Object_GetType(type_object);
+    Transform* transform = NULL;
+    Texture* texture = NULL;
+    Font* font = NULL;
+    char* text = NULL;
+    int max_length = 0;
+    int current_value = 0;
+    int max_value = 0;
+
+    switch (type) {
+        case OBJECT_TYPE_SPRITE:
+            transform = ((Sprite*)object)->transform;
+            texture = ((Sprite*)object)->texture;
+            printf("Object Type: Sprite\n");
+            break;
+        case OBJECT_TYPE_IMAGE:
+            transform = ((Image*)object)->transform;
+            texture = ((Image*)object)->texture;
+            printf("Object Type: Image\n");
+            break;
+        case OBJECT_TYPE_BUTTON:
+            transform = ((Button*)object)->transform;
+            texture = ((Button*)object)->texture;
+            printf("Object Type: Button\n");
+            break;
+        case OBJECT_TYPE_INPUTFIELD:
+            transform = ((InputField*)object)->transform;
+            texture = ((InputField*)object)->texture;
+            font = ((InputField*)object)->font;
+            text = ((InputField*)object)->text;
+            max_length = ((InputField*)object)->max_length;
+            printf("Object Type: InputField\n");
+            break;
+        case OBJECT_TYPE_LABEL:
+            transform = ((Label*)object)->transform;
+            texture = ((Label*)object)->texture;
+            font = ((Label*)object)->font;
+            text = ((Label*)object)->text;
+            max_length = ((Label*)object)->max_length;
+            printf("Object Type: Label\n");
+            break;
+        case OBJECT_TYPE_PANEL:
+            transform = ((Panel*)object)->transform;
+            texture = ((Panel*)object)->texture;
+            printf("Object Type: Panel\n");
+            break;
+        case OBJECT_TYPE_TOOLTIP:
+            transform = ((Tooltip*)object)->transform;
+            texture = ((Tooltip*)object)->texture;
+            font = ((Tooltip*)object)->font;
+            text = ((Tooltip*)object)->text;
+            max_length = ((Tooltip*)object)->max_length;
+            printf("Object Type: Tooltip\n");
+            break;
+        case OBJECT_TYPE_WIDGET:
+            transform = ((Widget*)object)->transform;
+            texture = ((Widget*)object)->texture;
+            printf("Object Type: Widget\n");
+            break;
+        case OBJECT_TYPE_WINDOW:
+            transform = ((Window*)object)->transform;
+            texture = ((Window*)object)->texture;
+            printf("Object Type: Window\n");
+            break;
+        case OBJECT_TYPE_PROGRESSBAR:
+            transform = ((ProgressBar*)object)->transform;
+            max_value = ((ProgressBar*)object)->max_value;
+            current_value = ((ProgressBar*)object)->current_value;
+            printf("Object Type: ProgressBar\n");
+            break;
+        default:
+            printf("Unknown object type\n");
+            return;
+    }
+
+    if (transform) {
+        printf("Position: (%d, %d)\n", transform->position->x, transform->position->y);
+        printf("Size: (%d, %d)\n", transform->size->width, transform->size->height);
+    }
+    if (texture) {
+        printf("Texture size: (%d, %d)\n", texture->size->width, texture->size->height);
+    }
+    if (font) {
+        printf("Font Size: %d\n", font->size);
+        printf("Font Color: (R: %d, G: %d, B: %d, A: %d)\n", font->color->r, font->color->g, font->color->b, font->color->a);
+    }
+    if (text && *text) {
+        printf("Text: %s\n", text);
+    } 
+    if (max_length) {
+        printf("Max Length: %d\n", max_length);
+    }
+    if (current_value) {
+        printf("Curent Value: %d\n", current_value);
+    }
+    if (max_value) {
+        printf("Max Value: %d\n", max_value);
+    }
+    printf("\n");
 }
