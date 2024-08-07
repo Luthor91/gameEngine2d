@@ -49,6 +49,13 @@ lt_animation:
 lt_sprites:
 	$(CC) $(L_SDL2) $(SYMBOL) test_sprites Examples/sprites.c $(AllFiles) $(L_LDFLAGS) && ./test_sprites
 
+lt_interface:
+	$(CC) $(L_SDL2) $(SYMBOL) test_interface Examples/interface.c $(AllFiles) $(L_LDFLAGS) && ./test_interface
+
+
+lt_physics:
+	$(CC) $(L_SDL2) $(SYMBOL) test_physics Examples/physics.c $(AllFiles) $(L_LDFLAGS) && ./test_physics
+
 ##############################################
 #
 #		WINDOWS
