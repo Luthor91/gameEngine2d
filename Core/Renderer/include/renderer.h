@@ -19,6 +19,7 @@
 #include "../../UI/include/button.h"
 #include "../../UI/include/widget.h"
 #include "../../UI/include/tooltip.h"
+#include "../../UI/include/progressbar.h"
 
 // Cette valeur représente le nombre maximum d'objets qui peuvent être rendus par le système.
 // Cette limite est en cours de vérification, car des valeurs trop élevées peuvent entraîner des
@@ -101,94 +102,6 @@ void RendererManager_Sort(RendererManager* manager);
 void RendererManager_Render(RendererManager* manager);
 
 /**
- * @brief Met à jour les animations dynamiques d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à mettre à jour.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Update_DynamicAnimation(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Met à jour les animations statiques d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à mettre à jour.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Update_StaticAnimation(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Met à jour les sprites d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à mettre à jour.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Update_Sprite(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Met à jour les labels d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à mettre à jour.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Update_Label(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Met à jour la fenêtre d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à mettre à jour.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Update_Window(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Affiche les animations dynamiques d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à afficher.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Show_DynamicAnimation(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Affiche les animations statiques d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à afficher.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Show_StaticAnimation(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Affiche les sprites d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à afficher.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Show_Sprite(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Affiche les labels d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à afficher.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Show_Label(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Affiche la fenêtre d'un objet `Renderer`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à afficher.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Show_Window(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
- * @brief Fonction de rendu pour le `StaticAnimationManager`.
- * 
- * @param renderer Pointeur vers la structure `Renderer` à afficher.
- * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
- */
-void Renderer2_StaticAnimationManager(Renderer* renderer, SDL_Renderer* sdl_renderer);
-
-/**
  * @brief Fonction de rendu pour les animations dynamiques.
  * 
  * @param renderer Pointeur vers la structure `Renderer` à afficher.
@@ -227,6 +140,8 @@ void Renderer_Widget(Renderer* renderer, SDL_Renderer* sdl_renderer);
  * @param sdl_renderer Pointeur vers le renderer SDL utilisé pour le rendu.
  */
 void Renderer_Panel(Renderer* renderer, SDL_Renderer* sdl_renderer);
+
+void Renderer_ProgressBar(Renderer* renderer, SDL_Renderer* sdl_renderer);
 
 /**
  * @brief Fonction de rendu pour les labels.

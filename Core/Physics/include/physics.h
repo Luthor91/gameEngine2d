@@ -7,14 +7,17 @@
 #define PI 3.14159265358979323846
 
 // Définition des directions principales en radians
-#define DIRECTION_NORTH       (3 * M_PI / 2) ///< Direction Nord, en radians.
-#define DIRECTION_NORTHEAST   (7 * M_PI / 4) ///< Direction Nord-Est, en radians.
+#define DIRECTION_NORTH       (3 * PI / 2) ///< Direction Nord, en radians.
+#define DIRECTION_NORTHEAST   (7 * PI / 4) ///< Direction Nord-Est, en radians.
 #define DIRECTION_EAST        0.0f ///< Direction Est, en radians.
-#define DIRECTION_SOUTHEAST   (M_PI / 4) ///< Direction Sud-Est, en radians.
-#define DIRECTION_SOUTH       (M_PI / 2) ///< Direction Sud, en radians.
-#define DIRECTION_SOUTHWEST   (3 * M_PI / 4) ///< Direction Sud-Ouest, en radians.
-#define DIRECTION_WEST        M_PI ///< Direction Ouest, en radians.
-#define DIRECTION_NORTHWEST   (5 * M_PI / 4) ///< Direction Nord-Ouest, en radians.
+#define DIRECTION_SOUTHEAST   (PI / 4) ///< Direction Sud-Est, en radians.
+#define DIRECTION_SOUTH       (PI / 2) ///< Direction Sud, en radians.
+#define DIRECTION_SOUTHWEST   (3 * PI / 4) ///< Direction Sud-Ouest, en radians.
+#define DIRECTION_WEST        PI ///< Direction Ouest, en radians.
+#define DIRECTION_NORTHWEST   (5 * PI / 4) ///< Direction Nord-Ouest, en radians.
+
+#define DEFAULT_MAX_BODIES 2048
+
 #include "acceleration.h"
 #include "force.h"
 #include "impulse.h"

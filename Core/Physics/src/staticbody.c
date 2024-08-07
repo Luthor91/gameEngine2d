@@ -34,10 +34,38 @@ StaticBodyManager* StaticBodyManager_Init(int max_body) {
     return manager;
 }
 
-void StaticBodyManager_AddBody(StaticBodyManager* manager, StaticBody* body) {
-    if (manager->index < manager->max_body) {
+void StaticBodyManager_Add(StaticBodyManager* manager, ...) {
+    va_list args;
+    va_start(args, manager);
+
+    int num_bodies = 0;
+    StaticBody* body;
+
+    // Compter les arguments variadiques jusqu'à rencontrer NULL
+    while ((body = va_arg(args, StaticBody*)) != NULL) {
+        num_bodies++;
+    }
+    va_end(args);
+    va_start(args, manager); // Réinitialiser va_list pour réutilisation
+
+    for (int i = 0; i < num_bodies; i++) {
+        
+        body = va_arg(args, StaticBody*);
+
+        if (body == NULL) {
+            fprintf(stderr, "RigidBodyManager_AddBodies: RigidBody at index %d is NULL\n", i);
+            break;
+        }
+
+        if (manager->index >= manager->max_body) {
+            fprintf(stderr, "RigidBodyManager_AddBodies: Maximum number of rigid bodies reached\n");
+            break;
+        }
+
         manager->staticBodies[manager->index++] = body;
     }
+
+    va_end(args);
 }
 
 void StaticBodyManager_Destroy(StaticBodyManager* manager) {

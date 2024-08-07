@@ -32,14 +32,14 @@ Transform* Transform_Init(Point2D* pos, Size2D* size, Point2D* center, double an
         free(transform);
         return NULL;
     }
-    if (!size || size->height <= 0 || size->width <= 0) {
-        transform->size->width = 32;
-        transform->size->height = 32;
+
+    if (size == NULL || size->height <= 0 || size->width <= 0) {
+        transform->size = Size2D_Init(32, 32);
     } else {
         transform->size->width = size->width;
         transform->size->height = size->height;
     }
-
+    
     transform->center = (Point2D*)malloc(sizeof(Point2D));
     if (!transform->center) {
         printf("Transform_Init: Erreur d'allocation de mémoire pour center\n");

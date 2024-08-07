@@ -3,6 +3,8 @@
 
 #include <math.h>
 
+#define DEFAULT_MAX_FORCES 2048
+
 /**
  * Représente une force avec une magnitude et une direction.
  */

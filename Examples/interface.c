@@ -1,70 +1,87 @@
 #include "../Core/Utilities/include/core.h"
 
 /**
- * @brief Programme d'exemple pour afficher une fenêtre et un panel avec les assets de base.
+ * @brief Exemple de programme pour afficher une fenêtre, un panneau, et d'autres composants avec SDL.
  * 
- * Ce programme initialise tous les composants nécessaires pour créer une fenêtre SDL,
- * configure un gestionnaire de rendu pour afficher le contenu, et entre dans une boucle
- * principale où il rend le contenu à chaque frame tout en vérifiant les événements.
- * La boucle principale continue jusqu'à ce que l'utilisateur déclenche une action de sortie.
+ * Ce programme démontre comment initialiser et gérer une application SDL en configurant et rendant divers éléments graphiques. 
+ * Il se compose des étapes suivantes :
  * 
- * Chaque ajout de composant affichable dans le code se fait de la manière suivante :
- *  - Initialisation de l'élément
- *  - Initialisation de son renderer
- *  - Ajout du renderer dans le gestionnaire de rendu
+ * 1. **Initialisation des composants** :
+ *    - Configure les éléments de base comme la fenêtre et le panneau.
+ *    - Crée et initialise divers composants graphiques comme les sprites, les labels, les champs de saisie, les boutons, etc.
  * 
+ * 2. **Configuration des paramètres** :
+ *    - Définie les propriétés des composants graphiques (position, taille, couleur, etc.) en utilisant des chaînes de paramètres.
+ * 
+ * 3. **Gestion des événements** :
+ *    - Associe des actions spécifiques (comme le clic sur un bouton) à des gestionnaires d'événements.
+ * 
+ * 4. **Initialisation des gestionnaires de rendu et d'événements** :
+ *    - Prépare les gestionnaires pour le rendu des composants et la gestion des événements.
+ * 
+ * 5. **Boucle principale** :
+ *    - Traite les événements.
+ *    - Rend les composants à l'écran à chaque frame.
+ *    - Contrôle le taux de rafraîchissement de l'écran.
+ * 
+ * 6. **Nettoyage** :
+ *    - Libère toutes les ressources avant de fermer l'application.
+ * 
+ * Chaque ajout ou configuration de composant suit cette méthodologie :
+ *  - **Initialisation de l'élément** : Crée et configure le composant.
+ *  - **Initialisation de son renderer** : Configure le renderer pour le composant.
+ *  - **Ajout du renderer dans le gestionnaire de rendu** : Ajoute le renderer au gestionnaire pour le rendu à l'écran.
  */
 
 void Test_Button_Clicked(void* data) {
-    printf("Doing something\n");
+    // Fonction de rappel pour le clic sur le bouton.
+    // Incrémente la valeur de la ProgressBar associée et affiche la nouvelle valeur.
+    ProgressBar* progress_bar = (ProgressBar*)data;
+    ProgressBar_SetValue(progress_bar, progress_bar->current_value + 10);
+    printf("Increment : %lf\n", progress_bar->current_value);
 }
 
 int main(int argc, char* argv[]) {
-    // Initialisation de tous les composants nécessaires pour le programme.
+    // Initialisation des composants du programme.
     if (Init_All() != 0) return 1;
 
-    // Initialisation des composants graphiques
+    // Création et initialisation des composants graphiques.
     Window* window = Window_Init(NULL, NULL, NULL);
     Panel* panel = Panel_Init(NULL, NULL);
     Sprite* sprite = Sprite_Init(NULL, NULL);
     Sprite* sprite_colored = Sprite_Init(NULL, NULL);
-    Label* label = Label_Init(NULL, NULL, NULL, "Henlo Henlo Henlo");
+    Label* label = Label_Init(NULL, NULL, NULL, "Test Test Test Test Test Test Test Test Test Test Test Test ");
     InputField* input_field = InputField_Init(NULL, NULL, NULL);
     Button* button = Button_Init(NULL, NULL, Test_Button_Clicked, NULL);
     Widget* widget = Widget_Init(NULL, NULL);
     Tooltip* tooltip = Tooltip_Init(NULL, NULL, NULL, NULL, NULL);
+    ProgressBar* progress_bar = ProgressBar_Init(NULL, NULL, NULL, NULL, 0, 0, 0);
 
-    Sprite_Set(sprite_colored, 
-        "size:50%,128; \
-        position:center,center;     \
-        backgroundcolor:GREEN;"
-    );
-/*
-    Widget_Set(widget,"position:212,-1;");
+    // Configuration des propriétés des composants à l'aide de chaînes de paramètres.
 
-    Button_Set(button,"position:350,0;");
-    Tooltip_Set(tooltip,"position:150,100;");
-
-    InputField_Set(input_field, 
-        "position:0,150;    \
-        textcolor:BLUE;      \
-        backgroundcolor:RED;\
-        textsize:22;          \
-        size:100,100;"
+    InputField_Set(input_field,         
+        "position:left+10,33%;textcolor:BLUE;backgroundcolor:RED;textsize:22;size:100,100;"
     );
     Label_Set(label, 
-        "position:0,300;    \
-        textcolor:255,0,0,255;       \
-        backgroundcolor:BLUE;\
-        textsize:22;          \
-        size:100,100;"
+        "position:left,60%;textcolor:255,0,0,255;backgroundcolor:BLUE;textsize:12;size:100,100;"
     );
-*/
-    // Initialisation du gestionnaire de rendu avec la taille maximale des objets à rendre.
+    Sprite_Set(sprite_colored, 
+        "position:center,20%-10; size:&90%+10%,&90%;backgroundcolor:GREEN;textsize:32;"
+    );
+
+    Widget_Set(widget, "position:212,;");
+    Button_Set(button, "position:350,0;");
+    Tooltip_Set(tooltip, "position:150,100;");
+    ProgressBar_Set(progress_bar, "position:right,bottom;");
+
+    // Associe la ProgressBar au bouton pour que la ProgressBar soit mise à jour lorsque le bouton est cliqué.
+    button->data = progress_bar;
+
+    // Initialisation des gestionnaires de rendu et d'événements.
     RendererManager* manager = RendererManager_Init(NULL, DEFAULT_MAX_RENDERER);
     EventManager* event_manager = EventManager_Init(DEFAULT_MAX_EVENT);
 
-    // Création et initialisation des renderers
+    // Création et initialisation des renderers pour chaque composant.
     Renderer* renderer_window = Renderer_Init(Renderer_Window, window, 0);
     Renderer* renderer_panel = Renderer_Init(Renderer_Panel, panel, 1);
     Renderer* renderer_sprite = Renderer_Init(Renderer_Sprite, sprite, 2);
@@ -74,33 +91,44 @@ int main(int argc, char* argv[]) {
     Renderer* renderer_button = Renderer_Init(Renderer_Button, button, 6);
     Renderer* renderer_widget = Renderer_Init(Renderer_Widget, widget, 3);
     Renderer* renderer_tooltip = Renderer_Init(Renderer_Tooltip, tooltip, 3);
+    Renderer* renderer_progress_bar = Renderer_Init(Renderer_ProgressBar, progress_bar, 3);
 
-    Event* event_input_field = Event_Init(input_field, Event_InputField);
-    Event* event_button_clicked = Event_Init(button, Event_Button_Clicked);
-    Event* event_widget_dragged = Event_Init(widget, Event_Widget_Dragged);
-    Event* event_tooltip = Event_Init(tooltip, Event_Tooltip_Hovered);
+    // Création et initialisation des événements pour chaque composant.
+    Event* event_input_field = Event_Init(input_field, Event_InputField, NULL);
+    Event* event_button_clicked = Event_Init(button, Event_Button_Clicked, NULL);
+    Event* event_widget_dragged = Event_Init(widget, Event_Widget_Dragged, NULL);
+    Event* event_tooltip = Event_Init(tooltip, Event_Tooltip_Hovered, NULL);
 
-    // Ajout des renderers au gestionnaire de rendu.
-    RendererManager_Add(manager, renderer_window, renderer_panel, renderer_sprite, renderer_sprite_colored, renderer_input, renderer_label, renderer_button, renderer_widget, renderer_tooltip, NULL);
-    EventManager_Add(event_manager, event_input_field, event_button_clicked, event_widget_dragged, event_tooltip, NULL);
+    // Ajout des renderers et des événements aux gestionnaires respectifs.
+    RendererManager_Add(manager, 
+        renderer_window, renderer_panel, renderer_button, renderer_sprite, renderer_sprite_colored, 
+        renderer_input, renderer_panel, renderer_label, renderer_widget, renderer_tooltip,
+        renderer_progress_bar, NULL
+    );
+    EventManager_Add(event_manager, 
+        event_input_field, event_button_clicked, event_widget_dragged, event_tooltip,
+        NULL)
+    ;
 
+    // Tri des renderers dans le gestionnaire de rendu.
     RendererManager_Sort(manager);
 
     // Boucle principale du programme.
     while (!sdl_quit_flag) {
+        // Gestion des événements.
         EventManager_HandleEvents(event_manager, &sdl_quit_flag);
 
-        /**
-         *  Si vous voulez ajouter des fonctionnalités
-         *  Idéalement le code devrait se situer à la place de ce commentaire
-         */
+        // Ici, vous pouvez ajouter des fonctionnalités supplémentaires si nécessaire.
 
-        RendererManager_Render(manager); // Rend le contenu à afficher en utilisant le gestionnaire de rendu.
+        // Rendu des composants à l'écran.
+        RendererManager_Render(manager);
 
-        Time_SetFPSLimit(DEFAULT_FPS_AVERAGE); // Définit la limite de frames par seconde (FPS) pour contrôler la vitesse de rafraîchissement.
+        // Limite le nombre de frames par seconde (FPS).
+        Time_SetFPSLimit(DEFAULT_FPS_AVERAGE);
     }
 
-    Exit_All(window); // Nettoie et ferme tous les composants
+    // Nettoyage et fermeture de tous les composants.
+    Exit_All(window);
 
     return 0;
 }

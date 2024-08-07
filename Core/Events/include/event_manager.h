@@ -13,6 +13,7 @@
 typedef struct Event {
     void* object;           ///< Pointeur vers l'objet associé à l'événement
     void* callback;         ///< Pointeur vers la fonction de rappel (utilisé comme void*)
+    void* returned_value;
 } Event;
 
 // Structure représentant le gestionnaire d'événements
@@ -37,7 +38,7 @@ EventManager* EventManager_Init(int initial_size);
  * @param callback Fonction de rappel pour traiter l'événement
  * @return Pointeur vers l'événement initialisé
  */
-Event* Event_Init(void* object, void* callback);
+Event* Event_Init(void* object, void* callback, void* returned_value);
 
 /**
  * @brief Ajoute des événements au gestionnaire d'événements

@@ -23,6 +23,6 @@ int Collision_Check(Point2D* posA, Point2D* posB, float radiusA, float radiusB);
  * @param body Pointeur vers le corps rigide impliqué dans la collision.
  * @param staticBody Pointeur vers le corps statique impliqué dans la collision.
  */
-void Collision_Handle(RigidBody* body, StaticBody* staticBody);
+void Collision_Handle(Physics* physics_body_1, Transform* transform_body_1, Physics* physics_body_2, Transform* transform_body_2);
 
 #endif // COLLISION_H

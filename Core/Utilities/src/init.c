@@ -58,6 +58,8 @@ int Init_All() {
     // Initialiser le fichier d'environnement
     Init_Env(".env");
 
+    Time_Initialize();
+
     return 0; // Succès
 }
 

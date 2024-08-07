@@ -1,5 +1,6 @@
 #include "../../Physics/include/impulse.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 Impulse* Impulse_Init(float magnitude, float direction, float duration) {
     Impulse* impulse = (Impulse*)malloc(sizeof(Impulse));
@@ -54,7 +55,11 @@ void ImpulseManager_Destroy(ImpulseManager* manager) {
 }
 
 void ImpulseManager_AddImpulse(ImpulseManager* manager, Impulse* impulse) {
-    if (manager->index < manager->max_impulses) {
+    if (impulse == NULL) {
+        return;
+    }
+    
+    if (manager->index < manager->max_impulses) {    
         manager->impulses[manager->index] = impulse;
         manager->index++;
     }

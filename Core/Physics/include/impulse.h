@@ -1,6 +1,8 @@
 #ifndef IMPULSE_H
 #define IMPULSE_H
 
+#define DEFAULT_MAX_IMPULSES 2048
+
 /**
  * Représente une impulsion avec une magnitude, une direction, une durée et un temps écoulé.
  */

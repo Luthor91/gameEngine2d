@@ -10,6 +10,7 @@
 #include "../../Utilities/include/init.h"
 #include "../../Utilities/include/time.h"
 #include "../../Utilities/include/object.h"
+#include "../../Utilities/include/parse.h"
 
 #include "../../Graphics/include/texture.h"
 #include "../../Graphics/include/sprite.h"
@@ -26,6 +27,8 @@
 #include "../../UI/include/input.h"
 #include "../../UI/include/widget.h"
 #include "../../UI/include/tooltip.h"
+#include "../../UI/include/image.h"
+#include "../../UI/include/progressbar.h"
 
 #include "../../Events/include/timer_manager.h"
 #include "../../Events/include/signal_manager.h"
@@ -55,6 +58,7 @@
 #include "../../Physics/include/world_physics.h"
 #include "../../Physics/include/staticbody.h"
 #include "../../Physics/include/acceleration.h"
+#include "../../Physics/include/physicsbodies.h"
 
 #include "../../Spatial/include/grid.h"
 #include "../../Spatial/include/transform.h"

@@ -16,14 +16,63 @@ RigidBodyManager* RigidBodyManager_Init(int max_body) {
 
 RigidBody* RigidBody_Init(Transform* transform, Physics* physics) {
     RigidBody* body = (RigidBody*)malloc(sizeof(RigidBody));
-
     body->physics = (Physics*)malloc(sizeof(Physics));
     body->transform = (Transform*)malloc(sizeof(Transform));
+
+    if (transform == NULL) {
+        transform = Transform_Init(NULL, NULL, NULL, 0, 0);
+    }
+
+    if (physics == NULL) {
+        physics = Physics_Init(NULL, NULL, NULL, NULL, NULL);
+    }
 
     body->physics = physics;
     body->transform = transform;
 
     return body;
+}
+
+void RigidBodyManager_Add(RigidBodyManager* manager, ...) {
+    va_list args;
+    va_start(args, manager);
+
+    int num_bodies = 0;
+    RigidBody* body;
+
+    // Compter les arguments variadiques jusqu'à rencontrer NULL
+    while ((body = va_arg(args, RigidBody*)) != NULL) {
+        num_bodies++;
+    }
+    va_end(args);
+    va_start(args, manager); // Réinitialiser va_list pour réutilisation
+
+    for (int i = 0; i < num_bodies; i++) {
+        
+        body = va_arg(args, RigidBody*);
+
+        if (body == NULL) {
+            fprintf(stderr, "RigidBodyManager_AddBodies: RigidBody at index %d is NULL\n", i);
+            break;
+        }
+
+        if (manager->index >= manager->max_body) {
+            fprintf(stderr, "RigidBodyManager_AddBodies: Maximum number of rigid bodies reached\n");
+            break;
+        }
+
+        manager->rigidBodies[manager->index++] = body;
+    }
+
+    va_end(args);
+}
+
+void RigidBodyManager_Update(RigidBodyManager* manager, float deltaTime) {
+    for (int i = 0; i < manager->max_body ; i++) {
+        if (manager->rigidBodies[i]) {
+            RigidBody_Update(manager->rigidBodies[i], deltaTime);
+        }
+    }
 }
 
 void RigidBody_Update(RigidBody* body, float deltaTime) {
@@ -94,4 +143,3 @@ void RigidBody_Update(RigidBody* body, float deltaTime) {
     body->transform->position->x += body->physics->velocity->x * deltaTime + 0.5f * body->physics->acceleration->x * deltaTime * deltaTime;
     body->transform->position->y += body->physics->velocity->y * deltaTime + 0.5f * body->physics->acceleration->y * deltaTime * deltaTime;
 }
-

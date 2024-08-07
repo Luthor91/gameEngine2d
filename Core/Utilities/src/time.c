@@ -1,35 +1,47 @@
 #include "../include/time.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-void Time_Initialize(Uint32* current_time, Uint32* previous_time) {
-    *current_time = Time_GetCurrentTime();
-    *previous_time = *current_time;
+// Initialisation du temps
+void Time_Initialize() {
+    previous_time = Time_GetCurrentTime();
 }
 
-float Time_UpdateDeltaTime(Uint32* current_time, Uint32* previous_time) {
-    *current_time = Time_GetCurrentTime();
-    float deltaTime = Time_CalculateDeltaTime(*current_time, *previous_time);
-    *previous_time = *current_time;
-    return deltaTime;
+// Mise à jour du delta time
+float Time_UpdateDeltaTime() {
+    current_time = Time_GetCurrentTime();
+    delta_time = Time_CalculateDeltaTime(current_time, previous_time);
+    previous_time = current_time;
+    return delta_time;
 }
 
+// Obtention du temps actuel en millisecondes
 Uint32 Time_GetCurrentTime() {
     return SDL_GetTicks();
 }
 
+// Calcul du delta time
 float Time_CalculateDeltaTime(Uint32 current_time, Uint32 previous_time) {
     return (current_time - previous_time) / 1000.0f;
 }
 
+// Fonction pour dormir pendant un certain temps
 void Time_Sleep(unsigned int milliseconds) {
     SDL_Delay(milliseconds);
 }
 
+// Limiter les FPS et mettre à jour delta_time
 void Time_SetFPSLimit(float fps) {
     static Uint32 last_time = 0;
     Uint32 current_time, elapsed_time;
 
     current_time = Time_GetCurrentTime();
     elapsed_time = current_time - last_time;
+
+    // Mettre à jour delta_time
+    delta_time = Time_CalculateDeltaTime(current_time, last_time);
 
     // Temps d'attente restant pour atteindre le FPS spécifié
     Uint32 target_delay = 1000 / fps;
@@ -41,6 +53,8 @@ void Time_SetFPSLimit(float fps) {
     last_time = Time_GetCurrentTime();
 }
 
+
+// Obtenir le FPS actuel
 float Time_GetFPS() {
     static Uint32 frame_count = 0;
     static Uint32 last_time = 0;
@@ -59,10 +73,16 @@ float Time_GetFPS() {
     return fps;
 }
 
+// Obtenir le timestamp actuel
 char* Time_GetTimeStamp() {
     time_t now = time(NULL);
     struct tm *tm_info = localtime(&now);
     char *time_stamp = asctime(tm_info);
     time_stamp[strlen(time_stamp) - 1] = '\0';
     return time_stamp;
+}
+
+// Fonction pour obtenir le delta time
+float Time_GetDelta() {
+    return delta_time;
 }

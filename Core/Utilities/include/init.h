@@ -6,6 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include "../../UI/include/window.h"
+#include "../../Utilities/include/time.h"
 
 #define MAX_LINE_LENGTH 1024
 

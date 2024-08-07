@@ -38,6 +38,10 @@ RigidBodyManager* RigidBodyManager_Init(int max_body);
  */
 RigidBody* RigidBody_Init(Transform* transform, Physics* physics);
 
+void RigidBodyManager_Add(RigidBodyManager* manager, ...);
+
+void RigidBodyManager_Update(RigidBodyManager* manager, float deltaTime);
+
 /**
  * Met à jour les propriétés d'un corps rigide en fonction du temps écoulé.
  *

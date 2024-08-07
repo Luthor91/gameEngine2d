@@ -51,7 +51,7 @@ StaticBodyManager* StaticBodyManager_Init(int max_body);
  * @param manager Pointeur vers le gestionnaire de corps statiques.
  * @param body Pointeur vers le corps statique à ajouter.
  */
-void StaticBodyManager_AddBody(StaticBodyManager* manager, StaticBody* body);
+void StaticBodyManager_Add(StaticBodyManager* manager, ...);;
 
 /**
  * Détruit le gestionnaire de corps statiques, libérant les ressources associées.

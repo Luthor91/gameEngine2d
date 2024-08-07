@@ -3,9 +3,7 @@
 
 Acceleration* Acceleration_Init(Vector2* accel) {
     Acceleration* acceleration = (Acceleration*)malloc(sizeof(Acceleration));
-    if (acceleration == NULL) return NULL;
-    acceleration->x = accel->x;
-    acceleration->y = accel->y;
+    acceleration = acceleration ? acceleration : (Acceleration*)Vector2_Init(0, 0);
     return acceleration;
 }
 

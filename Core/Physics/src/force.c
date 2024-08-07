@@ -1,5 +1,6 @@
 #include "../../Physics/include/force.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 Force* Force_Init(float magnitude, float direction) {
     Force* force = (Force*)malloc(sizeof(Force));
@@ -25,12 +26,13 @@ ForceManager* ForceManager_Init(int max_force) {
     for (int i = 0; i < max_force; i++) {
         manager->forces[i] = NULL;
     }
-
     return manager;
 }
 
 void ForceManager_AddForce(ForceManager* manager, Force* force) {
+    printf("ForceManager_AddForce index:%d ; max:%d\n", manager->index, manager->max_force);
     if (manager->index < manager->max_force) {
+        printf("Force ajouté\n");
         manager->forces[manager->index] = force;
         manager->index++;
     }
@@ -43,6 +45,7 @@ Force* ForceManager_CalculateNetForce(ForceManager* manager) {
 
     // Calculer la somme des composantes x et y des forces
     for (int i = 0; i < manager->index; i++) {
+        printf("ForceManager: Force n°%d\n", i);
         float magnitude = manager->forces[i]->magnitude;
         float direction = manager->forces[i]->direction;
         netDirectionX += magnitude * cos(direction);

@@ -8,66 +8,36 @@
 #define FPS_CALC_INTERVAL 1000
 #define DEFAULT_FPS_AVERAGE 60
 
-/**
- * @brief Initialise les variables de temps.
- * 
- * @param current_time Pointeur vers la variable contenant le temps actuel.
- * @param previous_time Pointeur vers la variable contenant le temps précédent.
- */
-void Time_Initialize(Uint32* current_time, Uint32* previous_time);
+// Variables globales pour le suivi du temps
+static Uint32 current_time = 0;
+static Uint32 previous_time = 0;
+static float delta_time = 0.0f;
 
-/**
- * @brief Met à jour le delta time entre deux cadres.
- * 
- * @param current_time Pointeur vers la variable contenant le temps actuel.
- * @param previous_time Pointeur vers la variable contenant le temps précédent.
- * @return float Le delta time calculé.
- */
-float Time_UpdateDeltaTime(Uint32* current_time, Uint32* previous_time);
+// Fonction d'initialisation
+void Time_Initialize();
 
-/**
- * @brief Obtient le temps actuel.
- * 
- * @return Uint32 Le temps actuel en millisecondes.
- */
+// Fonction de mise à jour du delta time
+float Time_UpdateDeltaTime();
+
+// Fonction pour obtenir le temps actuel
 Uint32 Time_GetCurrentTime();
 
-/**
- * @brief Calcule le delta time entre deux temps donnés.
- * 
- * @param current_time Le temps actuel.
- * @param previous_time Le temps précédent.
- * @return float Le delta time calculé en secondes.
- */
+// Fonction pour calculer le delta time
 float Time_CalculateDeltaTime(Uint32 current_time, Uint32 previous_time);
 
-/**
- * @brief Met le programme en pause pendant un certain nombre de millisecondes.
- * 
- * @param milliseconds Le nombre de millisecondes pendant lesquelles le programme doit être en pause.
- */
+// Fonction pour dormir pendant un certain temps
 void Time_Sleep(unsigned int milliseconds);
 
-/**
- * @brief Définit une limite d'images par seconde (FPS).
- * 
- * @param fps La limite d'images par seconde.
- */
+// Fonction pour limiter les FPS
 void Time_SetFPSLimit(float fps);
 
-/**
- * @brief Obtient un timestamp actuel sous forme de chaîne de caractères.
- * 
- * @return char* Un timestamp sous forme de chaîne de caractères. 
- *         L'appelant est responsable de libérer cette mémoire.
- */
+// Fonction pour obtenir le FPS actuel
+float Time_GetFPS();
+
+// Fonction pour obtenir le timestamp actuel
 char* Time_GetTimeStamp();
 
-/**
- * @brief Obtient le nombre d'images par seconde (FPS) actuel.
- * 
- * @return float Le nombre d'images par seconde (FPS) actuel.
- */
-float Time_GetFPS();
+// Fonction pour obtenir le delta time
+float Time_GetDelta();
 
 #endif /* TIME_H */
