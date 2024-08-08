@@ -7,6 +7,8 @@
 #include "../../Utilities/include/global.h"
 #include "../../Utilities/include/object.h"
 
+#define DEFAULT_WIDGET Widget_Init(NULL, NULL)
+
 typedef struct Widget {
     Transform* transform;
     Texture* texture;

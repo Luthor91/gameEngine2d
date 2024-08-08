@@ -4,60 +4,52 @@
 #include "../../Spatial/include/transform.h"
 #include "physics.h"
 
+#define DEFAULT_STATICBODY StaticBodyManager_Init(DEFAULT_MAX_BODIES)
+
 /**
- * Représente un corps statique avec des propriétés physiques et une transformation spatiale.
+ * Représente un corps statice avec des propriétés physiques et une transformation spatiale.
  */
 typedef struct StaticBody {
-    Physics* physics; ///< Pointeur vers les propriétés physiques du corps statique.
-    Transform* transform; ///< Pointeur vers la transformation spatiale du corps statique (position, taille, etc.).
+    Physics* physics; ///< Pointeur vers les propriétés physiques du corps statice.
+    Transform* transform; ///< Pointeur vers la transformation spatiale du corps statice (position, taille, etc.).
 } StaticBody;
 
 /**
- * Gestionnaire pour les corps statiques.
+ * Gestionnaire pour les corps statices.
  */
 typedef struct StaticBodyManager {
-    StaticBody** staticBodies; ///< Tableau de pointeurs vers les corps statiques gérés.
-    int max_body; ///< Nombre maximal de corps statiques pouvant être gérés.
-    int index; ///< Index actuel pour ajouter de nouveaux corps statiques.
+    StaticBody** bodies; ///< Tableau de pointeurs vers les corps statices gérés.
+    int max_body; ///< Nombre maximal de corps statices pouvant être gérés.
+    int index; ///< Index actuel pour ajouter de nouveaux corps statices.
 } StaticBodyManager;
 
 /**
- * Initialise un corps statique avec la transformation et les propriétés physiques spécifiées.
+ * Initialise un gestionnaire de corps statices avec un nombre maximal spécifié.
  *
- * @param transform Pointeur vers la transformation spatiale du corps statique.
- * @param physics Pointeur vers les propriétés physiques du corps statique.
- * @return Pointeur vers le corps statique initialisé.
- */
-StaticBody* StaticBody_Init(Transform* transform, Physics* physics);
-
-/**
- * Détruit un corps statique, libérant les ressources associées.
- *
- * @param body Pointeur vers le corps statique à détruire.
- */
-void StaticBody_Destroy(StaticBody* body);
-
-/**
- * Initialise un gestionnaire de corps statiques avec un nombre maximal spécifié.
- *
- * @param max_body Nombre maximal de corps statiques que le gestionnaire peut contenir.
- * @return Pointeur vers le gestionnaire de corps statiques initialisé.
+ * @param max_body Nombre maximal de corps statices que le gestionnaire peut contenir.
+ * @return Pointeur vers le gestionnaire de corps statices initialisé.
  */
 StaticBodyManager* StaticBodyManager_Init(int max_body);
 
 /**
- * Ajoute un corps statique au gestionnaire de corps statiques.
+ * Initialise un corps statice avec la transformation et les propriétés physiques spécifiées.
  *
- * @param manager Pointeur vers le gestionnaire de corps statiques.
- * @param body Pointeur vers le corps statique à ajouter.
+ * @param transform Pointeur vers la transformation spatiale du corps statice.
+ * @param physics Pointeur vers les propriétés physiques du corps statice.
+ * @return Pointeur vers le corps statice initialisé.
  */
-void StaticBodyManager_Add(StaticBodyManager* manager, ...);;
+StaticBody* StaticBody_Init(Transform* transform, Physics* physics);
+
+void StaticBodyManager_Add(StaticBodyManager* manager, ...);
+
+void StaticBodyManager_Update(StaticBodyManager* manager, float deltaTime);
 
 /**
- * Détruit le gestionnaire de corps statiques, libérant les ressources associées.
+ * Met à jour les propriétés d'un corps statice en fonction du temps écoulé.
  *
- * @param manager Pointeur vers le gestionnaire de corps statiques à détruire.
+ * @param body Pointeur vers le corps statice à mettre à jour.
+ * @param deltaTime Temps écoulé depuis la dernière mise à jour (en secondes).
  */
-void StaticBodyManager_Destroy(StaticBodyManager* manager);
+void StaticBody_Update(StaticBody* body, float deltaTime);
 
 #endif // STATICBODY_H

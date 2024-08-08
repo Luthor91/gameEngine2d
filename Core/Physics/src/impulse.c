@@ -21,26 +21,33 @@ void Impulse_Destroy(Impulse* impulse) {
 }
 
 ImpulseManager* ImpulseManager_Init(int max_impulses) {
+    // Allocation mémoire pour ImpulseManager
     ImpulseManager* manager = (ImpulseManager*)malloc(sizeof(ImpulseManager));
     if (manager == NULL) {
+        fprintf(stderr, "Erreur: Impossible d'allouer de la mémoire pour ImpulseManager.\n");
         return NULL;
     }
 
+    // Allocation mémoire pour le tableau des impulsions
     manager->impulses = (Impulse**)malloc(max_impulses * sizeof(Impulse*));
     if (manager->impulses == NULL) {
+        fprintf(stderr, "Erreur: Impossible d'allouer de la mémoire pour le tableau des impulsions.\n");
         free(manager);
         return NULL;
     }
 
+    // Initialisation des paramètres de ImpulseManager
     manager->max_impulses = max_impulses;
     manager->index = 0;
 
+    // Initialisation des impulsions à NULL
     for (int i = 0; i < max_impulses; i++) {
         manager->impulses[i] = NULL;
     }
 
     return manager;
 }
+
 
 void ImpulseManager_Destroy(ImpulseManager* manager) {
     if (manager != NULL) {
@@ -54,12 +61,12 @@ void ImpulseManager_Destroy(ImpulseManager* manager) {
     }
 }
 
-void ImpulseManager_AddImpulse(ImpulseManager* manager, Impulse* impulse) {
-    if (impulse == NULL) {
+void ImpulseManager_Add(ImpulseManager* manager, Impulse* impulse) {
+    if (manager == NULL || impulse == NULL) {
+        printf("ImpulseManager_Add: manager or impulse NULL\n");
         return;
     }
-    
-    if (manager->index < manager->max_impulses) {    
+    if (manager->index < manager->max_impulses) {   
         manager->impulses[manager->index] = impulse;
         manager->index++;
     }

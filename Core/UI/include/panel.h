@@ -8,6 +8,8 @@
 #include "../../Utilities/include/global.h"
 #include "../../Utilities/include/object.h"
 
+#define DEFAULT_PANEL Panel_Init(NULL, NULL)
+
 /**
  * @brief Structure représentant un Panel.
  */

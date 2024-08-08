@@ -3,6 +3,7 @@
 
 #include <math.h>
 
+#define FORCE_GRAVITY Force_Init(9.81f, DIRECTION_SOUTH)
 #define DEFAULT_MAX_FORCES 2048
 
 /**
@@ -52,7 +53,7 @@ ForceManager* ForceManager_Init(int max_force);
  * @param manager Pointeur vers le gestionnaire de forces.
  * @param force Pointeur vers la force à ajouter.
  */
-void ForceManager_AddForce(ForceManager* manager, Force* force);
+void ForceManager_Add(ForceManager* manager, Force* force);
 
 /**
  * Calcule la force nette résultante de toutes les forces dans le gestionnaire.

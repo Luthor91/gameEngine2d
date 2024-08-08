@@ -6,7 +6,7 @@ Physics* Physics_Init(Acceleration* acceleration, ForceManager* force_manager, I
         return NULL;
     }
 
-    physics->acceleration = acceleration ? acceleration : Acceleration_Init(NULL);
+    physics->acceleration = acceleration ? acceleration : ACCELERATION_ZERO;
     if (physics->acceleration == NULL) {
         free(physics);
         return NULL;
@@ -27,7 +27,7 @@ Physics* Physics_Init(Acceleration* acceleration, ForceManager* force_manager, I
         return NULL;
     }
 
-    physics->velocity = velocity ? velocity : Velocity_Init(0, 0);
+    physics->velocity = velocity ? velocity : VELOCITY_ZERO;
     if (physics->velocity == NULL) {
         free(physics->impulses);
         free(physics->forces);
@@ -36,7 +36,7 @@ Physics* Physics_Init(Acceleration* acceleration, ForceManager* force_manager, I
         return NULL;
     }
 
-    physics->material = material ? material : Material_Init(0.5f, 0.5f, 1.0f, 1.0f, 0.5f, 0.5f);
+    physics->material = material ? material : MATERIAL_WOOD;
     if (physics->material == NULL) {
         free(physics->velocity);
         free(physics->impulses);

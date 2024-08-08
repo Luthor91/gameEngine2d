@@ -9,11 +9,12 @@
 #include "../../Utilities/include/global.h"
 #include "../../Utilities/include/object.h"
 
+#define DEFAULT_SPRITE Sprite_Init(NULL, NULL)
+
 /**
  * Représente un sprite, qui est une image affichée à l'écran avec une position et une taille spécifiques.
  */
 typedef struct Sprite {
-    int id; ///< Identifiant unique du sprite.
     Texture* texture; ///< Texture associée au sprite, contenant l'image à afficher.
     Transform* transform; ///< Transformations appliquées au sprite (position, taille, rotation, etc.).
 } Sprite;

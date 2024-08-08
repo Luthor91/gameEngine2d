@@ -5,10 +5,10 @@ RigidBodyManager* RigidBodyManager_Init(int max_body) {
 
     manager->max_body = max_body;
     manager->index = 0;
-    manager->rigidBodies = (RigidBody**)malloc(max_body * sizeof(RigidBody*));
+    manager->bodies = (RigidBody**)malloc(max_body * sizeof(RigidBody*));
 
     for (int i = 0; i < max_body; i++) {
-        manager->rigidBodies[i] = NULL;
+        manager->bodies[i] = NULL;
     }
 
     return manager;
@@ -61,7 +61,7 @@ void RigidBodyManager_Add(RigidBodyManager* manager, ...) {
             break;
         }
 
-        manager->rigidBodies[manager->index++] = body;
+        manager->bodies[manager->index++] = body;
     }
 
     va_end(args);
@@ -69,8 +69,8 @@ void RigidBodyManager_Add(RigidBodyManager* manager, ...) {
 
 void RigidBodyManager_Update(RigidBodyManager* manager, float deltaTime) {
     for (int i = 0; i < manager->max_body ; i++) {
-        if (manager->rigidBodies[i]) {
-            RigidBody_Update(manager->rigidBodies[i], deltaTime);
+        if (manager->bodies[i]) {
+            RigidBody_Update(manager->bodies[i], deltaTime);
         }
     }
 }

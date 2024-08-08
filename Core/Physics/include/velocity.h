@@ -1,6 +1,8 @@
 #ifndef VELOCITY_H
 #define VELOCITY_H
 
+#define VELOCITY_ZERO Velocity_Init(0.0f, 0.0f)
+
 /**
  * Représente la vitesse d'un objet en deux dimensions.
  */

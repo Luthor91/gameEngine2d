@@ -33,7 +33,7 @@ EventManager* EventManager_Init(int initial_size) {
  * @param callback Fonction de rappel pour traiter l'événement
  * @return Pointeur vers l'événement initialisé
  */
-Event* Event_Init(void* object, void* callback, void* returned_value) {
+Event* Event_Init(void* object, void* callback, void* transfered_value, void* returned_value) {
     Event* event = (Event*)malloc(sizeof(Event));
     if (!event) {
         printf("Event_Init: Échec de l'allocation de mémoire pour l'événement.\n");
@@ -41,6 +41,7 @@ Event* Event_Init(void* object, void* callback, void* returned_value) {
     }
     event->object = object;
     event->callback = callback;
+    event->transfered_value = transfered_value;
     event->returned_value = returned_value;
     return event;
 }
@@ -92,6 +93,7 @@ int EventManager_Add(EventManager* manager, ...) {
 
         manager->events[manager->current_index].object = event->object;
         manager->events[manager->current_index].callback = event->callback;
+        manager->events[manager->current_index].transfered_value = event->transfered_value;
         manager->events[manager->current_index].returned_value = event->returned_value;
         manager->current_index++;
     }

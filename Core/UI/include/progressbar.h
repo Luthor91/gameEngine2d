@@ -5,7 +5,7 @@
 #include "../../Utilities/include/global.h"
 #include "../../Utilities/include/object.h"
 
-
+#define DEFAULT_PROGRESSBAR ProgressBar_Init(NULL, NULL, NULL, NULL, 0.0f, 0.0f, 0)
 #define DEFAULT_BORDER_THICKNESS 1
 #define DEFAULT_MAX_VALUE 100.0f
 

@@ -9,6 +9,8 @@
 #include "../../Utilities/include/global.h"
 #include "../../Utilities/include/object.h"
 
+#define DEFAULT_INPUTFIELD InputField_Init(NULL, NULL, NULL)
+
 /**
  * @brief Structure représentant un champ de saisie (InputField) graphique.
  */

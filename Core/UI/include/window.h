@@ -8,6 +8,8 @@
 #include "../../Utilities/include/global.h"
 #include "../../Utilities/include/object.h"
 
+#define DEFAULT_WINDOW Window_Init(NULL, NULL, NULL)
+
 /**
  * @brief Structure représentant une fenêtre.
  */

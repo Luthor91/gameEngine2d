@@ -1,6 +1,10 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
+#define MATERIAL_RUBBER Material_Init(0.9f, 0.8f, 1.0f, 1.0f, 0.9f, 0.8f)
+#define MATERIAL_STEEL Material_Init(0.6f, 0.3f, 7.8f, 7.8f, 0.6f, 0.3f)
+#define MATERIAL_WOOD Material_Init(0.5f, 0.4f, 0.7f, 0.7f, 0.5f, 0.4f)
+
 /**
  * Représente les propriétés physiques d'un matériau utilisé dans les simulations.
  */

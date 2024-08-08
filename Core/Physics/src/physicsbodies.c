@@ -14,12 +14,11 @@ PhysicsBodies* PhysicBodies_Init(CharacterBodyManager* cb_manager, RigidBodyMana
 }
 
 
-void PhysicBodies_Update(PhysicsBodies* p_bodies, float deltaTime) {
-    if (p_bodies->rb_manager) {
-        RigidBodyManager_Update(p_bodies->rb_manager, deltaTime);
+void PhysicBodies_Update(PhysicsBodies* physics_bodies, float deltaTime) {
+    if (physics_bodies->rb_manager && physics_bodies->rb_manager->index > 0) {
+        RigidBodyManager_Update(physics_bodies->rb_manager, deltaTime);
     }
-    if (p_bodies->cb_manager) {
-        CharacterBodyManager_Update(p_bodies->cb_manager, deltaTime);
-    }  
-       
+    if (physics_bodies->cb_manager && physics_bodies->cb_manager->index > 0) {
+        CharacterBodyManager_Update(physics_bodies->cb_manager, deltaTime);
+    }      
 }

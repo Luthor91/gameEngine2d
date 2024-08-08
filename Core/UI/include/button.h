@@ -8,6 +8,8 @@
 #include "../../Utilities/include/global.h"
 #include "../../Utilities/include/object.h"
 
+#define DEFAULT_BUTTON Button_Init(NULL, NULL, NULL, NULL)
+
 /**
  * @brief Structure représentant un bouton interactif.
  */

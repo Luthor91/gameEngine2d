@@ -5,10 +5,10 @@ CharacterBodyManager* CharacterBodyManager_Init(int max_body) {
 
     manager->max_body = max_body;
     manager->index = 0;
-    manager->characterBodies = (CharacterBody**)malloc(max_body * sizeof(CharacterBody*));
+    manager->bodies = (CharacterBody**)malloc(max_body * sizeof(CharacterBody*));
 
     for (int i = 0; i < max_body; i++) {
-        manager->characterBodies[i] = NULL;
+        manager->bodies[i] = NULL;
     }
 
     return manager;
@@ -16,18 +16,16 @@ CharacterBodyManager* CharacterBodyManager_Init(int max_body) {
 
 CharacterBody* CharacterBody_Init(Transform* transform, Physics* physics) {
     CharacterBody* body = (CharacterBody*)malloc(sizeof(CharacterBody));
+    body->physics = (Physics*)malloc(sizeof(Physics));
+    body->transform = (Transform*)malloc(sizeof(Transform));
 
     if (transform == NULL) {
-        body->transform = Transform_Init(NULL, NULL, NULL, 0, 0);
+        transform = Transform_Init(NULL, NULL, NULL, 0, 0);
     }
 
     if (physics == NULL) {
-        body->physics = Physics_Init(NULL, NULL, NULL, NULL, NULL);
+        physics = Physics_Init(NULL, NULL, NULL, NULL, NULL);
     }
-
-
-    body->physics = (Physics*)malloc(sizeof(Physics));
-    body->transform = (Transform*)malloc(sizeof(Transform));
 
     body->physics = physics;
     body->transform = transform;
@@ -59,11 +57,11 @@ void CharacterBodyManager_Add(CharacterBodyManager* manager, ...) {
         }
 
         if (manager->index >= manager->max_body) {
-            fprintf(stderr, "CharacterBodyManager_AddBodies: Maximum number of rigid bodies reached\n");
+            fprintf(stderr, "CharacterBodyManager_AddBodies: Maximum number of character bodies reached\n");
             break;
         }
 
-        manager->characterBodies[manager->index++] = body;
+        manager->bodies[manager->index++] = body;
     }
 
     va_end(args);
@@ -71,8 +69,8 @@ void CharacterBodyManager_Add(CharacterBodyManager* manager, ...) {
 
 void CharacterBodyManager_Update(CharacterBodyManager* manager, float deltaTime) {
     for (int i = 0; i < manager->max_body ; i++) {
-        if (manager->characterBodies[i]) {
-            CharacterBody_Update(manager->characterBodies[i], deltaTime);
+        if (manager->bodies[i]) {
+            CharacterBody_Update(manager->bodies[i], deltaTime);
         }
     }
 }
@@ -145,4 +143,3 @@ void CharacterBody_Update(CharacterBody* body, float deltaTime) {
     body->transform->position->x += body->physics->velocity->x * deltaTime + 0.5f * body->physics->acceleration->x * deltaTime * deltaTime;
     body->transform->position->y += body->physics->velocity->y * deltaTime + 0.5f * body->physics->acceleration->y * deltaTime * deltaTime;
 }
-

@@ -12,6 +12,8 @@
 #include "../../Utilities/include/global.h"
 #include "../../Utilities/include/object.h"
 
+#define DEFAULT_TOOLTIP Tooltip_Init(NULL, NULL, NULL, NULL, NULL)
+
 /**
  * @brief Structure représentant une fenêtre.
  */

@@ -21,6 +21,8 @@
 #include "../../UI/include/tooltip.h"
 #include "../../UI/include/progressbar.h"
 
+#define DEFAULT_RENDERER RendererManager_Init(NULL, DEFAULT_MAX_RENDERER)
+
 // Cette valeur représente le nombre maximum d'objets qui peuvent être rendus par le système.
 // Cette limite est en cours de vérification, car des valeurs trop élevées peuvent entraîner des
 // problèmes de segmentation (segfault) lors du tri des objets de rendu.

@@ -4,6 +4,8 @@
 #include "../../Spatial/include/transform.h"
 #include "physics.h"
 
+#define DEFAULT_RIGIDBODY RigidBodyManager_Init(DEFAULT_MAX_BODIES)
+
 /**
  * Représente un corps rigide avec des propriétés physiques et une transformation spatiale.
  */
@@ -16,7 +18,7 @@ typedef struct RigidBody {
  * Gestionnaire pour les corps rigides.
  */
 typedef struct RigidBodyManager {
-    RigidBody** rigidBodies; ///< Tableau de pointeurs vers les corps rigides gérés.
+    RigidBody** bodies; ///< Tableau de pointeurs vers les corps rigides gérés.
     int max_body; ///< Nombre maximal de corps rigides pouvant être gérés.
     int index; ///< Index actuel pour ajouter de nouveaux corps rigides.
 } RigidBodyManager;

@@ -17,6 +17,11 @@ Label* Label_Init(Transform* transform, Texture* texture, Font* font, char* text
         font = Font_Init(NULL, NULL, DEFAULT_FONT_SIZE);
     }
 
+    if (text == NULL) {
+        fprintf(stderr, "Label_Init: text invalid, default value used\n");
+        text = "Hello World!";
+    }
+
     Label* label = (Label*)malloc(sizeof(Label));
     if (label == NULL) {
         printf("Label_Init: Échec de l'allocation de mémoire pour le champ de saisie.\n");

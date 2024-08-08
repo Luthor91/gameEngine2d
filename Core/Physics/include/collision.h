@@ -4,6 +4,7 @@
 #include "physics.h"
 #include "rigidbody.h"
 #include "staticbody.h"
+#include "physicsbodies.h"
 #include "../../Spatial/include/point2d.h"
 
 /**
@@ -15,7 +16,7 @@
  * @param radiusB Rayon du deuxième objet.
  * @return 1 si une collision est détectée, 0 sinon.
  */
-int Collision_Check(Point2D* posA, Point2D* posB, float radiusA, float radiusB);
+int Collision_Check(Transform* transA, Transform* transB);
 
 /**
  * Gère la collision entre un corps rigide et un corps statique.
@@ -24,5 +25,7 @@ int Collision_Check(Point2D* posA, Point2D* posB, float radiusA, float radiusB);
  * @param staticBody Pointeur vers le corps statique impliqué dans la collision.
  */
 void Collision_Handle(Physics* physics_body_1, Transform* transform_body_1, Physics* physics_body_2, Transform* transform_body_2);
+
+void Collision_HandleAll(PhysicsBodies* physics_bodies);
 
 #endif // COLLISION_H

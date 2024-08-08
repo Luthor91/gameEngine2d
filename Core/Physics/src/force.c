@@ -29,8 +29,8 @@ ForceManager* ForceManager_Init(int max_force) {
     return manager;
 }
 
-void ForceManager_AddForce(ForceManager* manager, Force* force) {
-    printf("ForceManager_AddForce index:%d ; max:%d\n", manager->index, manager->max_force);
+void ForceManager_Add(ForceManager* manager, Force* force) {
+    printf("ForceManager_Add index:%d ; max:%d\n", manager->index, manager->max_force);
     if (manager->index < manager->max_force) {
         printf("Force ajouté\n");
         manager->forces[manager->index] = force;
@@ -45,7 +45,6 @@ Force* ForceManager_CalculateNetForce(ForceManager* manager) {
 
     // Calculer la somme des composantes x et y des forces
     for (int i = 0; i < manager->index; i++) {
-        printf("ForceManager: Force n°%d\n", i);
         float magnitude = manager->forces[i]->magnitude;
         float direction = manager->forces[i]->direction;
         netDirectionX += magnitude * cos(direction);

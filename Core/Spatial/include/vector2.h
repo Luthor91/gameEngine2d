@@ -1,6 +1,8 @@
 #ifndef VECTOR2_H
 #define VECTOR2_H
 
+#define VECTOR2_ZERO Vector2_Init(0.0f, 0.0f)
+
 /**
  * @brief Structure représentant un vecteur 2D.
  */

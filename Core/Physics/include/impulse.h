@@ -60,6 +60,6 @@ void ImpulseManager_Destroy(ImpulseManager* manager);
  * @param manager Pointeur vers le gestionnaire d'impulsions.
  * @param impulse Pointeur vers l'impulsion à ajouter au gestionnaire.
  */
-void ImpulseManager_AddImpulse(ImpulseManager* manager, Impulse* impulse);
+void ImpulseManager_Add(ImpulseManager* manager, Impulse* impulse);
 
 #endif // IMPULSE_H

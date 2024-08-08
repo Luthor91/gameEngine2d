@@ -3,6 +3,8 @@
 
 #include "../../Spatial/include/vector2.h"
 
+#define ACCELERATION_ZERO Acceleration_Init(VECTOR2_ZERO)
+
 // Structure représentant une accélération en 2D.
 // Contient les composantes x et y de l'accélération.
 typedef struct Acceleration {
