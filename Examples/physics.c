@@ -1,45 +1,10 @@
 #include "../Core/Utilities/include/core.h"
 
-/**
- * @brief Exemple de programme pour afficher une fenêtre, un panneau, et d'autres composants avec SDL.
- * 
- * Ce programme démontre comment initialiser et gérer une application SDL en configurant et rendant divers éléments graphiques. 
- * Il se compose des étapes suivantes :
- * 
- * 1. **Initialisation des composants** :
- *    - Configure les éléments de base comme la fenêtre et le panneau.
- *    - Crée et initialise divers composants graphiques comme les sprites, les labels, les champs de saisie, les boutons, etc.
- * 
- * 2. **Configuration des paramètres** :
- *    - Définie les propriétés des composants graphiques (position, taille, couleur, etc.) en utilisant des chaînes de paramètres.
- * 
- * 3. **Gestion des événements** :
- *    - Associe des actions spécifiques (comme le clic sur un bouton) à des gestionnaires d'événements.
- * 
- * 4. **Initialisation des gestionnaires de rendu et d'événements** :
- *    - Prépare les gestionnaires pour le rendu des composants et la gestion des événements.
- * 
- * 5. **Boucle principale** :
- *    - Traite les événements.
- *    - Rend les composants à l'écran à chaque frame.
- *    - Contrôle le taux de rafraîchissement de l'écran.
- * 
- * 6. **Nettoyage** :
- *    - Libère toutes les ressources avant de fermer l'application.
- * 
- * Chaque ajout ou configuration de composant suit cette méthodologie :
- *  - **Initialisation de l'élément** : Crée et configure le composant.
- *  - **Initialisation de son renderer** : Configure le renderer pour le composant.
- *  - **Ajout du renderer dans le gestionnaire de rendu** : Ajoute le renderer au gestionnaire pour le rendu à l'écran.
- */
-
-void Event_Space_Pressed(void* object, SDL_Event* event, void* value) {
+void Event_Space_Pressed(void* object, SDL_Event* event, void* entry, void* returned) {
     if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_SPACE) {
-        Force* new_force = Force_Init(5.0, DIRECTION_SOUTH);
-        ForceManager* manager = (ForceManager*)value;
-        if (new_force != NULL) {
-            ForceManager_AddForce(manager, new_force);
-        }
+        printf("Pressed\n");
+        ImpulseManager* manager = (ImpulseManager*)object;
+        ImpulseManager_Add(manager, Impulse_Init(10.0f, DIRECTION_SOUTH, 1.0f));
     }
 }
 
@@ -48,33 +13,55 @@ int main(int argc, char* argv[]) {
     if (Init_All() != 0) return 1;
 
     // Création et initialisation des composants graphiques.
-    Window* window = Window_Init(NULL, NULL, NULL);
-    Sprite* sprite_1 = Sprite_Init(NULL, NULL);
-    Sprite* sprite_2 = Sprite_Init(NULL, NULL);
-    Sprite_Set(sprite_1, "position:5%,5%;");
-    Sprite_Set(sprite_2, "position:left,bottom;");
+    Window* window = DEFAULT_WINDOW;
+    Sprite* sprite_1 = DEFAULT_SPRITE;
+    Sprite* sprite_2 = DEFAULT_SPRITE;
+    Sprite* sprite_3 = DEFAULT_SPRITE;
+    Sprite* ground = DEFAULT_SPRITE;
+    Sprite_Set(sprite_1, "position:20%,5%;");
+    Sprite_Set(sprite_2, "position:50%,5%;");
+    Sprite_Set(sprite_3, "position:80%,5%;");
+    Sprite_Set(ground, "size:w100%,w10%;position:left,bottom;");
+    //ground->transform->position = Point2D_Init(0, DEFAULT_WINDOW_HEIGHT - (DEFAULT_WINDOW_HEIGHT*0.1));
+    //ground->transform->size = Size2D_Init(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT*0.1);
 
     RigidBody* r_body1 = RigidBody_Init(sprite_1->transform, NULL);
+    r_body1->physics->material = MATERIAL_WOOD;
     RigidBody* r_body2 = RigidBody_Init(sprite_2->transform, NULL);
-    ForceManager_AddForce(r_body1->physics->forces, &(Force){9.81f, DIRECTION_SOUTH});
+    r_body2->physics->material = MATERIAL_STEEL;
+    RigidBody* r_body3 = RigidBody_Init(sprite_3->transform, NULL);
+    r_body3->physics->material = MATERIAL_RUBBER;
+    StaticBody* s_body = StaticBody_Init(ground->transform, NULL);
 
     // Initialisation des gestionnaires de rendu et d'événements.
-    RendererManager* r_manager = RendererManager_Init(NULL, DEFAULT_MAX_RENDERER);
-    RigidBodyManager* rb_manager = RigidBodyManager_Init(DEFAULT_MAX_BODIES);
-    PhysicsBodies* p_bodies = PhysicBodies_Init(NULL, rb_manager, NULL);
-    EventManager* evt_manager = EventManager_Init(DEFAULT_MAX_EVENT);
+    RendererManager* r_manager = DEFAULT_RENDERER;
+    CharacterBodyManager* cb_manager = DEFAULT_CHARACTERBODY;
+    StaticBodyManager* sb_manager = DEFAULT_STATICBODY;
+    RigidBodyManager* rb_manager = DEFAULT_RIGIDBODY;
+    PhysicsBodies* p_bodies = PhysicBodies_Init(cb_manager, rb_manager, sb_manager);
+    EventManager* evt_manager = DEFAULT_EVENT;
 
     // Création et initialisation des renderers pour chaque composant.
-    Renderer* renderer_window = Renderer_Init(Renderer_Window, window, 0);
-    Renderer* renderer_sprite_1 = Renderer_Init(Renderer_Sprite, sprite_1, 2);
-    Renderer* renderer_sprite_2 = Renderer_Init(Renderer_Sprite, sprite_2, 2);
+    Renderer* r_window = Renderer_Init(Renderer_Window, window, 0);
+    Renderer* r_sprite_1 = Renderer_Init(Renderer_Sprite, sprite_1, 2);
+    Renderer* r_sprite_2 = Renderer_Init(Renderer_Sprite, sprite_2, 2);
+    Renderer* r_sprite_3 = Renderer_Init(Renderer_Sprite, sprite_3, 2);
+    Renderer* r_ground = Renderer_Init(Renderer_Sprite, ground, 1);
 
-    Event* evt_space = Event_Init(NULL, Event_Space_Pressed, r_body1->physics->forces);
+    Event* evt_space1 = Event_Init(r_body1->physics->impulses, Event_Space_Pressed, NULL, NULL);
+    Event* evt_space2 = Event_Init(r_body2->physics->impulses, Event_Space_Pressed, NULL, NULL);
+    Event* evt_space3 = Event_Init(r_body3->physics->impulses, Event_Space_Pressed, NULL, NULL);
     
     // Ajout des renderers et des événements aux gestionnaires respectifs.
-    RendererManager_Add(r_manager, renderer_window, renderer_sprite_1, renderer_sprite_2, NULL);
-    RigidBodyManager_Add(rb_manager, r_body1, r_body2, NULL);
-    EventManager_Add(evt_manager, evt_space, NULL);
+    RendererManager_Add(r_manager, r_window, r_sprite_1, r_sprite_2, r_sprite_3, r_ground, NULL);
+    RigidBodyManager_Add(rb_manager, r_body1, r_body2, r_body3, NULL);
+    CharacterBodyManager_Add(cb_manager, NULL);
+    StaticBodyManager_Add(sb_manager, s_body, NULL);
+    EventManager_Add(evt_manager, evt_space1, evt_space2, evt_space3, NULL);
+
+    ForceManager_Add(r_body1->physics->forces, FORCE_GRAVITY);
+    ForceManager_Add(r_body2->physics->forces, FORCE_GRAVITY);
+    ForceManager_Add(r_body3->physics->forces, FORCE_GRAVITY);
 
     // Tri des renderers dans le gestionnaire de rendu.
     RendererManager_Sort(r_manager);
@@ -83,16 +70,12 @@ int main(int argc, char* argv[]) {
     while (!sdl_quit_flag) {
         // Gestion des événements.
         EventManager_HandleEvents(evt_manager, &sdl_quit_flag);
+        Collision_HandleAll(p_bodies);
         PhysicBodies_Update(p_bodies, Time_GetDelta());
-        // Ici, vous pouvez ajouter des fonctionnalités supplémentaires si nécessaire.
-        printf("rbody: pos(x,y):(%d,%d) ; vel(%lf,%lf) ; accel(%lf,%lf)\n", 
-            r_body1->transform->position->x, r_body1->transform->position->y, 
-            r_body1->physics->velocity->x, r_body1->physics->velocity->y,
-            r_body1->physics->acceleration->x, r_body1->physics->acceleration->x);
-        // Rendu des composants à l'écran.
-        RendererManager_Render(r_manager);
 
-        // Limite le nombre de frames par seconde (FPS).
+        // Ici, vous pouvez ajouter des fonctionnalités supplémentaires si nécessaire.
+
+        RendererManager_Render(r_manager);
         Time_SetFPSLimit(DEFAULT_FPS_AVERAGE);
     }
 

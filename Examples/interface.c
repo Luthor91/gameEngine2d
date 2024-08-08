@@ -46,19 +46,21 @@ int main(int argc, char* argv[]) {
     if (Init_All() != 0) return 1;
 
     // Création et initialisation des composants graphiques.
-    Window* window = Window_Init(NULL, NULL, NULL);
-    Panel* panel = Panel_Init(NULL, NULL);
-    Sprite* sprite = Sprite_Init(NULL, NULL);
-    Sprite* sprite_colored = Sprite_Init(NULL, NULL);
-    Label* label = Label_Init(NULL, NULL, NULL, "Test Test Test Test Test Test Test Test Test Test Test Test ");
-    InputField* input_field = InputField_Init(NULL, NULL, NULL);
-    Button* button = Button_Init(NULL, NULL, Test_Button_Clicked, NULL);
-    Widget* widget = Widget_Init(NULL, NULL);
-    Tooltip* tooltip = Tooltip_Init(NULL, NULL, NULL, NULL, NULL);
-    ProgressBar* progress_bar = ProgressBar_Init(NULL, NULL, NULL, NULL, 0, 0, 0);
+    Window* window = DEFAULT_WINDOW;
+    Panel* panel = DEFAULT_PANEL;
+    Sprite* sprite = DEFAULT_SPRITE;
+    Sprite* sprite_colored = DEFAULT_SPRITE;
+    Label* label = DEFAULT_LABEL;
+    InputField* input_field = DEFAULT_INPUTFIELD;
+    Button* button = DEFAULT_BUTTON;
+    Widget* widget = DEFAULT_WIDGET;
+    Tooltip* tooltip = DEFAULT_TOOLTIP;
+    ProgressBar* progress_bar = DEFAULT_PROGRESSBAR;
+
+    // Associe la ProgressBar au bouton pour que la ProgressBar soit mise à jour lorsque le bouton est cliqué.
+    Button_SetOnClick(button, Test_Button_Clicked, progress_bar);
 
     // Configuration des propriétés des composants à l'aide de chaînes de paramètres.
-
     InputField_Set(input_field,         
         "position:left+10,33%;textcolor:BLUE;backgroundcolor:RED;textsize:22;size:100,100;"
     );
@@ -74,12 +76,9 @@ int main(int argc, char* argv[]) {
     Tooltip_Set(tooltip, "position:150,100;");
     ProgressBar_Set(progress_bar, "position:right,bottom;");
 
-    // Associe la ProgressBar au bouton pour que la ProgressBar soit mise à jour lorsque le bouton est cliqué.
-    button->data = progress_bar;
-
     // Initialisation des gestionnaires de rendu et d'événements.
-    RendererManager* manager = RendererManager_Init(NULL, DEFAULT_MAX_RENDERER);
-    EventManager* event_manager = EventManager_Init(DEFAULT_MAX_EVENT);
+    RendererManager* manager = DEFAULT_RENDERER;
+    EventManager* event_manager = DEFAULT_EVENT;
 
     // Création et initialisation des renderers pour chaque composant.
     Renderer* renderer_window = Renderer_Init(Renderer_Window, window, 0);
@@ -94,10 +93,10 @@ int main(int argc, char* argv[]) {
     Renderer* renderer_progress_bar = Renderer_Init(Renderer_ProgressBar, progress_bar, 3);
 
     // Création et initialisation des événements pour chaque composant.
-    Event* event_input_field = Event_Init(input_field, Event_InputField, NULL);
-    Event* event_button_clicked = Event_Init(button, Event_Button_Clicked, NULL);
-    Event* event_widget_dragged = Event_Init(widget, Event_Widget_Dragged, NULL);
-    Event* event_tooltip = Event_Init(tooltip, Event_Tooltip_Hovered, NULL);
+    Event* event_input_field = Event_Init(input_field, Event_InputField, NULL, NULL);
+    Event* event_button_clicked = Event_Init(button, Event_Button_Clicked, NULL, NULL);
+    Event* event_widget_dragged = Event_Init(widget, Event_Widget_Dragged, NULL, NULL);
+    Event* event_tooltip = Event_Init(tooltip, Event_Tooltip_Hovered, NULL, NULL);
 
     // Ajout des renderers et des événements aux gestionnaires respectifs.
     RendererManager_Add(manager, 
@@ -105,29 +104,26 @@ int main(int argc, char* argv[]) {
         renderer_input, renderer_panel, renderer_label, renderer_widget, renderer_tooltip,
         renderer_progress_bar, NULL
     );
+
     EventManager_Add(event_manager, 
         event_input_field, event_button_clicked, event_widget_dragged, event_tooltip,
-        NULL)
-    ;
+        NULL
+    );
 
     // Tri des renderers dans le gestionnaire de rendu.
     RendererManager_Sort(manager);
 
     // Boucle principale du programme.
     while (!sdl_quit_flag) {
-        // Gestion des événements.
         EventManager_HandleEvents(event_manager, &sdl_quit_flag);
 
         // Ici, vous pouvez ajouter des fonctionnalités supplémentaires si nécessaire.
 
-        // Rendu des composants à l'écran.
         RendererManager_Render(manager);
 
-        // Limite le nombre de frames par seconde (FPS).
         Time_SetFPSLimit(DEFAULT_FPS_AVERAGE);
     }
-
-    // Nettoyage et fermeture de tous les composants.
+    
     Exit_All(window);
 
     return 0;
