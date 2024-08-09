@@ -3,6 +3,7 @@
 
 #include "../../Spatial/include/transform.h"
 #include "physics.h"
+#include "hitbox.h"
 
 #define DEFAULT_STATICBODY StaticBodyManager_Init(DEFAULT_MAX_BODIES)
 
@@ -12,6 +13,7 @@
 typedef struct StaticBody {
     Physics* physics; ///< Pointeur vers les propriétés physiques du corps statice.
     Transform* transform; ///< Pointeur vers la transformation spatiale du corps statice (position, taille, etc.).
+    Hitbox* hitbox;
 } StaticBody;
 
 /**
@@ -22,6 +24,8 @@ typedef struct StaticBodyManager {
     int max_body; ///< Nombre maximal de corps statices pouvant être gérés.
     int index; ///< Index actuel pour ajouter de nouveaux corps statices.
 } StaticBodyManager;
+
+extern StaticBodyManager* STATICBODY_MANAGER;
 
 /**
  * Initialise un gestionnaire de corps statices avec un nombre maximal spécifié.
@@ -38,7 +42,7 @@ StaticBodyManager* StaticBodyManager_Init(int max_body);
  * @param physics Pointeur vers les propriétés physiques du corps statice.
  * @return Pointeur vers le corps statice initialisé.
  */
-StaticBody* StaticBody_Init(Transform* transform, Physics* physics);
+StaticBody* StaticBody_Init(Transform* transform, Physics* physics, Hitbox* hitbox);
 
 void StaticBodyManager_Add(StaticBodyManager* manager, ...);
 

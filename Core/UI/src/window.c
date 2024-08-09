@@ -1,5 +1,7 @@
 #include "../include/window.h"
 
+Window* CURRENT_WINDOW = NULL;
+
 Window* Window_Init(char* title, Transform* transform, char* background_path) {
     if (background_path == NULL) {
         fprintf(stderr, "Window_Init: Sprite path is invalid, default value used\n");
@@ -19,6 +21,7 @@ Window* Window_Init(char* title, Transform* transform, char* background_path) {
     if (transform->scale <= 0.0) {
         transform->scale = 1.0;
     }
+
     Window* window = (Window*)malloc(sizeof(Window));
     if (!window) {
         fprintf(stderr, "Window_Init: %s\n", SDL_GetError());

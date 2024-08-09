@@ -48,7 +48,6 @@ ImpulseManager* ImpulseManager_Init(int max_impulses) {
     return manager;
 }
 
-
 void ImpulseManager_Destroy(ImpulseManager* manager) {
     if (manager != NULL) {
         for (int i = 0; i < manager->max_impulses; i++) {

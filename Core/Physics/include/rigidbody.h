@@ -3,6 +3,7 @@
 
 #include "../../Spatial/include/transform.h"
 #include "physics.h"
+#include "hitbox.h"
 
 #define DEFAULT_RIGIDBODY RigidBodyManager_Init(DEFAULT_MAX_BODIES)
 
@@ -12,6 +13,7 @@
 typedef struct RigidBody {
     Physics* physics; ///< Pointeur vers les propriétés physiques du corps rigide.
     Transform* transform; ///< Pointeur vers la transformation spatiale du corps rigide (position, taille, etc.).
+    Hitbox* hitbox;
 } RigidBody;
 
 /**
@@ -22,6 +24,8 @@ typedef struct RigidBodyManager {
     int max_body; ///< Nombre maximal de corps rigides pouvant être gérés.
     int index; ///< Index actuel pour ajouter de nouveaux corps rigides.
 } RigidBodyManager;
+
+extern RigidBodyManager* RIGIDBODY_MANAGER;
 
 /**
  * Initialise un gestionnaire de corps rigides avec un nombre maximal spécifié.
@@ -38,7 +42,7 @@ RigidBodyManager* RigidBodyManager_Init(int max_body);
  * @param physics Pointeur vers les propriétés physiques du corps rigide.
  * @return Pointeur vers le corps rigide initialisé.
  */
-RigidBody* RigidBody_Init(Transform* transform, Physics* physics);
+RigidBody* RigidBody_Init(Transform* transform, Physics* physics, Hitbox* hitbox);
 
 void RigidBodyManager_Add(RigidBodyManager* manager, ...);
 

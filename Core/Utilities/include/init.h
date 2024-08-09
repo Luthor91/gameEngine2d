@@ -5,24 +5,34 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
+
 #include "../../UI/include/window.h"
 #include "../../Utilities/include/time.h"
+#include "../../Events/include/timer_manager.h"
+#include "../../Renderer/include/renderer.h"
+
+#include "../../Physics/include/world_physics.h"
+#include "../../Physics/include/physicsbodies.h"
+#include "../../Physics/include/characterbody.h"
+#include "../../Physics/include/rigidbody.h"
+#include "../../Physics/include/staticbody.h"
+
+#include "../../Events/include/event_manager.h"
+#include "../../Events/include/signal_manager.h"
+#include "../../Events/include/timer_manager.h"
 
 #define MAX_LINE_LENGTH 1024
 
 /**
- * @brief Initialise l'environnement à partir d'un fichier de configuration.
- * 
- * @param filename Le chemin du fichier de configuration.
- */
-void Init_Env(const char *filename);
-
-/**
  * @brief Initialise toutes les bibliothèques nécessaires pour l'application.
  * 
- * @return int Retourne 0 si l'initialisation est réussie, sinon retourne une valeur négative indiquant l'erreur.
+ * @return int Retourne 1 si l'initialisation est réussie, sinon retourne une valeur négative indiquant l'erreur.
  */
 int Init_All();
+
+void Init_Env(const char *filename);
+int Init_Dependancies();
+void Init_Global();
 
 /**
  * @brief Ferme et libère toutes les ressources allouées, y compris la fenêtre.

@@ -1,5 +1,7 @@
 #include "../include/renderer.h"
 
+RendererManager* RENDERER_MANAGER = NULL;
+
 RendererManager* RendererManager_Init(SDL_Renderer* sdl_renderer, int max_renderers) {
 
     if (sdl_renderer == NULL) {

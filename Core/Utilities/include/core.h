@@ -34,6 +34,7 @@
 #include "../../Events/include/signal_manager.h"
 #include "../../Events/include/event_manager.h"
 #include "../../Events/include/event.h"
+#include "../../Events/include/signal.h"
 
 #include "../../Tilemap/include/tilemap.h"
 
@@ -59,6 +60,7 @@
 #include "../../Physics/include/staticbody.h"
 #include "../../Physics/include/acceleration.h"
 #include "../../Physics/include/physicsbodies.h"
+#include "../../Physics/include/hitbox.h"
 
 #include "../../Spatial/include/grid.h"
 #include "../../Spatial/include/transform.h"
@@ -68,7 +70,5 @@
 #include "../../Spatial/include/area2d.h"
 
 #include "../../Font/include/font.h"
-
-int sdl_quit_flag = 0;
 
 #endif

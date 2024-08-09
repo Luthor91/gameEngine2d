@@ -5,7 +5,9 @@
 #include "rigidbody.h"
 #include "staticbody.h"
 #include "physicsbodies.h"
+#include "hitbox.h"
 #include "../../Spatial/include/point2d.h"
+#include "../../Events/include/timer_manager.h"
 
 /**
  * Vérifie la collision entre deux objets circulaires.
@@ -16,7 +18,7 @@
  * @param radiusB Rayon du deuxième objet.
  * @return 1 si une collision est détectée, 0 sinon.
  */
-int Collision_Check(Transform* transA, Transform* transB);
+int Collision_Check(Hitbox* hitboxA, Hitbox* hitboxB);
 
 /**
  * Gère la collision entre un corps rigide et un corps statique.
@@ -24,7 +26,8 @@ int Collision_Check(Transform* transA, Transform* transB);
  * @param body Pointeur vers le corps rigide impliqué dans la collision.
  * @param staticBody Pointeur vers le corps statique impliqué dans la collision.
  */
-void Collision_Handle(Physics* physics_body_1, Transform* transform_body_1, Physics* physics_body_2, Transform* transform_body_2);
+void Collision_Handle(Physics* physics_body_1, Transform* transform_body_1, Hitbox* hitbox_body_1, 
+                      Physics* physics_body_2, Transform* transform_body_2, Hitbox* hitbox_body_2);
 
 void Collision_HandleAll(PhysicsBodies* physics_bodies);
 

@@ -3,6 +3,7 @@
 
 #include "../../Spatial/include/transform.h"
 #include "physics.h"
+#include "hitbox.h"
 
 #define DEFAULT_CHARACTERBODY CharacterBodyManager_Init(DEFAULT_MAX_BODIES)
 
@@ -12,6 +13,7 @@
 typedef struct CharacterBody {
     Physics* physics; ///< Pointeur vers les propriétés physiques du corps charactere.
     Transform* transform; ///< Pointeur vers la transformation spatiale du corps charactere (position, taille, etc.).
+    Hitbox* hitbox;
 } CharacterBody;
 
 /**
@@ -22,6 +24,8 @@ typedef struct CharacterBodyManager {
     int max_body; ///< Nombre maximal de corps characteres pouvant être gérés.
     int index; ///< Index actuel pour ajouter de nouveaux corps characteres.
 } CharacterBodyManager;
+
+extern CharacterBodyManager* CHARACTERBODY_MANAGER;
 
 /**
  * Initialise un gestionnaire de corps characteres avec un nombre maximal spécifié.
@@ -38,7 +42,7 @@ CharacterBodyManager* CharacterBodyManager_Init(int max_body);
  * @param physics Pointeur vers les propriétés physiques du corps charactere.
  * @return Pointeur vers le corps charactere initialisé.
  */
-CharacterBody* CharacterBody_Init(Transform* transform, Physics* physics);
+CharacterBody* CharacterBody_Init(Transform* transform, Physics* physics, Hitbox* hitbox);
 
 void CharacterBodyManager_Add(CharacterBodyManager* manager, ...);
 

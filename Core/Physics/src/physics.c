@@ -46,5 +46,8 @@ Physics* Physics_Init(Acceleration* acceleration, ForceManager* force_manager, I
         return NULL;
     }
 
+    Force* gravityForce = Force_Init(physics->material->mass * WORLD_PHYSICS->gravity, DIRECTION_SOUTH);
+    ForceManager_Add(physics->forces, gravityForce);
+
     return physics;
 }

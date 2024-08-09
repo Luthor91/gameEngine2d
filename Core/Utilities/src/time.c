@@ -1,8 +1,4 @@
 #include "../include/time.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 // Initialisation du temps
 void Time_Initialize() {

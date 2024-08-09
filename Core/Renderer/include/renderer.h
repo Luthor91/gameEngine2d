@@ -54,6 +54,8 @@ typedef struct RendererManager {
     int current_renderer_count; ///< Nombre actuel d'objets de rendu.
 } RendererManager;
 
+extern RendererManager* RENDERER_MANAGER;
+
 /**
  * @brief Initialise un `RendererManager` avec un renderer SDL et une capacité maximale.
  * 

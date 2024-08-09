@@ -18,6 +18,7 @@
 
 #define DEFAULT_MAX_BODIES 2048
 
+#include "world_physics.h"
 #include "acceleration.h"
 #include "force.h"
 #include "impulse.h"

@@ -1,6 +1,7 @@
 #ifndef WORLD_PHYSICS_H
 #define WORLD_PHYSICS_H
 
+#define DEFAULT_WORLDPHYSICS WorldPhysics_Init(9.81f, 1.225f, 0.47f)
 /**
  * Représente les propriétés physiques globales du monde.
  */
@@ -10,6 +11,7 @@ typedef struct {
     float global_drag_coefficient; ///< Coefficient global de résistance de l'air, utilisé pour modéliser la traînée aérodynamique.
 } WorldPhysics;
 
+extern WorldPhysics* WORLD_PHYSICS;
 /**
  * Initialise une structure de physique du monde avec les valeurs spécifiées.
  *

@@ -1,8 +1,12 @@
 #ifndef TIMER_MANAGER_H
 #define TIMER_MANAGER_H
 
+#include <stddef.h>
+
+#define DEFAULT_TIMER TimerManager_Init()
+
 typedef struct Timer {
-    int id;                 ///< Identifiant unique du timer.
+    int id;                 ///< Identifiant unique du timer, attribué automatiquement.
     int delay;              ///< Délai en millisecondes avant le premier appel de la fonction callback.
     int start_time;         ///< Temps de départ du timer (en millisecondes depuis le début du programme).
     int repeat;             ///< Indique le nombre de répétitions. Si 0, le timer est non-répétitif.
@@ -15,6 +19,9 @@ typedef struct TimerManager {
     Timer* head;            ///< Pointeur vers le premier timer de la liste chaînée.
 } TimerManager;
 
+extern TimerManager* TIMER_MANAGER;
+static int last_timer_id = 0;  // Variable statique pour suivre le dernier identifiant attribué
+
 /**
  * Initialise un TimerManager.
  *
@@ -23,16 +30,23 @@ typedef struct TimerManager {
 TimerManager* TimerManager_Init();
 
 /**
- * Ajoute un nouveau timer à la gestion.
+ * Initialise un Timer avec un identifiant auto-attribué.
  *
- * @param manager Pointeur vers le TimerManager qui gère les timers.
- * @param id Identifiant unique du timer.
  * @param delay Délai en millisecondes avant le premier appel de la fonction callback.
  * @param callback Fonction de rappel à appeler lorsque le timer expire.
  * @param data Données à passer à la fonction de rappel.
  * @param repeat Nombre de répétitions. Si 0, le timer est non-répétitif.
+ * @return Un pointeur vers un nouvel objet Timer, ou NULL en cas d'échec.
  */
-void TimerManager_AddTimer(TimerManager* manager, int id, int delay, void (*callback)(void*), void* data, int repeat);
+Timer* Timer_Init(int delay, void (*callback)(void*), void* data, int repeat);
+
+/**
+ * Ajoute un nouveau timer à la gestion.
+ *
+ * @param manager Pointeur vers le TimerManager qui gère les timers.
+ * @param timer Pointeur vers le timer à ajouter.
+ */
+void TimerManager_Add(TimerManager* manager, Timer* timer);
 
 /**
  * Met à jour les timers, appelant les callbacks lorsque les timers expirent.
@@ -42,7 +56,7 @@ void TimerManager_AddTimer(TimerManager* manager, int id, int delay, void (*call
 void TimerManager_Update(TimerManager* manager);
 
 /**
- * Supprime un timer de la gestion.
+ * Supprime un timer de la gestion en fonction de son identifiant.
  *
  * @param manager Pointeur vers le TimerManager dont le timer sera supprimé.
  * @param id Identifiant du timer à supprimer.

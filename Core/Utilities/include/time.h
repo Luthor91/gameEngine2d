@@ -1,12 +1,15 @@
 #ifndef TIME_H
 #define TIME_H
 
-#include <stdio.h>
-#include <time.h>
 #include <SDL2/SDL.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 #define FPS_CALC_INTERVAL 1000
 #define DEFAULT_FPS_AVERAGE 60
+#define TIME_DELTA Time_GetDelta()
 
 // Variables globales pour le suivi du temps
 static Uint32 current_time = 0;

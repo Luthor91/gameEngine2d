@@ -20,6 +20,8 @@ typedef struct Window {
     Texture* texture;       ///< Texture de fond pour la fenêtre.
 } Window;
 
+extern Window* CURRENT_WINDOW;
+
 /**
  * @brief Initialise une nouvelle fenêtre avec un titre, une transformation et un chemin d'image pour l'arrière-plan.
  * 

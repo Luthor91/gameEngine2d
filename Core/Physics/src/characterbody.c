@@ -1,5 +1,7 @@
 #include "../include/characterbody.h"
 
+CharacterBodyManager* CHARACTERBODY_MANAGER = NULL;
+
 CharacterBodyManager* CharacterBodyManager_Init(int max_body) {
     CharacterBodyManager* manager = (CharacterBodyManager*)malloc(sizeof(CharacterBodyManager));
 
@@ -14,7 +16,7 @@ CharacterBodyManager* CharacterBodyManager_Init(int max_body) {
     return manager;
 }
 
-CharacterBody* CharacterBody_Init(Transform* transform, Physics* physics) {
+CharacterBody* CharacterBody_Init(Transform* transform, Physics* physics, Hitbox* hitbox) {
     CharacterBody* body = (CharacterBody*)malloc(sizeof(CharacterBody));
     body->physics = (Physics*)malloc(sizeof(Physics));
     body->transform = (Transform*)malloc(sizeof(Transform));
@@ -27,8 +29,13 @@ CharacterBody* CharacterBody_Init(Transform* transform, Physics* physics) {
         physics = Physics_Init(NULL, NULL, NULL, NULL, NULL);
     }
 
+    if (hitbox == NULL) {
+        hitbox = Hitbox_Init(transform, HITBOX_RECTANGLE);
+    }
+
     body->physics = physics;
     body->transform = transform;
+    body->hitbox = hitbox;
 
     return body;
 }
@@ -142,4 +149,6 @@ void CharacterBody_Update(CharacterBody* body, float deltaTime) {
     // Mettre à jour la position en fonction de la vitesse et de l'accélération
     body->transform->position->x += body->physics->velocity->x * deltaTime + 0.5f * body->physics->acceleration->x * deltaTime * deltaTime;
     body->transform->position->y += body->physics->velocity->y * deltaTime + 0.5f * body->physics->acceleration->y * deltaTime * deltaTime;
+
+    body->hitbox->transform->position = body->transform->position;
 }

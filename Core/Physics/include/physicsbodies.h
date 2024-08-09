@@ -1,6 +1,7 @@
 #ifndef PHYSICSBODIES_H
 #define PHYSICSBODIES_H
 
+#include "world_physics.h"
 #include "physics.h"
 #include "rigidbody.h"
 #include "staticbody.h"
@@ -15,6 +16,7 @@ typedef struct PhysicsBodies {
     StaticBodyManager* sb_manager; 
 } PhysicsBodies;
 
+extern PhysicsBodies* PHYSICSBODIES_MANAGER;
 
 /**
  * Initialise un gestionnaire de corps rigides avec un nombre maximal spécifié.
@@ -25,5 +27,7 @@ typedef struct PhysicsBodies {
 PhysicsBodies* PhysicBodies_Init(CharacterBodyManager* cb_manager, RigidBodyManager* rb_manager, StaticBodyManager* sb_manager);
 
 void PhysicBodies_Update(PhysicsBodies* physics_bodies, float deltaTime);
+
+void Body_Update(Physics* physics, Transform* transform, Hitbox* hitbox, float deltaTime);
 
 #endif // PHYSICSBODIES_H

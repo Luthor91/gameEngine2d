@@ -1,6 +1,8 @@
 #include "../include/world_physics.h"
 #include <stdlib.h>
 
+WorldPhysics* WORLD_PHYSICS = NULL;
+
 WorldPhysics* WorldPhysics_Init(float gravity, float air_density, float global_drag_coefficient) {
     WorldPhysics* world_physics = (WorldPhysics*)malloc(sizeof(WorldPhysics));
     if (!world_physics) return NULL;

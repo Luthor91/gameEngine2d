@@ -1,5 +1,8 @@
 #include "../include/event_manager.h"
 
+EventManager* EVENT_MANAGER = NULL;
+int sdl_quit_flag = 0;
+
 /**
  * @brief Initialise le gestionnaire d'événements
  * 
@@ -107,11 +110,11 @@ int EventManager_Add(EventManager* manager, ...) {
  * 
  * @param manager Pointeur vers le gestionnaire d'événements
  */
-void EventManager_HandleEvents(EventManager* manager, int* sdl_quit_flag) {
+void EventManager_HandleEvents(EventManager* manager) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
-            *sdl_quit_flag = 1;
+            sdl_quit_flag = 1;
             return;
         }
 

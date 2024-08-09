@@ -25,6 +25,9 @@ typedef struct EventManager {
     int max_index;     ///< Index maximum dans le tableau
 } EventManager;
 
+extern EventManager* EVENT_MANAGER;
+extern int sdl_quit_flag;
+
 /**
  * @brief Initialise le gestionnaire d'événements
  * 
@@ -57,7 +60,7 @@ int EventManager_Add(EventManager* manager, ...);
  * 
  * @param manager Pointeur vers le gestionnaire d'événements
  */
-void EventManager_HandleEvents(EventManager* manager, int* sdl_quit_flag);
+void EventManager_HandleEvents(EventManager* manager);
 
 /**
  * @brief Libère les ressources allouées pour le gestionnaire d'événements

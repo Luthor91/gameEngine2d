@@ -1,5 +1,14 @@
 #include "../include/init.h"
 
+int Init_All() {
+    
+    if (Init_Dependancies == 0) { return 0; }
+    Init_Env(".env");
+    Init_Global();
+    
+    return 1;
+}
+
 void Init_Env(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -36,11 +45,11 @@ void Init_Env(const char *filename) {
     fclose(file);
 }
 
-int Init_All() {
+int Init_Dependancies() {
     // Initialiser SDL
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         fprintf(stderr, "Main: %s\n", SDL_GetError());
-        return 1;
+        return 0;
     }
 
     // Initialiser SDL_ttf si ce n'est pas déjà fait
@@ -52,15 +61,25 @@ int Init_All() {
     // Initialiser SDL_image avec les formats JPG et PNG
     if (IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG) == 0) {
         fprintf(stderr, "Main: %s\n", IMG_GetError());
-        return 1;
+        return 0;
     }
-
-    // Initialiser le fichier d'environnement
-    Init_Env(".env");
 
     Time_Initialize();
 
-    return 0; // Succès
+    return 1; // Succès
+}
+
+void Init_Global() {
+    CURRENT_WINDOW = DEFAULT_WINDOW;
+    TIMER_MANAGER = DEFAULT_TIMER;
+    RENDERER_MANAGER = DEFAULT_RENDERER;
+    CHARACTERBODY_MANAGER = DEFAULT_CHARACTERBODY;
+    RIGIDBODY_MANAGER = DEFAULT_RIGIDBODY;
+    STATICBODY_MANAGER = DEFAULT_STATICBODY;
+    PHYSICSBODIES_MANAGER = PhysicBodies_Init(CHARACTERBODY_MANAGER, RIGIDBODY_MANAGER, STATICBODY_MANAGER);
+    EVENT_MANAGER = DEFAULT_EVENT;
+    TIMER_MANAGER = DEFAULT_TIMER;
+    WORLD_PHYSICS = DEFAULT_WORLDPHYSICS;
 }
 
 void Exit_All(Window* window) {
