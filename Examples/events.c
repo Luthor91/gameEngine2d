@@ -24,6 +24,7 @@ int main(int argc, char* argv[]) {
     Renderer* r_window = Renderer_Init(Renderer_Window, CURRENT_WINDOW, 0);
     Signal* signal = Signal_Init(Signal_Space_Pressed, &data);
     Event* evt_space1 = Event_Init(signal, Event_Space_Pressed, NULL, NULL);
+    
     // Ajout des renderers et des événements aux gestionnaires respectifs.
     RendererManager_Add(RENDERER_MANAGER, r_window, NULL);
     EventManager_Add(EVENT_MANAGER, evt_space1, NULL);
