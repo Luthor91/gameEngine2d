@@ -58,6 +58,9 @@ lt_physics:
 lt_events:
 	$(CC) $(L_SDL2) $(SYMBOL) test_events Examples/events.c $(AllFiles) $(L_LDFLAGS) && ./test_events
 
+lt_clicker:
+	$(CC) $(L_SDL2) $(SYMBOL) project_clicker ProjectClicker/main.c $(AllFiles) $(L_LDFLAGS) && ./project_clicker
+
 ##############################################
 #
 #		WINDOWS

@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
 
     // Boucle principale du programme.
     while (!sdl_quit_flag) {
-        EventManager_HandleEvents(event_manager, &sdl_quit_flag);
+        EventManager_HandleEvents(event_manager);
 
         // Ici, vous pouvez ajouter des fonctionnalités supplémentaires si nécessaire.
 
