@@ -13,7 +13,6 @@ typedef struct SpriteComponent {
 } SpriteComponent;
 
 static SpriteComponent spriteComponents[MAX_ENTITIES];
-static bool hasSprite[MAX_ENTITIES] = { false };
 
 // Fonctions pour manipuler les composants Sprite
 void addSpriteComponent(Entity entity, SDL_Texture* texture, SDL_Rect srcRect);
