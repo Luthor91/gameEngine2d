@@ -7,7 +7,7 @@ typedef struct VelocityComponent {
     float velocityX, velocityY;
 } VelocityComponent;
 
-void addVelocityComponent(Entity entity, float x, float y);
+void addVelocityComponent(Entity entity, VelocityComponent velocity);
 VelocityComponent* getVelocityComponent(Entity entity);
 
 #endif

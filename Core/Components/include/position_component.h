@@ -10,4 +10,5 @@ typedef struct PositionComponent {
 void addPositionComponent(Entity entity, float x, float y);
 PositionComponent* getPositionComponent(Entity entity);
 
+
 #endif

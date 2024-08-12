@@ -9,10 +9,6 @@ typedef unsigned int Entity;
 #include "../../Components/include/velocity_component.h"
 #include "../../Components/include/sprite_component.h"
 
-
-
-
-
 // Tableau pour stocker les états des entités
 static bool entityStates[MAX_ENTITIES] = { false };
 static bool hasSprite[MAX_ENTITIES] = { false };
