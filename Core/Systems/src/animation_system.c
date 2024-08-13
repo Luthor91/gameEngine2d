@@ -19,28 +19,28 @@ void updateAnimations() {
     Uint32 currentTime = SDL_GetTicks();
 
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+        if (!hasAnimationComponent(entity) || !hasSpriteComponent(entity)) { continue; }
+        
         AnimationComponent* animation = getAnimationComponent(entity);
         SpriteComponent* sprite = getSpriteComponent(entity);
 
-        if (animation && sprite) {
-            if (currentTime > animation->lastFrameTime + animation->frameDuration) {
-                animation->currentFrame = (animation->currentFrame + 1) % animation->totalFrames;
-                animation->lastFrameTime = currentTime;
+        if (currentTime > animation->lastFrameTime + animation->frameDuration) {
+            animation->currentFrame = (animation->currentFrame + 1) % animation->totalFrames;
+            animation->lastFrameTime = currentTime;
 
-                // Mettre à jour le srcRect du SpriteComponent pour correspondre à la nouvelle frame
-                int frameWidth = sprite->srcRect.w;
-                int frameHeight = sprite->srcRect.h;
-                int textureWidth = getTextureWidth(sprite->texture);
-                int textureHeight = getTextureHeight(sprite->texture);
+            // Mettre à jour le srcRect du SpriteComponent pour correspondre à la nouvelle frame
+            int frameWidth = sprite->srcRect.w;
+            int frameHeight = sprite->srcRect.h;
+            int textureWidth = getTextureWidth(sprite->texture);
+            int textureHeight = getTextureHeight(sprite->texture);
 
-                // Assumer que les frames sont alignées horizontalement
-                sprite->srcRect.x = (animation->currentFrame % (textureWidth / frameWidth)) * frameWidth;
-                sprite->srcRect.y = (animation->currentFrame / (textureWidth / frameWidth)) * frameHeight;
+            // Assumer que les frames sont alignées horizontalement
+            sprite->srcRect.x = (animation->currentFrame % (textureWidth / frameWidth)) * frameWidth;
+            sprite->srcRect.y = (animation->currentFrame / (textureWidth / frameWidth)) * frameHeight;
 
-                // Vérifiez si le rectangle source est valide
-                if (sprite->srcRect.x < 0 || sprite->srcRect.y < 0 || sprite->srcRect.x >= textureWidth || sprite->srcRect.y >= textureHeight) {
-                    printf("Warning: srcRect is out of bounds. x: %d, y: %d\n", sprite->srcRect.x, sprite->srcRect.y);
-                }
+            // Vérifiez si le rectangle source est valide
+            if (sprite->srcRect.x < 0 || sprite->srcRect.y < 0 || sprite->srcRect.x >= textureWidth || sprite->srcRect.y >= textureHeight) {
+                printf("Warning: srcRect is out of bounds. x: %d, y: %d\n", sprite->srcRect.x, sprite->srcRect.y);
             }
         }
     }

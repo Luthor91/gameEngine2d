@@ -5,7 +5,8 @@
 #include "../../Entities/include/entity.h"
 #include "../../Components/include/sprite_component.h"
 #include "../../Components/include/transform_component.h"
+#include "../../Utils/include/renderer_utils.h"
 
-void renderEntities(SDL_Renderer* renderer);
+void renderEntities();
 
 #endif

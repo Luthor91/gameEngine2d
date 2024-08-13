@@ -3,13 +3,15 @@
 
 #include "../../Entities/include/entity.h"
 
-#define DEFAULT_TRANSFORM {0.0f, 0.0f, 1.0f, 1.0f, 0.0f}
+#define TRANSFORM_ZERO {0.0f, 0.0f, 1.0f, 1.0f, 0.0f}
 
 typedef struct TransformComponent {
     float x, y; // Position de l'entité
     float scaleX, scaleY; // Échelle de l'entité
     float rotation; // Rotation de l'entité en degrés
 } TransformComponent;
+
+static TransformComponent transformComponents[MAX_ENTITIES];
 
 TransformComponent* getTransformComponent(Entity entity);
 void addTransformComponent(Entity entity, TransformComponent transform);

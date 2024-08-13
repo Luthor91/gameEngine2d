@@ -1,5 +1,7 @@
 #include "../include/renderer_utils.h"
 
+SDL_Renderer* g_renderer = NULL;
+
 SDL_Renderer* createRenderer(SDL_Window* window) {
     if (window == NULL) {
         fprintf(stderr, "La fenêtre doit être non nulle pour créer un renderer.\n");
@@ -13,6 +15,8 @@ SDL_Renderer* createRenderer(SDL_Window* window) {
         fprintf(stderr, "Erreur de création du renderer: %s\n", SDL_GetError());
         return NULL;
     }
+
+    g_renderer = renderer;
 
     return renderer;
 }

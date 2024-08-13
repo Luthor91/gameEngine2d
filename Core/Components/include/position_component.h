@@ -3,11 +3,15 @@
 
 #include "../../Entities/include/entity.h"
 
+#define POSITION_ZERO {0.0f, 0.0f}
+
 typedef struct PositionComponent {
     float x, y;
 } PositionComponent;
 
-void addPositionComponent(Entity entity, float x, float y);
+static PositionComponent positionComponents[MAX_ENTITIES];
+
+void addPositionComponent(Entity entity, PositionComponent position);
 PositionComponent* getPositionComponent(Entity entity);
 
 

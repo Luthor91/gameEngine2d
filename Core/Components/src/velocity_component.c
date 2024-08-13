@@ -1,7 +1,5 @@
 #include "../include/velocity_component.h"
 
-static VelocityComponent velocityComponents[MAX_ENTITIES];
-
 // Fonction pour ajouter un composant Sprite à une entité
 void addVelocityComponent(Entity entity, VelocityComponent velocity) {
     if (entity < MAX_ENTITIES) {
@@ -11,7 +9,7 @@ void addVelocityComponent(Entity entity, VelocityComponent velocity) {
 }
 
 VelocityComponent* getVelocityComponent(Entity entity) {
-    if (entity < MAX_ENTITIES) {
+    if (entity < MAX_ENTITIES && hasVelocity[entity]) {
         return &velocityComponents[entity];
     }
     return NULL;

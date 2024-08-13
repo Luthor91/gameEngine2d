@@ -3,9 +3,13 @@
 
 #include "../../Entities/include/entity.h"
 
+#define VELOCITY_ZERO {0, 0}
+
 typedef struct VelocityComponent {
     float velocityX, velocityY;
 } VelocityComponent;
+
+static VelocityComponent velocityComponents[MAX_ENTITIES];
 
 void addVelocityComponent(Entity entity, VelocityComponent velocity);
 VelocityComponent* getVelocityComponent(Entity entity);

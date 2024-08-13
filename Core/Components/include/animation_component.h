@@ -3,14 +3,16 @@
 
 #include "../../Entities/include/entity.h"
 
+#define ANIMATION_ZERO {0, 1, 0, 0, true}
+
 typedef struct AnimationComponent {
     int currentFrame;
     int totalFrames;
-    int frameDuration; // Durée de chaque frame en millisecondes
-    Uint32 lastFrameTime; // Temps depuis la dernière frame
+    int frameDuration;
+    Uint32 lastFrameTime;
+    bool isActive;
 } AnimationComponent;
 
-// Tableau pour stocker les AnimationComponents pour chaque entité
 static AnimationComponent animationComponents[MAX_ENTITIES];
 
 AnimationComponent* getAnimationComponent(Entity entity);

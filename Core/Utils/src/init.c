@@ -2,6 +2,9 @@
 
 int Init_All() {
     srand(time(NULL));
+    g_window = createWindow("Game Window");
+    g_renderer = createRenderer(g_window);
+    initStateMachine();
     if (Init_Dependancies == 0) { return 0; }
     
     return 1;

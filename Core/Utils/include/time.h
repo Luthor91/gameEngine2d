@@ -8,7 +8,9 @@
 #include <time.h>
 
 #define FPS_CALC_INTERVAL 1000
+#define DEFAULT_FPS_LOW 20
 #define DEFAULT_FPS_AVERAGE 60
+#define DEFAULT_FPS_HIGH 120
 #define TIME_DELTA Time_GetDelta()
 
 // Variables globales pour le suivi du temps

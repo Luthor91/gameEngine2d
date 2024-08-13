@@ -1,5 +1,7 @@
 #include "../include/window_utils.h"
 
+SDL_Window* g_window = NULL;
+
 SDL_Window* createWindow(const char* title) {
     // Initialisation de SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -20,6 +22,8 @@ SDL_Window* createWindow(const char* title) {
         SDL_Quit();
         return NULL;
     }
+
+    g_window = window;
 
     return window;
 }

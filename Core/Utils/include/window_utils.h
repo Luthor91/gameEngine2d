@@ -7,6 +7,8 @@
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
+extern SDL_Window* g_window;
+
 // Fonction pour créer une SDL_Window
 SDL_Window* createWindow(const char* title);
 
