@@ -22,11 +22,11 @@ extern bool hasVelocity[MAX_ENTITIES];
 extern bool hasInput[MAX_ENTITIES];
 extern bool hasTransform[MAX_ENTITIES];
 extern bool hasAnimation[MAX_ENTITIES];
+extern bool hasHitbox[MAX_ENTITIES];
 extern Entity playerEntity;
 
 // Générateur d'ID simple pour les entités
 static Entity nextEntityID = 0;
-
 Entity createEntity();
 Entity getEntity(int id);
 

@@ -53,6 +53,7 @@ void handlePlayingState() {
     updateEvent();
     processEvents();
     updateMovement();
+    updateCollisionSystem()
     updateAnimations();
     renderEntities();
     Time_SetFPSLimit(DEFAULT_FPS_HIGH);
