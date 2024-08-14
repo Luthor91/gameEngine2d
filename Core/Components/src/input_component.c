@@ -1,5 +1,6 @@
 #include "../include/input_component.h"
 
+static InputComponent inputComponents[MAX_ENTITIES];
 
 void addInputComponent(Entity entity, InputComponent input) {
     if (entity < MAX_ENTITIES) {

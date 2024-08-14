@@ -3,9 +3,18 @@
 
 #include "../../Components/include/hitbox_component.h"
 #include "../../Components/include/position_component.h"
+#include "../../Entities/include/entity.h"
+#include "event_system.h"
+
+typedef struct CollisionData {
+    Entity entity1;
+    Entity entity2;
+} CollisionData;
 
 // Fonction pour initialiser le système de collision (si nécessaire)
 void initCollisionSystem();
+
+CollisionData* CollisionData_Init(Entity entity1, Entity entity2);
 
 // Fonction pour mettre à jour le système de collision
 void updateCollisionSystem();

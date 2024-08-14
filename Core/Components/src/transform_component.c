@@ -1,5 +1,7 @@
 #include "../include/transform_component.h"
 
+static TransformComponent transformComponents[MAX_ENTITIES];
+
 void addTransformComponent(Entity entity, TransformComponent transform) {
     if (entity < MAX_ENTITIES) {
         transformComponents[entity] = transform;

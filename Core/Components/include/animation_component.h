@@ -13,8 +13,6 @@ typedef struct AnimationComponent {
     bool isActive;
 } AnimationComponent;
 
-static AnimationComponent animationComponents[MAX_ENTITIES];
-
 AnimationComponent* getAnimationComponent(Entity entity);
 void addAnimationComponent(Entity entity, AnimationComponent animation);
 

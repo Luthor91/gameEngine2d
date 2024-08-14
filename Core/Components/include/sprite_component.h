@@ -12,8 +12,6 @@ typedef struct SpriteComponent {
     SDL_Rect srcRect;     // Rectangle source de la texture (pour l'animation ou la découpe)
 } SpriteComponent;
 
-static SpriteComponent spriteComponents[MAX_ENTITIES];
-
 // Fonctions pour manipuler les composants Sprite
 void addSpriteComponent(Entity entity, SDL_Texture* texture, SDL_Rect srcRect);
 SpriteComponent* getSpriteComponent(Entity entity);

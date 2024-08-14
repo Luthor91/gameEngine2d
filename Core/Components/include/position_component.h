@@ -9,8 +9,6 @@ typedef struct PositionComponent {
     float x, y;
 } PositionComponent;
 
-static PositionComponent positionComponents[MAX_ENTITIES];
-
 void addPositionComponent(Entity entity, PositionComponent position);
 PositionComponent* getPositionComponent(Entity entity);
 

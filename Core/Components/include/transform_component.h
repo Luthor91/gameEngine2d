@@ -11,8 +11,6 @@ typedef struct TransformComponent {
     float rotation; // Rotation de l'entité en degrés
 } TransformComponent;
 
-static TransformComponent transformComponents[MAX_ENTITIES];
-
 TransformComponent* getTransformComponent(Entity entity);
 void addTransformComponent(Entity entity, TransformComponent transform);
 

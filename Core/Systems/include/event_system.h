@@ -24,9 +24,14 @@ typedef enum EventType {
     EVENT_TYPE_JUMP,
     EVENT_TYPE_SHOOT,
     EVENT_TYPE_DASH,
+    EVENT_TYPE_COLLIDE,
     EVENT_TYPE_QUIT,
     EVENT_TYPE_KEYDOWN,
     EVENT_TYPE_KEYUP,
+    EVENT_TYPE_MIDDLE_MOUSECLICK,
+    EVENT_TYPE_RIGHT_MOUSECLICK,
+    EVENT_TYPE_LEFT_MOUSECLICK,
+    EVENT_TYPE_GENERIC,
     // Ajoutez ici d'autres types d'événements nécessaires
 } EventType;
 
@@ -52,13 +57,6 @@ typedef struct EventBinding {
     EventType eventType;
     void* eventData;
 } EventBinding;
-
-// Variables globales pour gérer les événements
-static EventBinding entityBindings[MAX_ENTITIES][MAX_BINDINGS] = {0};
-static EventListeners eventListeners[MAX_EVENTS];
-static Event eventQueue[MAX_EVENTS];
-static int eventQueueCount = 0;
-static int listenerCount = 0;
 
 // Fonctions pour gérer les événements
 void addEventListener(EventType type, EventListener listener);

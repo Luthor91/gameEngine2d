@@ -1,5 +1,7 @@
 #include "../include/sprite_component.h"
 
+static SpriteComponent spriteComponents[MAX_ENTITIES];
+
 // Fonction pour ajouter un composant Sprite à une entité
 void addSpriteComponent(Entity entity, SDL_Texture* texture, SDL_Rect srcRect) {
     if (entity < MAX_ENTITIES) {

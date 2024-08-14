@@ -1,12 +1,20 @@
 #include "../include/event_system.h"
 #include <SDL2/SDL.h>
 
+// Variables globales pour gérer les événements
+static EventBinding entityBindings[MAX_ENTITIES][MAX_BINDINGS] = {0};
+static EventListeners eventListeners[MAX_EVENTS];
+static Event eventQueue[MAX_EVENTS];
+static int eventQueueCount = 0;
+static int listenerCount = 0;
+
 // Ajout d'un écouteur d'événements
-void addEventListener(EventType type, EventListener listener) {
+void addEventListener(EventType type, EventListener listener) {     
     for (int i = 0; i < MAX_EVENTS; ++i) {
         if (eventListeners[i].type == type) {
             if (eventListeners[i].listenerCount < MAX_LISTENERS) {
                 eventListeners[i].listeners[eventListeners[i].listenerCount++] = listener;
+                printf("Listener added for event type %d\n", type);
             } else {
                 printf("Max listeners reached for event type %d\n", type);
             }
@@ -15,7 +23,8 @@ void addEventListener(EventType type, EventListener listener) {
             eventListeners[i].type = type;
             eventListeners[i].listeners[0] = listener;
             eventListeners[i].listenerCount = 1;
-            listenerCount++;  // Ajouté pour suivre le nombre total de types d'événements
+            listenerCount++;
+            printf("Listener added for new event type %d\n", type);
             return;
         }
     }
@@ -41,6 +50,7 @@ void removeEventListener(EventType type, EventListener listener) {
 void emitEvent(Event event) {
     if (eventQueueCount < MAX_EVENTS) {
         eventQueue[eventQueueCount++] = event;
+        printf("Event emitted with type: %d\n", event.type);
     } else {
         printf("Event queue is full, cannot emit event of type %d\n", event.type);
     }
@@ -66,53 +76,59 @@ void processEvents() {
 
     for (int i = 0; i < eventQueueCount; ++i) {
         Event event = eventQueue[i];
-
         for (int j = 0; j <= listenerCount; ++j) {
+            printf("index J : %d/%d\n", j, listenerCount);
             if (eventListeners[j].type == event.type) {
-                for (int k = 0; k < eventListeners[j].listenerCount; ++k) {
+                printf("Event detected with type: %d\n", event.type);
+                for (int k = 0; k <= eventListeners[j].listenerCount; ++k) {
+                    printf("index K : %d/%d\n", k, eventListeners[j].listenerCount);
                     if (eventListeners[j].listeners[k] != NULL) {
+                        printf("Executing listener for event type: %d\n", event.type);
                         eventListeners[j].listeners[k](event);
                     }
                 }
             }
         }
     }
-
-    // Réinitialise la queue après le traitement
     eventQueueCount = 0;
 }
+
 
 // Met à jour les événements et émet les événements liés aux touches
 void updateEvent() {
     SDL_Event sdlEvent;
     while (SDL_PollEvent(&sdlEvent)) {
         if (sdlEvent.type == SDL_QUIT) {
-            SDL_Quit();
-            exit(0);
-        }
+            changeState(STATE_EXIT);
+        }      
+        bool eventHandled = false; 
 
-        // Gestion des clics de souris pour émettre un événement de tir
         if (sdlEvent.type == SDL_MOUSEBUTTONDOWN) {
+            int mouseX, mouseY;
+            SDL_GetMouseState(&mouseX, &mouseY);
+            // Créer l'événement de tir
+            SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
+            cursorPos->x = mouseX;
+            cursorPos->y = mouseY;
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
-                int mouseX, mouseY;
-                SDL_GetMouseState(&mouseX, &mouseY);
-
-                // Créer l'événement de tir
-                SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
-                cursorPos->x = mouseX;
-                cursorPos->y = mouseY;
-                Event shootEvent = {EVENT_TYPE_SHOOT, cursorPos};
-                emitEvent(shootEvent);
+                Event clickEvent = {EVENT_TYPE_LEFT_MOUSECLICK, cursorPos};
+                emitEvent(clickEvent);
+            } else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) {
+                Event clickEvent = {EVENT_TYPE_RIGHT_MOUSECLICK, cursorPos};
+                emitEvent(clickEvent);
+            } else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
+                Event clickEvent = {EVENT_TYPE_MIDDLE_MOUSECLICK, cursorPos};
+                emitEvent(clickEvent);
             }
         }
-
+        
         // Gestion des événements clavier
         if (sdlEvent.type == SDL_KEYDOWN || sdlEvent.type == SDL_KEYUP) {
             bool isPressed = (sdlEvent.type == SDL_KEYDOWN);
             SDL_Keycode key = sdlEvent.key.keysym.sym;
 
             for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
-                if (!hasInput[entity]) { continue; }
+                if (!hasInputComponent(entity)) { continue; }
 
                 InputComponent* input = getInputComponent(entity);
                 if (key < MAX_KEYS) {
@@ -127,5 +143,11 @@ void updateEvent() {
                 }
             }
         }
+        /*
+        if (!eventHandled && sdlEvent.type != NULL) {
+            Event sdlGenericEvent = { EVENT_TYPE_GENERIC, &sdlEvent };
+            emitEvent(sdlGenericEvent);
+        }
+        */
     }
 }

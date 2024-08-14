@@ -1,5 +1,7 @@
 #include "../include/animation_component.h"
 
+static AnimationComponent animationComponents[MAX_ENTITIES];
+
 // Fonction pour ajouter un AnimationComponent à une entité
 void addAnimationComponent(Entity entity, AnimationComponent animation) {
     if (entity < MAX_ENTITIES) {

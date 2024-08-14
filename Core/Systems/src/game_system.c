@@ -51,9 +51,9 @@ void handleMenuState() {
 // Gestion de l'état de jeu
 void handlePlayingState() {
     updateEvent();
-    processEvents();
     updateMovement();
-    updateCollisionSystem()
+    updateCollisionSystem();
+    processEvents();
     updateAnimations();
     renderEntities();
     Time_SetFPSLimit(DEFAULT_FPS_HIGH);
@@ -76,9 +76,10 @@ void handleExitState() {
         hasInput[entity] = false;
         hasTransform[entity] = false;
         hasAnimation[entity] = false;
-
-        if (spriteComponents[entity].texture != NULL) {
-            SDL_DestroyTexture(spriteComponents[entity].texture);
+        
+        SDL_Texture* texture = getSpriteComponent(entity)->texture;
+        if (texture != NULL) {
+            SDL_DestroyTexture(texture);
         }
         
     }

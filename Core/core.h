@@ -18,6 +18,9 @@
 #include "Components/include/sprite_component.h"
 #include "Components/include/input_component.h"
 #include "Components/include/hitbox_component.h"
+#include "Components/include/size_component.h"
+#include "Components/include/animation_component.h"
+#include "Components/include/tag_component.h"
 
 #include "Systems/include/game_system.h"
 #include "Systems/include/movement_system.h"

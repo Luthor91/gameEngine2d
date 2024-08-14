@@ -1,8 +1,10 @@
 #include "../include/hitbox_component.h"
 
-void addHitboxComponent(Entity entity, float offsetX, float offsetY, float width, float height) {
+static HitboxComponent hitboxComponents[MAX_ENTITIES];
+
+void addHitboxComponent(Entity entity, HitboxComponent hitbox) {
     if (entity >= 0 && entity < MAX_ENTITIES) {
-        hitboxComponents[entity] = (HitboxComponent){offsetX, offsetY, width, height};
+        hitboxComponents[entity] = hitbox;
         hasHitbox[entity] = true;
     }
 }
@@ -14,22 +16,15 @@ HitboxComponent* getHitboxComponent(Entity entity) {
     return NULL;
 }
 
-bool checkCollision(Entity entity1, Entity entity2) {
-    if (!hasHitbox[entity1] || !hasHitbox[entity2]) return false;
-
-    HitboxComponent* hitbox1 = getHitboxComponent(entity1);
-    HitboxComponent* hitbox2 = getHitboxComponent(entity2);
+void updateHitbox(Entity entity) {
+    PositionComponent* position = getPositionComponent(entity);
+    SizeComponent* size = getSizeComponent(entity);
+    HitboxComponent* hitbox = getHitboxComponent(entity);
     
-    PositionComponent* pos1 = getPositionComponent(entity1);
-    PositionComponent* pos2 = getPositionComponent(entity2);
-    
-    float x1 = pos1->x + hitbox1->offsetX;
-    float y1 = pos1->y + hitbox1->offsetY;
-    float x2 = pos2->x + hitbox2->offsetX;
-    float y2 = pos2->y + hitbox2->offsetY;
-
-    return (x1 < x2 + hitbox2->width && 
-            x1 + hitbox1->width > x2 && 
-            y1 < y2 + hitbox2->height && 
-            y1 + hitbox1->height > y2);
+    if (position && size && hitbox) {
+        hitbox->x = position->x;
+        hitbox->y = position->y;
+        hitbox->width = size->width;
+        hitbox->height = size->height;
+    }
 }
