@@ -1,8 +1,7 @@
 #include "../include/movement_system.h"
 
-void updateMovement() {
-    float deltaTime = Time_GetDelta();
-    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+void updateMovement(float deltaTime) {
+    for (Entity entity = 0; entity < getEntityCount(); ++entity) {
         if (!hasPositionComponent(entity) || !hasVelocityComponent(entity)) {
             continue;
         }

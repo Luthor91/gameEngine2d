@@ -8,6 +8,6 @@
 #include "../../Components/include/tag_component.h"
 #include "../../Utils/include/time.h"
 
-void updateMovement();
+void updateMovement(float deltaTime);
 
 #endif

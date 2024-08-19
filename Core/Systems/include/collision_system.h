@@ -4,7 +4,8 @@
 #include "../../Components/include/hitbox_component.h"
 #include "../../Components/include/position_component.h"
 #include "../../Entities/include/entity.h"
-#include "event_system.h"
+
+typedef struct Event Event;
 
 typedef struct CollisionData {
     Entity entity1;
@@ -21,5 +22,7 @@ void updateCollisionSystem();
 
 // Fonction pour vérifier la collision entre deux entités
 bool checkCollision(Entity entity1, Entity entity2);
+
+bool checkCollisionTags(Event event, const char* tag1, const char* tag2);
 
 #endif // COLLISION_SYSTEM_H

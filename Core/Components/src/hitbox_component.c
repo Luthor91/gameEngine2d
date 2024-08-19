@@ -10,7 +10,7 @@ void addHitboxComponent(Entity entity, HitboxComponent hitbox) {
 }
 
 HitboxComponent* getHitboxComponent(Entity entity) {
-    if (entity >= 0 && entity < MAX_ENTITIES && hasHitbox[entity]) {
+    if (entity < MAX_ENTITIES && hasHitbox[entity]) {
         return &hitboxComponents[entity];
     }
     return NULL;

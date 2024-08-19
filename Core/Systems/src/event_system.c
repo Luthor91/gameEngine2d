@@ -1,5 +1,4 @@
 #include "../include/event_system.h"
-#include <SDL2/SDL.h>
 
 // Variables globales pour gérer les événements
 static EventBinding entityBindings[MAX_ENTITIES][MAX_BINDINGS] = {0};
@@ -50,7 +49,7 @@ void removeEventListener(EventType type, EventListener listener) {
 void emitEvent(Event event) {
     if (eventQueueCount < MAX_EVENTS) {
         eventQueue[eventQueueCount++] = event;
-        printf("Event emitted with type: %d\n", event.type);
+        //printf("Event emitted with type: %d\n", event.type);
     } else {
         printf("Event queue is full, cannot emit event of type %d\n", event.type);
     }
@@ -70,29 +69,46 @@ void bindEvent(Entity entity, SDL_Keycode key, EventType eventType, void* eventD
     printf("Warning: Max bindings reached for entity %d\n", entity);
 }
 
-// Traiter les événements en file d'attente
 void processEvents() {
-    if (eventQueueCount == 0) { return; }
+    if (eventQueueCount == 0) {
+        return;
+    }
 
     for (int i = 0; i < eventQueueCount; ++i) {
+        if (i < 0 || i >= MAX_EVENT_QUEUE_SIZE) {
+            printf("Error: Invalid event index %d\n", i);
+            continue;
+        }
+
         Event event = eventQueue[i];
-        for (int j = 0; j <= listenerCount; ++j) {
-            printf("index J : %d/%d\n", j, listenerCount);
+
+        if (event.type < 0 || event.type >= MAX_EVENT_TYPE_COUNT) {
+            printf("Error: Invalid event type %d\n", event.type);
+            continue;
+        }
+
+        for (int j = 0; j < listenerCount; ++j) {  // Correction: '<' instead of '<='
+            if (j < 0 || j >= MAX_LISTENER_COUNT) {
+                printf("Error: Invalid listener index %d\n", j);
+                continue;
+            }
+
             if (eventListeners[j].type == event.type) {
-                printf("Event detected with type: %d\n", event.type);
-                for (int k = 0; k <= eventListeners[j].listenerCount; ++k) {
-                    printf("index K : %d/%d\n", k, eventListeners[j].listenerCount);
+                for (int k = 0; k < eventListeners[j].listenerCount; ++k) {  // Correction: '<' instead of '<='
+                    if (k < 0 || k >= MAX_LISTENERS_PER_EVENT) {
+                        printf("Error: Invalid listener function index %d\n", k);
+                        continue;
+                    }
+
                     if (eventListeners[j].listeners[k] != NULL) {
-                        printf("Executing listener for event type: %d\n", event.type);
                         eventListeners[j].listeners[k](event);
                     }
                 }
             }
         }
     }
-    eventQueueCount = 0;
+    eventQueueCount = 0;  // Réinitialiser la file d'attente des événements
 }
-
 
 // Met à jour les événements et émet les événements liés aux touches
 void updateEvent() {
@@ -143,11 +159,5 @@ void updateEvent() {
                 }
             }
         }
-        /*
-        if (!eventHandled && sdlEvent.type != NULL) {
-            Event sdlGenericEvent = { EVENT_TYPE_GENERIC, &sdlEvent };
-            emitEvent(sdlGenericEvent);
-        }
-        */
     }
 }

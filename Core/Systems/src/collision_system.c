@@ -1,4 +1,5 @@
 #include "../include/collision_system.h"
+#include "../include/event_system.h"
 
 // Fonction pour initialiser le système de collision (si nécessaire)
 void initCollisionSystem() {
@@ -20,20 +21,16 @@ CollisionData* CollisionData_Init(Entity entity1, Entity entity2) {
 // Fonction pour mettre à jour le système de collision
 void updateCollisionSystem() {
     // Parcourir toutes les entités et vérifier les collisions
-    for (Entity entity1 = 0; entity1 < MAX_ENTITIES; ++entity1) {
+    for (Entity entity1 = 0; entity1 < getEntityCount(); ++entity1) {
         if (!hasHitbox[entity1] || !hasPosition[entity1]) continue;
 
-        for (Entity entity2 = entity1 + 1; entity2 < MAX_ENTITIES; ++entity2) {
+        for (Entity entity2 = entity1 + 1; entity2 < getEntityCount(); ++entity2) {
             if (!hasHitbox[entity2] || !hasPosition[entity2]) continue;
 
                 if (checkCollision(entity1, entity2)) {
                     CollisionData* collider1 = CollisionData_Init(entity1, entity2);
                     Event collisionEvent1 = { EVENT_TYPE_COLLIDE, collider1 };
                     emitEvent(collisionEvent1);
-
-                    CollisionData* collider2 = CollisionData_Init(entity2, entity1);
-                    Event collisionEvent2 = { EVENT_TYPE_COLLIDE, collider2 };
-                    emitEvent(collisionEvent2);
                 }
         }
     }
@@ -53,6 +50,11 @@ bool checkCollision(Entity entity1, Entity entity2) {
         return false;
     }
 
+    if (!hitbox1->is_active || !hitbox2->is_active) {
+        return false;
+    }
+    
+
     // Calculer les positions des hitboxes
     float leftA = pos1->x + hitbox1->x;
     float rightA = leftA + hitbox1->width;
@@ -70,4 +72,36 @@ bool checkCollision(Entity entity1, Entity entity2) {
     }
 
     return true;
+}
+
+bool checkCollisionTags(Event event, const char* tag1, const char* tag2) {
+    // Vérification que les données de l'événement ne sont pas nulles
+    if (event.data == NULL) return false;
+    
+    // Extraction des données de collision de l'événement
+    CollisionData* collisionData = (CollisionData*)event.data;
+    if (collisionData == NULL) return false;
+
+    // Récupération des entités impliquées dans la collision
+    Entity entity1 = collisionData->entity1;
+    Entity entity2 = collisionData->entity2;
+
+    // Vérification que les entités sont valides et activées
+    if (!isEntityEnabled(entity1) || !isEntityEnabled(entity2)) return false;
+
+    // Si tag1 est NULL, ne pas vérifier le tag1 pour entity1
+    if (tag1 == NULL) {
+        // Si tag2 est NULL, aucune vérification supplémentaire n'est nécessaire, retournez true
+        if (tag2 == NULL) return true;
+        // Vérifiez seulement si entity2 possède tag2
+        return hasTag(entity2, tag2);
+    }
+
+    // Si tag2 est NULL, ne vérifiez que tag1 pour entity1
+    if (tag2 == NULL) {
+        return hasTag(entity1, tag1);
+    }
+
+    // Vérifiez que les entités ont les tags spécifiés
+    return hasTag(entity1, tag1) && hasTag(entity2, tag2);
 }

@@ -50,9 +50,14 @@ void handleMenuState() {
 
 // Gestion de l'état de jeu
 void handlePlayingState() {
+    float deltaTime = Time_GetDelta();
+    
+    Uint32 startTime = Time_GetCurrentTime(); // Temps avant l'exécution
     updateEvent();
-    updateMovement();
+    updateMovement(deltaTime);
+    updateParticles(activeEmitters, deltaTime);
     updateCollisionSystem();
+    updateTimers(deltaTime);
     processEvents();
     updateAnimations();
     renderEntities();
@@ -65,10 +70,12 @@ void handlePausedState() {
 
 // Gestion de l'état de fin de jeu
 void handleGameOverState() {
+    // Provisoire
+    changeState(STATE_EXIT);
 }
 
 void handleExitState() {
-    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+    for (Entity entity = 0; entity < getEntityCount(); ++entity) {
         entityStates[entity] = false;
         hasSprite[entity] = false;
         hasPosition[entity] = false;
@@ -76,13 +83,16 @@ void handleExitState() {
         hasInput[entity] = false;
         hasTransform[entity] = false;
         hasAnimation[entity] = false;
-        
+        hasHitbox[entity] = false;
+        hasSize[entity] = false;
+        hasTags[entity] = false;
+
         SDL_Texture* texture = getSpriteComponent(entity)->texture;
         if (texture != NULL) {
             SDL_DestroyTexture(texture);
         }
-        
     }
+    freeParticleEmitter(activeEmitters);
     SDL_DestroyRenderer(g_renderer);
     SDL_DestroyWindow(g_window);
     SDL_Quit();

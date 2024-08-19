@@ -1,4 +1,5 @@
 #include "../include/tag_component.h"
+#include "../../Systems/include/event_system.h"
 
 static TagComponent tagComponents[MAX_ENTITIES];
 
@@ -20,6 +21,21 @@ void addTagComponent(Entity entity, TagComponent tagComponent) {
 // Obtenir le TagComponent d'une entité
 TagComponent* getTagComponent(Entity entity) {
     return &tagComponents[entity];
+}
+
+// Fonction pour obtenir le premier tag d'une entité
+const char* getFirstTag(Entity entity) {
+    if (entity < 0 || entity >= MAX_ENTITIES) {
+        return NULL;  // Vérifier si l'entité est valide
+    }
+
+    TagComponent* tagComponent = &tagComponents[entity];
+
+    if (tagComponent->tagCount == 0) {
+        return NULL;  // Retourner NULL si l'entité n'a pas de tags
+    }
+
+    return tagComponent->tags[0];  // Retourner le premier tag
 }
 
 // Ajouter un tag à une entité
@@ -71,6 +87,39 @@ bool hasTag(Entity entity, const char* tag) {
             return true;
         }
     }
+    return false;
+}
+
+// Fonction pour vérifier si une entité possède un des tags spécifiés
+bool hasAnyTag(Event event, ...) {
+    // Vérifier que les données de l'événement ne sont pas nulles
+    if (event.data == NULL) return false;
+
+    // Convertir event.data en pointeur vers l'entité
+    Entity* entityPtr = (Entity*)event.data;
+    if (entityPtr == NULL) return false;
+
+    // Récupérer l'entité
+    Entity entity = *entityPtr;
+
+    // Initialiser la liste d'arguments
+    va_list args;
+    va_start(args, event);
+
+    // Parcourir les arguments jusqu'à ce que NULL soit trouvé
+    const char* tag;
+    while ((tag = va_arg(args, const char*)) != NULL) {
+        // Vérifier si l'entité possède le tag courant
+        if (hasTag(entity, tag)) {
+            va_end(args);
+            return true;
+        }
+    }
+
+    // Terminer la liste d'arguments
+    va_end(args);
+
+    // Aucun tag correspondant trouvé
     return false;
 }
 

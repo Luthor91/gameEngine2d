@@ -7,6 +7,7 @@
 typedef struct HitboxComponent {
     float x, y;  // Décalage de la hitbox par rapport à la position de l'entité
     float width, height;     // Largeur et hauteur de la hitbox
+    bool is_active;
 } HitboxComponent;
 
 // Fonction pour ajouter une hitbox à une entité

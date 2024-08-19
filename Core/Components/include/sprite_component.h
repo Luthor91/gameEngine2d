@@ -13,7 +13,7 @@ typedef struct SpriteComponent {
 } SpriteComponent;
 
 // Fonctions pour manipuler les composants Sprite
-void addSpriteComponent(Entity entity, SDL_Texture* texture, SDL_Rect srcRect);
+void addSpriteComponent(Entity entity, SpriteComponent sprite);
 SpriteComponent* getSpriteComponent(Entity entity);
 void removeSpriteComponent(Entity entity);
 

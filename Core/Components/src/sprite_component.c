@@ -3,10 +3,9 @@
 static SpriteComponent spriteComponents[MAX_ENTITIES];
 
 // Fonction pour ajouter un composant Sprite à une entité
-void addSpriteComponent(Entity entity, SDL_Texture* texture, SDL_Rect srcRect) {
+void addSpriteComponent(Entity entity, SpriteComponent sprite) {
     if (entity < MAX_ENTITIES) {
-        spriteComponents[entity].texture = texture;
-        spriteComponents[entity].srcRect = srcRect;
+        spriteComponents[entity] = sprite;
         hasSprite[entity] = true;
     }
 }

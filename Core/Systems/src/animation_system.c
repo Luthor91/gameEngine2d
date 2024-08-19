@@ -18,7 +18,7 @@ int getTextureHeight(SDL_Texture* texture) {
 void updateAnimations() {
     Uint32 currentTime = SDL_GetTicks();
 
-    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+    for (Entity entity = 0; entity < getEntityCount(); ++entity) {
         if (!hasAnimationComponent(entity) || !hasSpriteComponent(entity)) { continue; }
         
         AnimationComponent* animation = getAnimationComponent(entity);

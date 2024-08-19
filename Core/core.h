@@ -21,6 +21,7 @@
 #include "Components/include/size_component.h"
 #include "Components/include/animation_component.h"
 #include "Components/include/tag_component.h"
+#include "Components/include/data_component.h"
 
 #include "Systems/include/game_system.h"
 #include "Systems/include/movement_system.h"
@@ -29,6 +30,9 @@
 #include "Systems/include/render_system.h"
 #include "Systems/include/animation_system.h"
 #include "Systems/include/collision_system.h"
+#include "Systems/include/timer_system.h"
+#include "Systems/include/sound_system.h"
+#include "Systems/include/particle_system.h"
 
 //#include "Managers/include/event_manager.h"
 

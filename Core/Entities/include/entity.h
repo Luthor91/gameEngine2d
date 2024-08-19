@@ -14,6 +14,7 @@ typedef unsigned int Entity;
 #include "../../Components/include/hitbox_component.h"
 #include "../../Components/include/size_component.h"
 #include "../../Components/include/tag_component.h"
+#include "../../Components/include/data_component.h"
 
 #define INVALID_ENTITY_ID -1
 
@@ -28,16 +29,25 @@ extern bool hasAnimation[MAX_ENTITIES];
 extern bool hasHitbox[MAX_ENTITIES];
 extern bool hasSize[MAX_ENTITIES];
 extern bool hasTags[MAX_ENTITIES];
+extern bool hasDatas[MAX_ENTITIES];
 
 extern Entity playerEntity;
 
 // Générateur d'ID simple pour les entités
 Entity createEntity();
+Entity createEntityWithId(int id);
+Entity copyEntity(Entity entity);
+
 Entity getEntity(int id);
+Entity getFirstValidEntity();
+Entity getFirstEmptyEntity();
 
 void disableEntity(Entity entity);
+void disableEntitiesFromRange(int start, int end);
 void destroyEntity(Entity entity);
+int getEntityCount();
 
+bool isEntityEnabled(Entity entity);
 bool hasPositionComponent(Entity entity);
 bool hasVelocityComponent(Entity entity);
 bool hasSpriteComponent(Entity entity);
@@ -47,5 +57,6 @@ bool hasAnimationComponent(Entity entity);
 bool hasHitboxComponent(Entity entity);
 bool hasSizeComponent(Entity entity);
 bool hasTagComponent(Entity entity);
+bool hasDataComponents(Entity entity);
 
 #endif

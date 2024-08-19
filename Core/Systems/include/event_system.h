@@ -12,11 +12,15 @@
 
 
 // Définitions des constantes
-#define MAX_EVENTS 256
-#define MAX_LISTENERS 64
-
 #define MAX_KEYS 512
 #define MAX_BINDINGS 256
+#define MAX_EVENTS 256                // Nombre maximum d'événements dans la file d'attente
+#define MAX_LISTENERS 64              // Nombre maximum de types d'écouteurs d'événements
+
+#define MAX_EVENT_QUEUE_SIZE MAX_EVENTS       // Taille maximale de la file d'attente d'événements (identique à MAX_EVENTS)
+#define MAX_EVENT_TYPE_COUNT MAX_LISTENERS    // Nombre maximum de types d'événements (identique à MAX_LISTENERS)
+#define MAX_LISTENER_COUNT MAX_LISTENERS      // Nombre maximum de types d'écouteurs d'événements (identique à MAX_LISTENERS)
+#define MAX_LISTENERS_PER_EVENT 16            // Nombre maximum d'écouteurs pour un type d'événement donné
 
 // Types d'événements
 typedef enum EventType {
@@ -24,6 +28,8 @@ typedef enum EventType {
     EVENT_TYPE_JUMP,
     EVENT_TYPE_SHOOT,
     EVENT_TYPE_DASH,
+    EVENT_TYPE_DEATH,
+    EVENT_TYPE_LEVEL_UP,
     EVENT_TYPE_COLLIDE,
     EVENT_TYPE_QUIT,
     EVENT_TYPE_KEYDOWN,
@@ -31,6 +37,7 @@ typedef enum EventType {
     EVENT_TYPE_MIDDLE_MOUSECLICK,
     EVENT_TYPE_RIGHT_MOUSECLICK,
     EVENT_TYPE_LEFT_MOUSECLICK,
+    EVENT_TYPE_TIMER_EXPIRED,
     EVENT_TYPE_GENERIC,
     // Ajoutez ici d'autres types d'événements nécessaires
 } EventType;

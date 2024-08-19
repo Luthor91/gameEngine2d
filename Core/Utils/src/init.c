@@ -29,6 +29,11 @@ int Init_Dependancies() {
         return 0;
     }
 
+    if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) == -1) {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        return 0;
+    }
+
     Time_Initialize();
 
     return 1; // Succès

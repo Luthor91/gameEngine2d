@@ -7,7 +7,7 @@ void updateInput() {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) { exit(0); }
 
-        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+        for (Entity entity = 0; entity < getEntityCount(); ++entity) {
             if (!hasInput[entity]) { continue; }  
 
             InputComponent* input = getInputComponent(entity);

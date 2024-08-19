@@ -7,7 +7,7 @@ void Time_Initialize() {
 
 // Mise à jour du delta time
 float Time_UpdateDeltaTime() {
-    current_time = Time_GetCurrentTime();
+    Uint32 current_time = Time_GetCurrentTime();
     delta_time = Time_CalculateDeltaTime(current_time, previous_time);
     previous_time = current_time;
     return delta_time;
@@ -28,27 +28,20 @@ void Time_Sleep(unsigned int milliseconds) {
     SDL_Delay(milliseconds);
 }
 
-// Limiter les FPS et mettre à jour delta_time
+// Limiter les FPS sans affecter delta_time
 void Time_SetFPSLimit(float fps) {
-    static Uint32 last_time = 0;
-    Uint32 current_time, elapsed_time;
+    static Uint32 last_frame_time = 0;
+    Uint32 current_time = Time_GetCurrentTime();
+    Uint32 frame_duration = 1000 / fps;
 
-    current_time = Time_GetCurrentTime();
-    elapsed_time = current_time - last_time;
+    Uint32 elapsed_time = current_time - last_frame_time;
 
-    // Mettre à jour delta_time
-    delta_time = Time_CalculateDeltaTime(current_time, last_time);
-
-    // Temps d'attente restant pour atteindre le FPS spécifié
-    Uint32 target_delay = 1000 / fps;
-
-    if (elapsed_time < target_delay) {
-        Time_Sleep(target_delay - elapsed_time);
+    if (elapsed_time < frame_duration) {
+        Time_Sleep(frame_duration - elapsed_time);
     }
 
-    last_time = Time_GetCurrentTime();
+    last_frame_time = Time_GetCurrentTime();
 }
-
 
 // Obtenir le FPS actuel
 float Time_GetFPS() {
@@ -80,5 +73,5 @@ char* Time_GetTimeStamp() {
 
 // Fonction pour obtenir le delta time
 float Time_GetDelta() {
-    return delta_time;
+    return Time_UpdateDeltaTime();
 }
