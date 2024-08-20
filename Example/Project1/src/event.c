@@ -96,17 +96,9 @@ void onBullet_CollideWith_Enemy(Event event) {
         }
     }
 
-    // Ajouter un émetteur de particules rouges à l'emplacement de la collision
-    if (activeEmitterCount < MAX_EMITTERS) {
-        ParticleEmitter* emitter = &activeEmitters[activeEmitterCount++];  // Ajouter un nouvel émetteur
-        SDL_Texture* particleTexture = loadColor(g_renderer, COLOR_RED, 1, 1);  // Texture rouge pour les particules
-        PositionComponent* positionBullet = getPositionComponent(bullet);
-        // Initialiser l'émetteur avec 100 particules et un taux d'expansion de 1.0
-        initParticleEmitter(emitter, 10, particleTexture, positionBullet->x, positionBullet->y, 0.05f);
-        emitter->active = 1;  // Activer l'émetteur
-    }
-
-
+    activateEmitter("Explosion");
+    PositionComponent positionBullet = *getPositionComponent(bullet);
+    setEmitterPosition("Explosion", positionBullet.x, positionBullet.y);
     disableEntity(bullet);
 
 }
@@ -246,5 +238,7 @@ void onDeath(Event event) {
     }
     if (getDataValue(playerEntity, DATA_LEVEL) >= 4.0) {
         summonTrap(deathPosition);
+    } else if (getDataValue(playerEntity, DATA_LEVEL) >= 5.0) {
+        killChance();
     }
 }

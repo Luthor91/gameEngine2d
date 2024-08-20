@@ -55,7 +55,7 @@ void handlePlayingState() {
     Uint32 startTime = Time_GetCurrentTime(); // Temps avant l'exécution
     updateEvent();
     updateMovement(deltaTime);
-    updateParticles(activeEmitters, deltaTime);
+    updateParticles(deltaTime);
     updateCollisionSystem();
     updateTimers(deltaTime);
     processEvents();
@@ -92,7 +92,6 @@ void handleExitState() {
             SDL_DestroyTexture(texture);
         }
     }
-    freeParticleEmitter(activeEmitters);
     SDL_DestroyRenderer(g_renderer);
     SDL_DestroyWindow(g_window);
     SDL_Quit();

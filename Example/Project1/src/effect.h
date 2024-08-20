@@ -5,6 +5,7 @@
 #include "global.h"
 
 void summonSecondBullet(Entity bullet, float directionX, float directionY, float coeff_passive);
-void summonTrap();
+void summonTrap(PositionComponent deathPosition);
+void killChance();
 
 #endif

@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 // Définition du composant Size
-typedef struct {
+typedef struct SizeComponent {
     float width;
     float height;
 } SizeComponent;

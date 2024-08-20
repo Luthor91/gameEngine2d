@@ -29,8 +29,9 @@ void renderEntities() {
     }
 
     // Rendu des particules
-    for (int i = 0; i < activeEmitterCount; ++i) {
-        ParticleEmitter* emitter = &activeEmitters[i];
+    ParticleEmitter* emitters = getEmitters();
+    for (int i = 0; i < getActiveEmitterCount(); ++i) {
+        ParticleEmitter* emitter = &emitters[i];
         if (!emitter->active) continue;
 
         for (int j = 0; j < emitter->particleCount; ++j) {

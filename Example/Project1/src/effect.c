@@ -43,3 +43,28 @@ void summonTrap(PositionComponent deathPosition) {
     addTag(trap, "Trap");
     addTimerComponent(trap, "dispawn_trap", 2.5f, false);
 }
+
+void killChance() {
+    int count = 0;
+    Entity* enemies = getEntitiesWithTag("Enemy", &count);
+    int index = rand() % count - 1;
+
+    if (getDataValue(playerEntity, DATA_LEVEL)/2 >= rand() % 99) {
+        Entity bullet = createEntity();
+        Entity target = enemies[index];
+        PositionComponent pos_target = *getPositionComponent(target);
+        SizeComponent size_target = *getSizeComponent(target);
+        PositionComponent pos = { 
+            pos_target.x + size_target.width/2, 
+            pos_target.y + size_target.height/2
+        };
+        HitboxComponent hitbox = {0, 0, 1, 1, true};
+        DataComponent data = DATA_COMPONENT_DEFAULT;
+
+        addPositionComponent(bullet, pos);
+        addHitboxComponent(bullet, hitbox);
+        addDataComponent(bullet, data);
+        addTag(bullet, "Bullet");
+        setDataValue(bullet, DATA_ATTACK, getDataValue(target, DATA_HEALTH));
+    }
+}

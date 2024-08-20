@@ -1,89 +1,176 @@
 #include "../include/particle_system.h"
 
-ParticleEmitter activeEmitters[MAX_EMITTERS];
+ParticleEmitter emitters[MAX_EMITTERS];
 int activeEmitterCount = 0;
 
 // Fonction pour initialiser un émetteur de particules
-void initParticleEmitter(ParticleEmitter* emitter, int particleCount, SDL_Texture* texture, int x, int y, float expansionRate) {
-    // Libérer les ressources précédentes si elles existent
-    if (emitter->particles != NULL) {
-        free(emitter->particles);
-        emitter->particles = NULL;
+void initParticleEmitter(const char* name, int particleCount, SDL_Texture* texture, int x, int y, float spreadness, float expansionRate) {
+    // Recherche d'un émetteur inactif dans le tableau
+    ParticleEmitter* emitter = NULL;
+    for (int i = 0; i < MAX_EMITTERS; i++) {
+        if (!emitters[i].active) {
+            emitter = &emitters[i];
+            break;
+        }
+    }
+    if (emitter == NULL) {
+        fprintf(stderr, "No available emitters.\n");
+        return;
     }
 
-    // Allouer de la mémoire pour les particules
+    // Initialisation de l'émetteur
+    strncpy(emitter->name, name, sizeof(emitter->name) - 1);
     emitter->particles = (Particle*)malloc(sizeof(Particle) * particleCount);
     if (emitter->particles == NULL) {
         fprintf(stderr, "Failed to allocate memory for particles.\n");
         return;
     }
-    
+
     emitter->particleCount = particleCount;
-    emitter->active = 1;
     emitter->position.x = x;
     emitter->position.y = y;
-    emitter->expansionRate = expansionRate;  // Taux d'expansion des particules
+    emitter->spreadness = spreadness;
+    emitter->expansionRate = expansionRate;
+    emitter->active = 0; // Activer directement lors de l'initialisation
+    activeEmitterCount++;
 
-    // Obtenir la taille de la texture
+    // Initialiser chaque particule
     int textureWidth, textureHeight;
     SDL_QueryTexture(texture, NULL, NULL, &textureWidth, &textureHeight);
 
-    // Initialiser le générateur de nombres aléatoires
-    static int randomSeedInitialized = 0;
-    if (!randomSeedInitialized) {
-        srand((unsigned int)time(NULL));
-        randomSeedInitialized = 1;
-    }
+    srand((unsigned int)time(NULL));
 
-    // Initialiser chaque particule
     for (int i = 0; i < particleCount; ++i) {
         Particle* particle = &emitter->particles[i];
         particle->texture = texture;
         particle->srcRect = (SDL_Rect){0, 0, textureWidth, textureHeight};
 
+        // Position initiale de la particule
         particle->position.x = x;
         particle->position.y = y;
 
-        // Calculer l'angle aléatoire en degrés puis le convertir en radians
+        // Calcul de la vélocité initiale en utilisant l'angle
         float angleDegrees = (float)(rand() % 360);
         float angleRadians = angleDegrees * (M_PI / 180.0f);
-        
-        // Calculer la vitesse initiale en fonction du taux d'expansion
-        float speed = 100.0f * emitter->expansionRate;
-        particle->velocity.x = speed * cosf(angleRadians);
-        particle->velocity.y = speed * sinf(angleRadians);
+        float speed = 100.0f * expansionRate;
+        particle->velocity.x = speed * cosf(angleRadians) * spreadness;
+        particle->velocity.y = speed * sinf(angleRadians) * spreadness;
 
-        particle->lifetime = 1.5f;  // Durée de vie initiale
-        particle->size = 1.0f;     // Taille initiale
-        particle->active = 1;      // Activée par défaut pour l'affichage
+        particle->lifetime = MAX_PARTICLE_LIFETIME;
+        particle->size = 1.0f;
+        particle->active = 1;
     }
 }
 
-// Fonction pour mettre à jour les particules d'un émetteur
-void updateParticles(ParticleEmitter* emitter, float deltaTime) {
-    if (!emitter->active) return;
+// Fonction pour mettre à jour les particules
+void updateParticles(float deltaTime) {
+    for (int i = 0; i < MAX_EMITTERS; i++) {
+        if (!emitters[i].active) continue;
 
-    for (int i = 0; i < emitter->particleCount; ++i) {
-        Particle* particle = &emitter->particles[i];
-        if (!particle->active) continue;
+        ParticleEmitter* emitter = &emitters[i];
 
-        // Mise à jour de la position en fonction de la vitesse
-        particle->position.x += particle->velocity.x * deltaTime;
-        particle->position.y += particle->velocity.y * deltaTime;
+        int activeParticleCount = 0;
 
-        // Réduction de la durée de vie
-        particle->lifetime -= deltaTime;
-        if (particle->lifetime <= 0) {
-            printf("Particle n°%d disabled\n", i);
-            particle->active = 0; // Désactive la particule si sa durée de vie est écoulée
+        // Mise à jour des particules
+        for (int j = 0; j < emitter->particleCount; ++j) {
+            Particle* particle = &emitter->particles[j];
+            if (!particle->active) continue;
+
+            // Mise à jour de la position en fonction de la vitesse
+            particle->position.x += (int)(particle->velocity.x * deltaTime);
+            particle->position.y += (int)(particle->velocity.y * deltaTime);
+
+            // Réduction de la durée de vie
+            particle->lifetime -= deltaTime;
+            if (particle->lifetime <= 0) {
+                // Marquer la particule comme inactive
+                particle->active = 0;
+            } else {
+                // Conserver la particule active
+                emitter->particles[activeParticleCount++] = *particle;
+            }
+        }
+
+        // Réajuster le tableau des particules
+        Particle* newParticles = (Particle*)realloc(emitter->particles, sizeof(Particle) * activeParticleCount);
+        if (newParticles) {
+            emitter->particles = newParticles;
+            emitter->particleCount = activeParticleCount;
+        } else {
+            // En cas d'échec de réallocation, conserver l'ancien tableau
+            // Afficher un message d'erreur et conserver l'ancien tableau
+            fprintf(stderr, "Failed to reallocate memory for particles. Keeping old allocation.\n");
+            // Note : L'ancien tableau est encore valide ici, donc pas besoin de libérer ou de manipuler l'ancien tableau.
+        }
+
+        // Si toutes les particules de l'émetteur sont inactives, désactiver l'émetteur
+        if (activeParticleCount == 0) {
+            emitter->active = 0;
+            activeEmitterCount--;
+        }
+    }
+}
+
+ParticleEmitter* getEmitters() {
+    return emitters;
+}
+
+int getActiveEmitterCount() {
+    return activeEmitterCount;
+}
+
+void setEmitterPosition(const char* name, int x, int y) {
+    for (int i = 0; i < MAX_EMITTERS; i++) {
+        if (emitters[i].active && strcmp(emitters[i].name, name) == 0) {
+            emitters[i].position.x = x;
+            emitters[i].position.y = y;
+
+            // Mettre à jour la position initiale de chaque particule en conséquence
+            for (int j = 0; j < emitters[i].particleCount; j++) {
+                Particle* particle = &emitters[i].particles[j];
+                if (particle->active) {
+                    particle->position.x = x;
+                    particle->position.y = y;
+                }
+            }
+            break;
+        }
+    }
+}
+
+// Fonction pour activer un émetteur par son nom
+void activateEmitter(const char* name) {
+    for (int i = 0; i < MAX_EMITTERS; i++) {
+        if (strcmp(emitters[i].name, name) == 0) {
+            if (!emitters[i].active) {
+                emitters[i].active = 1;
+                activeEmitterCount++;
+            }
+            break;
+        }
+    }
+}
+
+// Fonction pour désactiver un émetteur par son nom
+void deactivateEmitter(const char* name) {
+    for (int i = 0; i < MAX_EMITTERS; i++) {
+        if (strcmp(emitters[i].name, name) == 0) {
+            if (emitters[i].active) {
+                emitters[i].active = 0;
+                activeEmitterCount--;
+            }
+            break;
         }
     }
 }
 
 // Fonction pour libérer les ressources d'un émetteur de particules
 void freeParticleEmitter(ParticleEmitter* emitter) {
-    free(emitter->particles);
-    emitter->particles = NULL;
+    if (emitter->particles) {
+        free(emitter->particles);
+        emitter->particles = NULL;
+    }
     emitter->particleCount = 0;
     emitter->active = 0;
+    activeEmitterCount--;
 }

@@ -68,6 +68,9 @@ int main(int argc, char* argv[]) {
     setDataValue(playerEntity, DATA_CAPABLE, 1.0f);
     // bullet_count
     setDataValue(playerEntity, DATA_COUNT_SHOOT, 0.0f);
+
+    SDL_Texture* particleTexture = loadColor(g_renderer, COLOR_RED, 1, 1);
+    initParticleEmitter("Explosion", 24, particleTexture, 0, 0, 1.5f, 2.0f);
      
     changeState(STATE_PLAYING);
     while (currentState != STATE_EXIT) {
