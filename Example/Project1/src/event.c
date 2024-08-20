@@ -95,12 +95,26 @@ void onBullet_CollideWith_Enemy(Event event) {
             emitEvent(eventDeath);
         }
     }
-
+/*
     activateEmitter("Explosion");
     PositionComponent positionBullet = *getPositionComponent(bullet);
     setEmitterPosition("Explosion", positionBullet.x, positionBullet.y);
+*/
     disableEntity(bullet);
 
+}
+
+void onBullet_CollideWith_Barrel(Event event) {
+    if (!checkCollisionTags(event, "Barrel", "Bullet")) return;
+    CollisionData* collisionData = (CollisionData*)event.data; // Note the pointer type
+    Entity barrel = collisionData->entity1;
+    Entity bullet = collisionData->entity2;
+    setDataValue(barrel, DATA_SCORE, getDataValue(barrel, DATA_SCORE)+1.0f);
+
+    if (getDataValue(barrel, DATA_SCORE) >= 5.0f) {
+        explodeBarrel(barrel);
+    }
+    disableEntity(bullet);
 }
 
 void onTrap_CollideWith_Enemy(Event event) {
@@ -182,6 +196,11 @@ void onLeveling_Up(Event event) {
     setDataValue(entity, DATA_HEALTH, getDataValue(entity, DATA_HEALTH)*1.1);
     setDataValue(entity, DATA_SPEED, getDataValue(entity, DATA_SPEED)*0.75);
 
+    if (getDataValue(entity, DATA_LEVEL) >= 6.0f) {
+        addTimerComponent(entity, "spawn_barrel", 15.0f, true);
+    }
+    
+
     printf("Leveling up to %.1f !\n\tAttack : %f\n\tHealth : %f\n\tAttack Speed : %f attacks per second\n", 
         getDataValue(entity, DATA_LEVEL),  getDataValue(entity, DATA_ATTACK),
         getDataValue(entity, DATA_HEALTH), 1.0f/getDataValue(entity, DATA_SPEED)
@@ -232,7 +251,7 @@ void onDeath(Event event) {
     );
 
     // Vérifier si le joueur doit monter de niveau
-    if ((int)getDataValue(entity, DATA_SCORE) % 5 == 0) {
+    if ((int)getDataValue(entity, DATA_SCORE) % 1 == 0) {
         Event levelUpEvent = {EVENT_TYPE_LEVEL_UP, &playerEntity};
         emitEvent(levelUpEvent);
     }

@@ -9,6 +9,7 @@ int main(int argc, char* argv[]) {
     addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Enemy);
     addEventListener(EVENT_TYPE_COLLIDE, onEnemy_CollideWith_Player);
     addEventListener(EVENT_TYPE_COLLIDE, onTrap_CollideWith_Enemy);
+    addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Barrel);
     
     addEventListener(EVENT_TYPE_DEATH, onDeath);
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponReloading);
@@ -16,6 +17,8 @@ int main(int argc, char* argv[]) {
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponIncreasingDifficulty);
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponSpawningEnemies);
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponDispawningTrap);
+    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponSpawnBarrel);
+    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponDispawnBarrel);
     addEventListener(EVENT_TYPE_LEVEL_UP, onLeveling_Up);
      
     // Définition du fond d'écran
@@ -71,6 +74,7 @@ int main(int argc, char* argv[]) {
 
     SDL_Texture* particleTexture = loadColor(g_renderer, COLOR_RED, 1, 1);
     initParticleEmitter("Explosion", 24, particleTexture, 0, 0, 1.5f, 2.0f);
+    addTimerComponent(playerEntity, "spawn_barrel", 1.0f, true);
      
     changeState(STATE_PLAYING);
     while (currentState != STATE_EXIT) {

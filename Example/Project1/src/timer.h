@@ -9,5 +9,7 @@ void uponInvincibilityFinished(Event event);
 void uponIncreasingDifficulty(Event event);
 void uponSpawningEnemies(Event event);
 void uponDispawningTrap(Event event);
+void uponSpawnBarrel(Event event);
+void uponDispawnBarrel(Event event);
 
 #endif

@@ -7,5 +7,6 @@
 void summonSecondBullet(Entity bullet, float directionX, float directionY, float coeff_passive);
 void summonTrap(PositionComponent deathPosition);
 void killChance();
+void explodeBarrel(Entity barrel);
 
 #endif

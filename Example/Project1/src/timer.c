@@ -91,3 +91,59 @@ void uponDispawningTrap(Event event) {
     disableEntity(trap);
 }
 
+
+void uponSpawnBarrel(Event event) {
+    if (!CheckTimerName(event, "spawn_barrel")) return;
+    printf("spawn barrel\n");
+    
+    // Créer et configurer une nouvelle entité
+    Entity barrel = createEntity();
+    if (barrel == INVALID_ENTITY_ID) {
+        printf("Failed to create barrel entity\n");
+        return;
+    }
+
+    // Configurer les composants pour l'entité barrel
+    VelocityComponent velocity = {0.0f, 0.0f};
+    SizeComponent size = {64, 64};
+    PositionComponent position = {
+        .x = 0 + rand() % (WINDOW_WIDTH - (int)size.width),
+        .y = 0 + rand() % (WINDOW_HEIGHT - (int)size.height)
+    };
+    HitboxComponent hitbox = {0.0f, 0.0f, size.width, size.height, true};
+    DataComponent datas = DATA_COMPONENT_DEFAULT;
+
+    // Créer une texture rouge avec un peu de transparence
+    SDL_Texture* barrelTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, (int)size.width, (int)size.height);
+    SDL_SetTextureBlendMode(barrelTexture, SDL_BLENDMODE_BLEND); // Activer le blending pour la transparence
+    SDL_SetRenderTarget(g_renderer, barrelTexture);
+    SDL_SetRenderDrawColor(g_renderer, 255, 0, 0, 64); // Rouge avec transparence
+    SDL_RenderClear(g_renderer);
+    SDL_SetRenderTarget(g_renderer, NULL);
+
+    // Créer le SpriteComponent pour le barrel
+    SpriteComponent barrelSprite = {
+        .texture = barrelTexture,
+        .srcRect = {0, 0, (int)size.width, (int)size.height}
+    };
+
+    // Ajouter les composants à l'entité
+    addPositionComponent(barrel, position);
+    addVelocityComponent(barrel, velocity);
+    addSizeComponent(barrel, size);
+    addHitboxComponent(barrel, hitbox);
+    addSpriteComponent(barrel, barrelSprite);
+    setDataValue(barrel, DATA_ATTACK, getDataValue(playerEntity, DATA_ATTACK) * 0.1);
+    setDataValue(barrel, DATA_SCORE, 0.0f);
+    addTag(barrel, "Barrel");
+    addTimerComponent(barrel, "dispawn_barrel", 5.0f, false);
+}
+
+void uponDispawnBarrel(Event event) {  
+    if (!CheckTimerName(event, "dispawn_barrel")) return;
+    printf("dispawn barrel\n");
+
+    TimerData* timerData = (TimerData*)event.data;
+    Entity barrel = timerData->entity;
+    disableEntity(barrel);
+}

@@ -68,3 +68,57 @@ void killChance() {
         setDataValue(bullet, DATA_ATTACK, getDataValue(target, DATA_HEALTH));
     }
 }
+
+void explodeBarrel(Entity barrel) {
+    // Récupérer la position et la taille du baril
+    PositionComponent* barrelPos = getPositionComponent(barrel);
+    SizeComponent* barrelSize = getSizeComponent(barrel);
+
+    if (barrelPos == NULL || barrelSize == NULL) {
+        printf("Barrel is missing Position or Size component\n");
+        return;
+    }
+
+    // Définir les limites de la zone d'explosion du baril
+    SDL_Rect explosionZone = {
+        .x = barrelPos->x,
+        .y = barrelPos->y,
+        .w = barrelSize->width,
+        .h = barrelSize->height
+    };
+
+    // Obtenir la valeur de l'attaque du baril
+    float damage = (getDataValue(barrel, DATA_ATTACK) * 0.70) * (1 + getDataValue(barrel, DATA_SCORE));
+    int count = 0;
+    Entity* enemies = getEntitiesWithTag("Enemy", &count);
+    // Parcourir toutes les entités et vérifier les ennemis dans la zone
+    for (Entity enemy = 0; enemy <= count; enemy++) {
+        PositionComponent* enemyPos = getPositionComponent(enemy);
+        SizeComponent* enemySize = getSizeComponent(enemy);
+
+        // Définir les limites de l'ennemi
+        SDL_Rect enemyZone = {
+            .x = enemyPos->x,
+            .y = enemyPos->y,
+            .w = enemySize->width,
+            .h = enemySize->height
+        };
+
+        // Vérifier si l'ennemi est dans la zone d'explosion
+        if (SDL_HasIntersection(&explosionZone, &enemyZone)) {
+            // Infliger des dégâts à l'ennemi
+            float health = getDataValue(enemy, DATA_HEALTH) - damage;
+            setDataValue(enemy, DATA_HEALTH, health);
+            if (health <= 0) {
+                Entity* enemyPtr = malloc(sizeof(Entity));
+                *enemyPtr = enemy;
+                Event eventDeath = {EVENT_TYPE_DEATH, enemyPtr};
+                emitEvent(eventDeath);
+            }
+            printf("Enemy %d hit by barrel explosion for %.2f damage\n", enemy, damage);
+        }
+    }
+
+    // Vous pouvez également ajouter ici une logique pour détruire ou désactiver le baril après l'explosion
+    destroyEntity(barrel);
+}
