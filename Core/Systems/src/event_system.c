@@ -113,6 +113,11 @@ void processEvents() {
 // Met à jour les événements et émet les événements liés aux touches
 void updateEvent() {
     SDL_Event sdlEvent;
+    static int mouseX, mouseY; // Pour garder la position de la souris
+    static bool leftMouseHeld = false;
+    static bool rightMouseHeld = false;
+    static bool middleMouseHeld = false;
+
     while (SDL_PollEvent(&sdlEvent)) {
         if (sdlEvent.type == SDL_QUIT) {
             changeState(STATE_EXIT);
@@ -120,24 +125,60 @@ void updateEvent() {
         bool eventHandled = false; 
 
         if (sdlEvent.type == SDL_MOUSEBUTTONDOWN) {
-            int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
-            // Créer l'événement de tir
             SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
             cursorPos->x = mouseX;
             cursorPos->y = mouseY;
+
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
+                leftMouseHeld = true; // Indiquer que le bouton gauche est maintenu
                 Event clickEvent = {EVENT_TYPE_LEFT_MOUSECLICK, cursorPos};
                 emitEvent(clickEvent);
             } else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) {
+                rightMouseHeld = true; // Indiquer que le bouton droit est maintenu
                 Event clickEvent = {EVENT_TYPE_RIGHT_MOUSECLICK, cursorPos};
                 emitEvent(clickEvent);
             } else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
+                middleMouseHeld = true; // Indiquer que le bouton milieu est maintenu
                 Event clickEvent = {EVENT_TYPE_MIDDLE_MOUSECLICK, cursorPos};
                 emitEvent(clickEvent);
             }
+        } else if (sdlEvent.type == SDL_MOUSEBUTTONUP) {
+            if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
+                leftMouseHeld = false; // Bouton gauche relâché
+            } else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) {
+                rightMouseHeld = false; // Bouton droit relâché
+            } else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
+                middleMouseHeld = false; // Bouton milieu relâché
+            }
         }
-        
+
+        // Émettre des événements de maintien de clic
+        if (leftMouseHeld) {
+            SDL_GetMouseState(&mouseX, &mouseY);
+            SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
+            cursorPos->x = mouseX;
+            cursorPos->y = mouseY;
+            Event holdEvent = {EVENT_TYPE_LEFT_MOUSEHELD, cursorPos};
+            emitEvent(holdEvent);
+        }
+        if (rightMouseHeld) {
+            SDL_GetMouseState(&mouseX, &mouseY);
+            SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
+            cursorPos->x = mouseX;
+            cursorPos->y = mouseY;
+            Event holdEvent = {EVENT_TYPE_RIGHT_MOUSEHELD, cursorPos};
+            emitEvent(holdEvent);
+        }
+        if (middleMouseHeld) {
+            SDL_GetMouseState(&mouseX, &mouseY);
+            SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
+            cursorPos->x = mouseX;
+            cursorPos->y = mouseY;
+            Event holdEvent = {EVENT_TYPE_MIDDLE_MOUSEHELD, cursorPos};
+            emitEvent(holdEvent);
+        }
+
         // Gestion des événements clavier
         if (sdlEvent.type == SDL_KEYDOWN || sdlEvent.type == SDL_KEYUP) {
             bool isPressed = (sdlEvent.type == SDL_KEYDOWN);

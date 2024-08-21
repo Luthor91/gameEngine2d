@@ -24,7 +24,7 @@ void uponIncreasingDifficulty(Event event) {
     printf("Difficulty increasing to %lf\n", getDataValue(playerEntity, DATA_DIFFICULTY));
 }
 
-void uponSpawningEnemies(Event event) {
+void uponSpawnEnemies(Event event) {
     if (!CheckTimerName(event, "spawn_enemies")) return;
     printf("spawning enemies\n");
 
@@ -82,61 +82,20 @@ void uponSpawningEnemies(Event event) {
     }
 }
 
-void uponDispawningTrap(Event event) {  
+void uponDispawnTrap(Event event) {  
     if (!CheckTimerName(event, "dispawn_trap")) return;
     printf("dispawn traps\n");
 
     TimerData* timerData = (TimerData*)event.data;
     Entity trap = timerData->entity;
-    disableEntity(trap);
+    disableComponentEntity(trap);
 }
 
 
 void uponSpawnBarrel(Event event) {
     if (!CheckTimerName(event, "spawn_barrel")) return;
     printf("spawn barrel\n");
-    
-    // Créer et configurer une nouvelle entité
-    Entity barrel = createEntity();
-    if (barrel == INVALID_ENTITY_ID) {
-        printf("Failed to create barrel entity\n");
-        return;
-    }
-
-    // Configurer les composants pour l'entité barrel
-    VelocityComponent velocity = {0.0f, 0.0f};
-    SizeComponent size = {64, 64};
-    PositionComponent position = {
-        .x = 0 + rand() % (WINDOW_WIDTH - (int)size.width),
-        .y = 0 + rand() % (WINDOW_HEIGHT - (int)size.height)
-    };
-    HitboxComponent hitbox = {0.0f, 0.0f, size.width, size.height, true};
-    DataComponent datas = DATA_COMPONENT_DEFAULT;
-
-    // Créer une texture rouge avec un peu de transparence
-    SDL_Texture* barrelTexture = SDL_CreateTexture(g_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, (int)size.width, (int)size.height);
-    SDL_SetTextureBlendMode(barrelTexture, SDL_BLENDMODE_BLEND); // Activer le blending pour la transparence
-    SDL_SetRenderTarget(g_renderer, barrelTexture);
-    SDL_SetRenderDrawColor(g_renderer, 255, 0, 0, 64); // Rouge avec transparence
-    SDL_RenderClear(g_renderer);
-    SDL_SetRenderTarget(g_renderer, NULL);
-
-    // Créer le SpriteComponent pour le barrel
-    SpriteComponent barrelSprite = {
-        .texture = barrelTexture,
-        .srcRect = {0, 0, (int)size.width, (int)size.height}
-    };
-
-    // Ajouter les composants à l'entité
-    addPositionComponent(barrel, position);
-    addVelocityComponent(barrel, velocity);
-    addSizeComponent(barrel, size);
-    addHitboxComponent(barrel, hitbox);
-    addSpriteComponent(barrel, barrelSprite);
-    setDataValue(barrel, DATA_ATTACK, getDataValue(playerEntity, DATA_ATTACK) * 0.1);
-    setDataValue(barrel, DATA_SCORE, 0.0f);
-    addTag(barrel, "Barrel");
-    addTimerComponent(barrel, "dispawn_barrel", 5.0f, false);
+    summonBarrel();
 }
 
 void uponDispawnBarrel(Event event) {  
@@ -145,5 +104,95 @@ void uponDispawnBarrel(Event event) {
 
     TimerData* timerData = (TimerData*)event.data;
     Entity barrel = timerData->entity;
-    disableEntity(barrel);
+    disableComponentEntity(barrel);
+}
+
+void uponSpawnPoison(Event event) {
+    if (!CheckTimerName(event, "spawn_poison")) return;
+    printf("spawn poison\n");
+    summonPoison();
+}
+
+void uponApplyingPoisonTicks(Event event) {
+    if (!CheckTimerName(event, "apply_poison_tick")) return;
+
+    TimerData* timerData = (TimerData*)event.data;
+    Entity poison = timerData->entity;
+    HitboxComponent hitbox = *getHitboxComponent(poison);
+    PositionComponent* poison_pos = getPositionComponent(poison);
+    SizeComponent* poison_size = getSizeComponent(poison);
+
+    if (poison_pos == NULL || poison_size == NULL) {
+        printf("Poison is missing Position or Size component\n");
+        return;
+    }
+
+    // Définir les limites de la zone d'explosion du baril
+    SDL_Rect poison_area = {
+        .x = poison_pos->x,
+        .y = poison_pos->y,
+        .w = poison_size->width,
+        .h = poison_size->height
+    };
+
+    float damage = getDataValue(poison, DATA_ATTACK);
+    int count = 0;
+    Entity* enemies = getEntitiesWithTag("Enemy", &count);
+    // Parcourir toutes les entités et vérifier les ennemis dans la zone
+    for (int index = 0; index < count; index++) {
+        Entity enemy = enemies[index];
+        PositionComponent* enemy_pos = getPositionComponent(enemy);
+        SizeComponent* enemy_size = getSizeComponent(enemy);
+
+        // Définir les limites de l'ennemi
+        SDL_Rect enemy_area = {
+            .x = enemy_pos->x,
+            .y = enemy_pos->y,
+            .w = enemy_size->width,
+            .h = enemy_size->height
+        };
+        // Vérifier si l'ennemi est dans la zone d'explosion
+        if (SDL_HasIntersection(&poison_area, &enemy_area)) {
+            // Infliger des dégâts à l'ennemi
+            float health = getDataValue(enemy, DATA_HEALTH) - damage;
+            setDataValue(enemy, DATA_HEALTH, health);
+            if (health <= 0) {
+                Entity* enemyPtr = malloc(sizeof(Entity));
+                *enemyPtr = enemy;
+                Event eventDeath = {EVENT_TYPE_DEATH, enemyPtr};
+                emitEvent(eventDeath);
+            }
+            printf("Enemy %d hit by poison for %.2f damage\n", enemy, damage);
+        }
+    }
+    hitbox.is_active = hitbox.is_active ? false : true;
+
+    setDataValue(poison, DATA_ATTACK, getDataValue(poison, DATA_ATTACK)*0.95);
+
+    if (getDataValue(poison, DATA_ATTACK) < getDataValue(playerEntity, DATA_ATTACK) * 0.05) {
+        TimerData* timerData = (TimerData*)event.data;
+        Entity poison = timerData->entity;
+        removeTimerComponent(poison, "apply_poison_tick"); 
+        disableComponentEntity(poison);
+    }
+    
+    printf("damage : %f\n", getDataValue(poison, DATA_ATTACK));
+}
+
+void uponDispawnBait(Event event) {  
+    if (!CheckTimerName(event, "dispawn_bait")) return;
+    printf("dispawn bait\n");
+
+    TimerData* timerData = (TimerData*)event.data;
+    Entity bait = timerData->entity;
+    PositionComponent position_player = *getPositionComponent(playerEntity);
+    // Faire changer la direction des ennemis vers le joueur
+    int count = 0;
+    Entity* enemies = getEntitiesWithTag("Enemy", &count);
+    for (int index = 0; index < count; index++) {
+        Entity enemy = enemies[index];
+        adjustEnemyDirection(enemy, position_player);
+    }
+
+    disableComponentEntity(bait);
 }

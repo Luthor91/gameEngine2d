@@ -22,10 +22,10 @@ CollisionData* CollisionData_Init(Entity entity1, Entity entity2) {
 void updateCollisionSystem() {
     // Parcourir toutes les entités et vérifier les collisions
     for (Entity entity1 = 0; entity1 < getEntityCount(); ++entity1) {
-        if (!hasHitbox[entity1] || !hasPosition[entity1]) continue;
+        if (!hasHitbox[entity1] || !hasPosition[entity1] || !isEntityEnabled(entity1)) continue;
 
         for (Entity entity2 = entity1 + 1; entity2 < getEntityCount(); ++entity2) {
-            if (!hasHitbox[entity2] || !hasPosition[entity2]) continue;
+            if (!hasHitbox[entity2] || !hasPosition[entity2] || !isEntityEnabled(entity2)) continue;
 
                 if (checkCollision(entity1, entity2)) {
                     CollisionData* collider1 = CollisionData_Init(entity1, entity2);

@@ -1,6 +1,6 @@
 #include "event.h"
 
-void onClick(Event event) {
+void onBullet_Shoot(Event event) {
     if(getDataValue(playerEntity, DATA_CAPABLE) == 0.0f) {
         return;
     } else {
@@ -76,6 +76,54 @@ void onClick(Event event) {
     }
 }
 
+void onBait_Spawn(Event event) {
+    int count = 0;
+    Entity* baits = getEntitiesWithTag("Bait", &count);
+    if (count > 0) return;  
+
+    // Extraire les coordonnées de la souris depuis event->data
+    SDL_Point* cursorPos = (SDL_Point*)event.data;
+    if (cursorPos == NULL) {
+        printf("Cursor position data is null\n");
+        return;
+    }
+
+    // Créer une nouvelle entité "bait"
+    Entity bait = createEntity();
+    if (bait == INVALID_ENTITY_ID) {
+        printf("Failed to create bait entity\n");
+        return;
+    }
+
+    // Configurer les composants pour l'entité "bait"
+    SizeComponent size = {20.0f, 20.0f}; // Taille du bait, par exemple 20x20
+    PositionComponent position = {
+        cursorPos->x - size.width / 2, // Centrer la position sur la souris
+        cursorPos->y - size.height / 2
+    };
+    SpriteComponent baitSprite = {
+        loadColor(g_renderer, COLOR_RED, size.width, size.height),
+        (SDL_Rect){0, 0, size.width, size.height}
+    };
+
+    // Ajouter les composants à l'entité
+    addPositionComponent(bait, position);
+    addSizeComponent(bait, size);
+    addSpriteComponent(bait, baitSprite);
+    addTag(bait, "Bait");
+
+    // Faire changer la direction des ennemis vers le "bait"
+    count = 0;
+    Entity* enemies = getEntitiesWithTag("Enemy", &count);
+    for (int index = 0; index < count; index++) {
+        Entity enemy = enemies[index];
+        adjustEnemyDirection(enemy, position); // Ajuster la direction vers le "bait"
+    }
+
+    // Ajouter un timer pour détruire le "bait" après un certain temps
+    addTimerComponent(bait, "dispawn_bait", 2.5f, false);
+}
+
 void onBullet_CollideWith_Enemy(Event event) {
     if (!checkCollisionTags(event, "Enemy", "Bullet")) return;
 
@@ -95,13 +143,10 @@ void onBullet_CollideWith_Enemy(Event event) {
             emitEvent(eventDeath);
         }
     }
-/*
-    activateEmitter("Explosion");
     PositionComponent positionBullet = *getPositionComponent(bullet);
     setEmitterPosition("Explosion", positionBullet.x, positionBullet.y);
-*/
-    disableEntity(bullet);
-
+    instanciateParticleEmitter("Explosion");
+    disableComponentEntity(bullet);
 }
 
 void onBullet_CollideWith_Barrel(Event event) {
@@ -114,7 +159,7 @@ void onBullet_CollideWith_Barrel(Event event) {
     if (getDataValue(barrel, DATA_SCORE) >= 5.0f) {
         explodeBarrel(barrel);
     }
-    disableEntity(bullet);
+    disableComponentEntity(bullet);
 }
 
 void onTrap_CollideWith_Enemy(Event event) {
@@ -156,7 +201,7 @@ void onTrap_CollideWith_Enemy(Event event) {
     }
 
     // Désactiver le trap après la collision
-    disableEntity(trap);
+    disableComponentEntity(trap);
 }
 
 void onEnemy_CollideWith_Player(Event event) {
@@ -183,8 +228,17 @@ void onEnemy_CollideWith_Player(Event event) {
             Event eventDeath = {EVENT_TYPE_DEATH, playerEntity};
             emitEvent(eventDeath);
         }
+
+        if (getDataValue(player, DATA_LEVEL) >= 7.0f) {
+            summonPoison();
+        }
+        if (getDataValue(player, DATA_LEVEL) >= 8.0f) {
+            addEventListener(EVENT_TYPE_RIGHT_MOUSECLICK, onBait_Spawn);
+        }
+
+        
     }
-    disableEntity(enemy);
+    disableComponentEntity(enemy);
 }
 
 void onLeveling_Up(Event event) {   
@@ -198,8 +252,7 @@ void onLeveling_Up(Event event) {
 
     if (getDataValue(entity, DATA_LEVEL) >= 6.0f) {
         addTimerComponent(entity, "spawn_barrel", 15.0f, true);
-    }
-    
+    } 
 
     printf("Leveling up to %.1f !\n\tAttack : %f\n\tHealth : %f\n\tAttack Speed : %f attacks per second\n", 
         getDataValue(entity, DATA_LEVEL),  getDataValue(entity, DATA_ATTACK),
@@ -214,7 +267,7 @@ void onDeath(Event event) {
     Entity entity = *entityPtr; 
 
     if (entity == playerEntity) {
-        disableEntitiesFromRange(0, MAX_ENTITIES);
+        disableComponentEntitiesFromRange(0, MAX_ENTITIES);
         Entity end_screen = createEntity();
         PositionComponent pos = POSITION_ZERO;
         addPositionComponent(end_screen, pos);
@@ -243,7 +296,7 @@ void onDeath(Event event) {
     };
 
     // Désactiver l'entité
-    disableEntity(entity);
+    disableComponentEntity(entity);
     setDataValue(
         entity, 
         DATA_SCORE, 
@@ -251,7 +304,7 @@ void onDeath(Event event) {
     );
 
     // Vérifier si le joueur doit monter de niveau
-    if ((int)getDataValue(entity, DATA_SCORE) % 1 == 0) {
+    if ((int)getDataValue(entity, DATA_SCORE) % 5 == 0) {
         Event levelUpEvent = {EVENT_TYPE_LEVEL_UP, &playerEntity};
         emitEvent(levelUpEvent);
     }

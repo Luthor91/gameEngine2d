@@ -118,7 +118,7 @@ Entity getFirstValidEntity() {
     return INVALID_ENTITY_ID;
 }
 
-void disableEntity(Entity entity) {
+void disableComponentEntity(Entity entity) {
     if (entity < MAX_ENTITIES && entityStates[entity]) {
         // Désactiver les composants
         entityStates[entity] = false;
@@ -136,17 +136,28 @@ void disableEntity(Entity entity) {
     }
 }
 
-void disableEntitiesFromRange(int start, int end) {
+void deactivateEntity(Entity entity) {
+    if (entity < MAX_ENTITIES) {
+        entityStates[entity] = false;
+    }
+}
+
+void activateEntity(Entity entity) {
+    if (entity < MAX_ENTITIES) {
+        entityStates[entity] = true;
+    }
+}
+
+void disableComponentEntitiesFromRange(int start, int end) {
     if (start < 0 || end >= MAX_ENTITIES || start > end)  return;
 
     // Parcourir chaque entité dans la plage spécifiée
     for (int entity = start; entity <= end; entity++) {
         if (entityStates[entity] == true) {
-            disableEntity(entity);
+            disableComponentEntity(entity);
         }
     }
 }
-
 
 void destroyEntity(Entity entity) {
     if (entity < MAX_ENTITIES && entityStates[entity]) {

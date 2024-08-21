@@ -8,7 +8,7 @@ void renderEntities() {
 
     // Rendu des entités
     for (Entity entity = 0; entity < getEntityCount(); ++entity) {
-        if (!hasSpriteComponent(entity)) { continue; }
+        if (!hasSpriteComponent(entity) || !isEntityEnabled(entity)) { continue; }
 
         SpriteComponent* sprite = getSpriteComponent(entity);
         PositionComponent* position = getPositionComponent(entity);
@@ -24,7 +24,7 @@ void renderEntities() {
             .w = (int)(sprite->srcRect.w * transform->scaleX),
             .h = (int)(sprite->srcRect.h * transform->scaleY)
         };
-        
+        SDL_SetTextureBlendMode(sprite->texture, SDL_BLENDMODE_BLEND);
         SDL_RenderCopyEx(g_renderer, sprite->texture, &sprite->srcRect, &destRect, transform->rotation, NULL, SDL_FLIP_NONE);
     }
 

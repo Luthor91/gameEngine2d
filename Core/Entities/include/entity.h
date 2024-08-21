@@ -42,8 +42,11 @@ Entity getEntity(int id);
 Entity getFirstValidEntity();
 Entity getFirstEmptyEntity();
 
-void disableEntity(Entity entity);
-void disableEntitiesFromRange(int start, int end);
+void disableComponentEntity(Entity entity);
+
+void disableComponentEntitiesFromRange(int start, int end);
+void deactivateEntity(Entity entity);
+void activateEntity(Entity entity);
 void destroyEntity(Entity entity);
 int getEntityCount();
 

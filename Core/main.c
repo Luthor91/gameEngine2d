@@ -4,7 +4,7 @@
 
 bool can_shoot = true;
 
-void onClick(Event event) {
+void onBullet_Shoot(Event event) {
     if(!can_shoot) {
         return;
     } else {
@@ -106,7 +106,7 @@ void onBullet_CollideWith_Enemy(Event event) {
             emitEvent(eventDeath);
         }
     }
-    disableEntity(bullet);
+    disableComponentEntity(bullet);
 }
 
 void onEnemy_CollideWith_Player(Event event) {
@@ -152,7 +152,7 @@ void onEnemy_CollideWith_Player(Event event) {
             emitEvent(eventDeath);
         }
     }
-    disableEntity(enemy);
+    disableComponentEntity(enemy);
 }
 
 void onDeath(Event event) {
@@ -164,7 +164,7 @@ void onDeath(Event event) {
     Entity entity = event.data;   
     if (hasTag(entity, "Enemy") || hasTag(entity, "Player")) {
         printf("Entity %u has died\n", entity);
-        disableEntity(entity);
+        disableComponentEntity(entity);
         if (entity == playerEntity) {
             changeState(STATE_GAME_OVER);
         }
@@ -219,7 +219,7 @@ int main(int argc, char* argv[]) {
 
     // Ajouter des listeners pour les événements
     addEventListener(EVENT_TYPE_MOVE, onMove);
-    addEventListener(EVENT_TYPE_LEFT_MOUSECLICK, onClick);
+    addEventListener(EVENT_TYPE_LEFT_MOUSECLICK, onBullet_Shoot);
     addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Enemy);
     addEventListener(EVENT_TYPE_COLLIDE, onEnemy_CollideWith_Player);
     addEventListener(EVENT_TYPE_DEATH, onDeath);

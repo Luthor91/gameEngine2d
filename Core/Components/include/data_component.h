@@ -18,6 +18,7 @@ typedef enum DataType {
     DATA_SCORE,
     DATA_DIFFICULTY,
     DATA_CAPABLE,
+    DATA_AGRO,
     DATA_COUNT_SHOOT,
     // Ajouter d'autres types de données ici
 

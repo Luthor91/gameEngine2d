@@ -5,21 +5,28 @@ int main(int argc, char* argv[]) {
     Init_All();
 
     // Ajouter des listeners pour les événements
-    addEventListener(EVENT_TYPE_LEFT_MOUSECLICK, onClick);
-    addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Enemy);
-    addEventListener(EVENT_TYPE_COLLIDE, onEnemy_CollideWith_Player);
-    addEventListener(EVENT_TYPE_COLLIDE, onTrap_CollideWith_Enemy);
-    addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Barrel);
-    
+    addEventListener(EVENT_TYPE_LEFT_MOUSECLICK, onBullet_Shoot);
+    addEventListener(EVENT_TYPE_LEVEL_UP, onLeveling_Up);
     addEventListener(EVENT_TYPE_DEATH, onDeath);
+
+    addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Enemy);
+    addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Barrel);
+    addEventListener(EVENT_TYPE_COLLIDE, onTrap_CollideWith_Enemy);
+    addEventListener(EVENT_TYPE_COLLIDE, onEnemy_CollideWith_Player);
+
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponReloading);
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponInvincibilityFinished);
+
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponIncreasingDifficulty);
-    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponSpawningEnemies);
-    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponDispawningTrap);
+    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponApplyingPoisonTicks);
+
+    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponSpawnEnemies);
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponSpawnBarrel);
+    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponSpawnPoison);
+
+    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponDispawnTrap);
     addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponDispawnBarrel);
-    addEventListener(EVENT_TYPE_LEVEL_UP, onLeveling_Up);
+    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponDispawnBait);  
      
     // Définition du fond d'écran
     Entity background = createEntity();
@@ -54,6 +61,13 @@ int main(int argc, char* argv[]) {
     setDataValue(playerEntity, DATA_PASSIVE, 2.0f); 
     setDataValue(playerEntity, DATA_LEVEL, 1.0f); 
 
+    // Ajout de données supplémentaires pour gérer les evenements en jeu
+    setDataValue(playerEntity, DATA_SCORE, 0.0f); // enemies_killed
+    setDataValue(playerEntity, DATA_DIFFICULTY, 1.0f);
+    setDataValue(playerEntity, DATA_CAPABLE, 1.0f); // can_shoot
+    setDataValue(playerEntity, DATA_COUNT_SHOOT, 0.0f);
+
+    // Définition d'evènements supplémentaires
     bindEvent(playerEntity, SDL_BUTTON_LEFT, EVENT_TYPE_LEFT_MOUSECLICK, "Shoot");
     addTimerComponent(playerEntity, "difficulty_increase", 30.0f, true);
     addTimerComponent(playerEntity, "spawn_enemies", 20.0f, true);
@@ -63,19 +77,12 @@ int main(int argc, char* argv[]) {
             TimerData_Init("spawn_enemies", background)
         }
     );
-    // enemies_killed
-    setDataValue(playerEntity, DATA_SCORE, 0.0f);
-    // Difficulty
-    setDataValue(playerEntity, DATA_DIFFICULTY, 1.0f);
-    // can_shoot
-    setDataValue(playerEntity, DATA_CAPABLE, 1.0f);
-    // bullet_count
-    setDataValue(playerEntity, DATA_COUNT_SHOOT, 0.0f);
 
+    // Ajouts d'emitter de particules
     SDL_Texture* particleTexture = loadColor(g_renderer, COLOR_RED, 1, 1);
-    initParticleEmitter("Explosion", 24, particleTexture, 0, 0, 1.5f, 2.0f);
-    addTimerComponent(playerEntity, "spawn_barrel", 1.0f, true);
-     
+    initParticleEmitter("Explosion", 24, particleTexture, 0, 0, 1.0f, 2.0f);
+
+    // Lancement du jeu
     changeState(STATE_PLAYING);
     while (currentState != STATE_EXIT) {
         handleState();

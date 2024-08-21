@@ -69,6 +69,42 @@ void killChance() {
     }
 }
 
+void summonBarrel() {
+    // Créer et configurer une nouvelle entité
+    Entity barrel = createEntity();
+    if (barrel == INVALID_ENTITY_ID) {
+        printf("Failed to create barrel entity\n");
+        return;
+    }
+
+    // Configurer les composants pour l'entité barrel
+    VelocityComponent velocity = {0.0f, 0.0f};
+    SizeComponent size = {64, 64};
+    PositionComponent position = {
+        .x = 0 + rand() % (WINDOW_WIDTH - (int)size.width),
+        .y = 0 + rand() % (WINDOW_HEIGHT - (int)size.height)
+    };
+    HitboxComponent hitbox = {0.0f, 0.0f, size.width, size.height, true};
+    DataComponent datas = DATA_COMPONENT_DEFAULT;
+
+    // Créer le SpriteComponent pour le barrel
+    SpriteComponent barrelSprite = {
+        .texture = loadColor(g_renderer, (SDL_Color){255, 0, 0, 64}, size.width, size.height),
+        .srcRect = {0, 0, (int)size.width, (int)size.height}
+    };
+
+    // Ajouter les composants à l'entité
+    addPositionComponent(barrel, position);
+    addVelocityComponent(barrel, velocity);
+    addSizeComponent(barrel, size);
+    addHitboxComponent(barrel, hitbox);
+    addSpriteComponent(barrel, barrelSprite);
+    setDataValue(barrel, DATA_ATTACK, getDataValue(playerEntity, DATA_ATTACK) * 0.1);
+    setDataValue(barrel, DATA_SCORE, 0.0f);
+    addTag(barrel, "Barrel");
+    addTimerComponent(barrel, "dispawn_barrel", 5.0f, false);
+}
+
 void explodeBarrel(Entity barrel) {
     // Récupérer la position et la taille du baril
     PositionComponent* barrelPos = getPositionComponent(barrel);
@@ -92,7 +128,8 @@ void explodeBarrel(Entity barrel) {
     int count = 0;
     Entity* enemies = getEntitiesWithTag("Enemy", &count);
     // Parcourir toutes les entités et vérifier les ennemis dans la zone
-    for (Entity enemy = 0; enemy <= count; enemy++) {
+    for (int index = 0; index < count; index++) {
+        Entity enemy = enemies[index];
         PositionComponent* enemyPos = getPositionComponent(enemy);
         SizeComponent* enemySize = getSizeComponent(enemy);
 
@@ -119,6 +156,71 @@ void explodeBarrel(Entity barrel) {
         }
     }
 
-    // Vous pouvez également ajouter ici une logique pour détruire ou désactiver le baril après l'explosion
     destroyEntity(barrel);
+}
+
+void summonPoison() {
+    int count = 0;
+    Entity* poisons = getEntitiesWithTag("Poison", &count);
+    if (count > 0) return;  
+    
+    // Créer et configurer une nouvelle entité
+    Entity poison = createEntity();
+    if (poison == INVALID_ENTITY_ID) {
+        printf("Failed to create trap entity\n");
+        return;
+    }
+
+    // Configurer les composants pour l'entité trap
+    SizeComponent size_poison = {120.0f, 120.0f};
+    SizeComponent size_player = *getSizeComponent(playerEntity);
+    PositionComponent position_player = *getPositionComponent(playerEntity);
+
+    PositionComponent position = {
+        (position_player.x + size_player.width / 2) - size_poison.width / 2,
+        (position_player.y + size_player.height / 2) - size_poison.height / 2
+    };
+    HitboxComponent hitbox = {0.0f, 0.0f, size_poison.width, size_poison.height, true};
+    DataComponent datas = DATA_COMPONENT_DEFAULT;
+    SpriteComponent trapSprite = {
+        loadColor(g_renderer, (SDL_Color){0, 255, 0, 64}, size_poison.width, size_poison.height),
+        (SDL_Rect){0, 0, size_poison.width, size_poison.height}
+    };
+
+    addPositionComponent(poison, position);
+    addSizeComponent(poison, size_poison);
+    addHitboxComponent(poison, hitbox);
+    addSpriteComponent(poison, trapSprite);
+    addDataComponent(poison, datas);
+    setDataValue(poison, DATA_ATTACK, getDataValue(playerEntity, DATA_ATTACK));
+    addTag(poison, "Poison");
+    addTimerComponent(poison, "apply_poison_tick", 0.250f, true);
+}
+
+// Fonction pour ajuster la direction des ennemis vers le "bait"
+void adjustEnemyDirection(Entity enemy, PositionComponent baitPosition) {
+    PositionComponent* enemyPosition = getPositionComponent(enemy);
+    VelocityComponent* enemyVelocity = getVelocityComponent(enemy);
+
+    if (enemyPosition == NULL || enemyVelocity == NULL) {
+        return; // Si l'ennemi n'a pas de composant de position ou de vélocité, ignorer
+    }
+
+    // Calculer la direction vers le "bait"
+    float directionX = baitPosition.x - enemyPosition->x;
+    float directionY = baitPosition.y - enemyPosition->y;
+    float magnitude = sqrtf(directionX * directionX + directionY * directionY);
+
+    // Normaliser la direction
+    if (magnitude != 0) {
+        directionX /= magnitude;
+        directionY /= magnitude;
+    }
+
+    // Définir une vitesse propre à chaque ennemi ou utiliser une valeur fixe
+    float speed = sqrtf(enemyVelocity->velocityX * enemyVelocity->velocityX + enemyVelocity->velocityY * enemyVelocity->velocityY);
+
+    // Ajuster la vélocité de l'ennemi pour qu'il se dirige vers le "bait"
+    enemyVelocity->velocityX = directionX * speed;
+    enemyVelocity->velocityY = directionY * speed;
 }
