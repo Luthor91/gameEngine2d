@@ -51,6 +51,7 @@ void updateParticles(float deltaTime);
 ParticleEmitter* getEmitters();
 int getActiveEmitterCount();
 void setEmitterPosition(const char* name, int x, int y);
+void setParticuleSize(const char* name, int size);
 void activateEmitter(const char* name);
 void deactivateEmitter(const char* name);
 void freeParticleEmitter(ParticleEmitter* emitter);

@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
 
     // Ajouts d'emitter de particules
     SDL_Texture* particleTexture = loadColor(g_renderer, COLOR_RED, 1, 1);
-    initParticleEmitter("Explosion", 24, particleTexture, 0, 0, 1.0f, 2.0f);
+    initParticleEmitter("Explosion", 64, particleTexture, 0, 0, 2.0f, 1.0f);
 
     // Lancement du jeu
     changeState(STATE_PLAYING);

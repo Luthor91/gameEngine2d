@@ -4,6 +4,8 @@ ParticleEmitter emitters[MAX_EMITTERS];
 int activeEmitterCount = 0;
 
 // Fonction pour initialiser un émetteur de particules
+// spreadness : 0.0 => 2.0
+// expansionRate : 0.1 => 2.0 
 void initParticleEmitter(const char* name, int particleCount, SDL_Texture* texture, int x, int y, float spreadness, float expansionRate) {
     ParticleEmitter* emitter = NULL;
     for (int i = 0; i < MAX_EMITTERS; i++) {
@@ -39,11 +41,14 @@ void initParticleEmitter(const char* name, int particleCount, SDL_Texture* textu
             particle->position.x = x;
             particle->position.y = y;
 
-            float angleDegrees = (float)(rand() % 360);
+            // Ajustement de l'angle selon la spreadness
+            float angleRange = spreadness * 180.0f; // Spreadness définit la largeur du cône (en degrés)
+            float angleDegrees = (rand() / (float)RAND_MAX) * angleRange - (angleRange / 2); // Centre autour de 0 degré
             float angleRadians = angleDegrees * (M_PI / 180.0f);
+
             float speed = 100.0f * expansionRate;
-            particle->velocity.x = speed * cosf(angleRadians) * spreadness;
-            particle->velocity.y = speed * sinf(angleRadians) * spreadness;
+            particle->velocity.x = speed * cosf(angleRadians);
+            particle->velocity.y = speed * sinf(angleRadians);
 
             particle->lifetime = MAX_PARTICLE_LIFETIME;
             particle->current_lifetime = MAX_PARTICLE_LIFETIME; // Initialisation de current_lifetime
@@ -116,6 +121,21 @@ void setEmitterPosition(const char* name, int x, int y) {
                 if (particle->active) {
                     particle->position.x = x;
                     particle->position.y = y;
+                }
+            }
+            break;
+        }
+    }
+}
+
+void setParticuleSize(const char* name, int size) {
+    for (int i = 0; i < MAX_EMITTERS; i++) {
+        if (strcmp(emitters[i].name, name) == 0) {
+            // Mettre à jour la position initiale de chaque particule en conséquence
+            for (int j = 0; j < emitters[i].particleCount; j++) {
+                Particle* particle = &emitters[i].particles[j];
+                if (particle->active) {
+                    particle->size = size;
                 }
             }
             break;
