@@ -79,8 +79,14 @@ int main(int argc, char* argv[]) {
     );
 
     // Ajouts d'emitter de particules
-    SDL_Texture* particleTexture = loadColor(g_renderer, COLOR_RED, 1, 1);
-    initParticleEmitter("Explosion", 64, particleTexture, 0, 0, 2.0f, 1.0f);
+    SDL_Texture* particle_texture_explosion = loadColor(g_renderer, COLOR_RED, 1, 1);
+    initParticleEmitter("Explosion", 64, particle_texture_explosion, 0, 0, 2.0f, 1.0f);
+
+    SDL_Texture* particle_texture_poison = loadColor(g_renderer, COLOR_GREEN, 1, 1);
+    initParticleEmitter("Poison", 64, particle_texture_poison, 0, 0, 2.0f, 1.0f);
+
+    SDL_Texture* particle_texture_trap = loadColor(g_renderer, COLOR_BLACK, 1, 1);
+    initParticleEmitter("Trap", 64, particle_texture_trap, 0, 0, 2.0f, 1.0f);
 
     // Lancement du jeu
     changeState(STATE_PLAYING);

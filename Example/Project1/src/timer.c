@@ -91,7 +91,6 @@ void uponDispawnTrap(Event event) {
     disableComponentEntity(trap);
 }
 
-
 void uponSpawnBarrel(Event event) {
     if (!CheckTimerName(event, "spawn_barrel")) return;
     printf("spawn barrel\n");
