@@ -10,6 +10,7 @@
 // Définition des types de données possibles
 typedef enum DataType {
     DATA_HEALTH,
+    DATA_MAX_HEALTH,
     DATA_ARMOR,
     DATA_ATTACK,
     DATA_SPEED,

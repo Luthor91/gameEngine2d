@@ -30,7 +30,7 @@ void summonTrap(PositionComponent deathPosition) {
     HitboxComponent hitbox = {0.0f, 0.0f, size.width, size.height, true};
     DataComponent datas = DATA_COMPONENT_DEFAULT;
     SpriteComponent trapSprite = {
-        loadTexture("Assets/Default/DefaultTrap.png", g_renderer),
+        loadTexture("Assets/TowerDefense/Trap.png", g_renderer),
         (SDL_Rect){0, 0, size.width, size.height}
     };
 
@@ -106,7 +106,6 @@ void summonBarrel() {
 }
 
 void explodeBarrel(Entity barrel) {
-    // Récupérer la position et la taille du baril
     PositionComponent* barrelPos = getPositionComponent(barrel);
     SizeComponent* barrelSize = getSizeComponent(barrel);
 
@@ -115,7 +114,6 @@ void explodeBarrel(Entity barrel) {
         return;
     }
 
-    // Définir les limites de la zone d'explosion du baril
     SDL_Rect explosionZone = {
         .x = barrelPos->x,
         .y = barrelPos->y,
@@ -123,17 +121,15 @@ void explodeBarrel(Entity barrel) {
         .h = barrelSize->height
     };
 
-    // Obtenir la valeur de l'attaque du baril
     float damage = (getDataValue(barrel, DATA_ATTACK) * 0.70) * (1 + getDataValue(barrel, DATA_SCORE));
     int count = 0;
     Entity* enemies = getEntitiesWithTag("Enemy", &count);
-    // Parcourir toutes les entités et vérifier les ennemis dans la zone
+
     for (int index = 0; index < count; index++) {
         Entity enemy = enemies[index];
         PositionComponent* enemyPos = getPositionComponent(enemy);
         SizeComponent* enemySize = getSizeComponent(enemy);
 
-        // Définir les limites de l'ennemi
         SDL_Rect enemyZone = {
             .x = enemyPos->x,
             .y = enemyPos->y,
@@ -141,16 +137,19 @@ void explodeBarrel(Entity barrel) {
             .h = enemySize->height
         };
 
-        // Vérifier si l'ennemi est dans la zone d'explosion
         if (SDL_HasIntersection(&explosionZone, &enemyZone)) {
-            // Infliger des dégâts à l'ennemi
             float health = getDataValue(enemy, DATA_HEALTH) - damage;
             setDataValue(enemy, DATA_HEALTH, health);
+
+            // Si la santé de l'ennemi tombe à 0 ou en dessous, émettre un événement de mort
+            Entity* enemy_ptr = malloc(sizeof(Entity));
+            *enemy_ptr = enemy;
             if (health <= 0) {
-                Entity* enemyPtr = malloc(sizeof(Entity));
-                *enemyPtr = enemy;
-                Event eventDeath = {EVENT_TYPE_DEATH, enemyPtr};
+                Event eventDeath = {EVENT_TYPE_DEATH, enemy_ptr};
                 emitEvent(eventDeath);
+            } else {
+                Event event_damaged = {EVENT_TYPE_INFO, enemy_ptr};
+                emitEvent(event_damaged);
             }
             printf("Enemy %d hit by barrel explosion for %.2f damage\n", enemy, damage);
         }
@@ -158,6 +157,7 @@ void explodeBarrel(Entity barrel) {
 
     destroyEntity(barrel);
 }
+
 
 void summonPoison() {
     int count = 0;

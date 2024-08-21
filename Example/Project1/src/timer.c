@@ -32,7 +32,7 @@ void uponSpawnEnemies(Event event) {
         Entity enemy = (createEntity() != INVALID_ENTITY_ID) ? createEntity() : getFirstEmptyEntity();
         if (enemy == INVALID_ENTITY_ID) return;
         
-        float speedMultiplier = 5.0f * (1 + (getDataValue(playerEntity, DATA_DIFFICULTY)/2.0f));
+        float speedMultiplier = 50.0f * (1 + (getDataValue(playerEntity, DATA_DIFFICULTY)/2.0f));
         int edge = rand() % 4, x = 0, y = 0;
 
         switch (edge) {
@@ -54,7 +54,7 @@ void uponSpawnEnemies(Event event) {
         SizeComponent enemySize = {32, 32};
         HitboxComponent enemyHitbox = { 0, 0, enemySize.width, enemySize.height, true};
         DataComponent enemyData = DATA_COMPONENT_DEFAULT;
-        SDL_Texture* enemyTexture = loadTexture("Assets/Default/DefaultEnemy.png", g_renderer);
+        SDL_Texture* enemyTexture = loadTexture("Assets/TowerDefense/EnemyFullHealth.png", g_renderer);
 
         // Calcul de la direction vers le centre de l'écran
         float deltaX = (WINDOW_WIDTH / 2) - x;
@@ -77,6 +77,7 @@ void uponSpawnEnemies(Event event) {
         addSpriteComponent(enemy, enemySprite);
         addVelocityComponent(enemy, enemyVelocity);
         setDataValue(enemy, DATA_HEALTH, 100*getDataValue(playerEntity, DATA_DIFFICULTY));
+        setDataValue(enemy, DATA_MAX_HEALTH, getDataValue(playerEntity, DATA_HEALTH));
         setDataValue(enemy, DATA_ATTACK, 20*getDataValue(playerEntity, DATA_DIFFICULTY));
         addTag(enemy, "Enemy");
     }
@@ -126,7 +127,6 @@ void uponApplyingPoisonTicks(Event event) {
         return;
     }
 
-    // Définir les limites de la zone d'explosion du baril
     SDL_Rect poison_area = {
         .x = poison_pos->x,
         .y = poison_pos->y,
@@ -137,46 +137,52 @@ void uponApplyingPoisonTicks(Event event) {
     float damage = getDataValue(poison, DATA_ATTACK);
     int count = 0;
     Entity* enemies = getEntitiesWithTag("Enemy", &count);
-    // Parcourir toutes les entités et vérifier les ennemis dans la zone
+
     for (int index = 0; index < count; index++) {
         Entity enemy = enemies[index];
         PositionComponent* enemy_pos = getPositionComponent(enemy);
         SizeComponent* enemy_size = getSizeComponent(enemy);
 
-        // Définir les limites de l'ennemi
         SDL_Rect enemy_area = {
             .x = enemy_pos->x,
             .y = enemy_pos->y,
             .w = enemy_size->width,
             .h = enemy_size->height
         };
-        // Vérifier si l'ennemi est dans la zone d'explosion
+
         if (SDL_HasIntersection(&poison_area, &enemy_area)) {
-            // Infliger des dégâts à l'ennemi
             float health = getDataValue(enemy, DATA_HEALTH) - damage;
             setDataValue(enemy, DATA_HEALTH, health);
+
+            PositionComponent pos_centered = *getCenterPosition(enemy);
+            setEmitterPosition("Poison", pos_centered.x, pos_centered.y);
+            instanciateParticleEmitter("Poison");
+
+            // Si la santé de l'ennemi tombe à 0 ou en dessous, émettre un événement de mort
+            Entity* enemy_ptr = malloc(sizeof(Entity));
+            *enemy_ptr = enemy;
             if (health <= 0) {
-                Entity* enemyPtr = malloc(sizeof(Entity));
-                *enemyPtr = enemy;
-                Event eventDeath = {EVENT_TYPE_DEATH, enemyPtr};
+                Event eventDeath = {EVENT_TYPE_DEATH, enemy_ptr};
                 emitEvent(eventDeath);
+            } else {
+                Event event_damaged = {EVENT_TYPE_INFO, enemy_ptr};
+                emitEvent(event_damaged);
             }
             printf("Enemy %d hit by poison for %.2f damage\n", enemy, damage);
         }
     }
-    hitbox.is_active = hitbox.is_active ? false : true;
 
-    setDataValue(poison, DATA_ATTACK, getDataValue(poison, DATA_ATTACK)*0.95);
+    hitbox.is_active = !hitbox.is_active;
+    setDataValue(poison, DATA_ATTACK, getDataValue(poison, DATA_ATTACK) * 0.95);
 
     if (getDataValue(poison, DATA_ATTACK) < getDataValue(playerEntity, DATA_ATTACK) * 0.05) {
-        TimerData* timerData = (TimerData*)event.data;
-        Entity poison = timerData->entity;
         removeTimerComponent(poison, "apply_poison_tick"); 
         disableComponentEntity(poison);
     }
-    
+
     printf("damage : %f\n", getDataValue(poison, DATA_ATTACK));
 }
+
 
 void uponDispawnBait(Event event) {  
     if (!CheckTimerName(event, "dispawn_bait")) return;

@@ -127,7 +127,7 @@ void onBait_Spawn(Event event) {
 void onBullet_CollideWith_Enemy(Event event) {
     if (!checkCollisionTags(event, "Enemy", "Bullet")) return;
 
-    CollisionData* collisionData = (CollisionData*)event.data; // Note the pointer type
+    CollisionData* collisionData = (CollisionData*)event.data;
     Entity enemy = collisionData->entity1;
     Entity bullet = collisionData->entity2;
 
@@ -136,13 +136,17 @@ void onBullet_CollideWith_Enemy(Event event) {
         setDataValue(enemy, DATA_HEALTH, health);
 
         // Si la santé de l'ennemi tombe à 0 ou en dessous, émettre un événement de mort
+        Entity* enemy_ptr = malloc(sizeof(Entity));
+        *enemy_ptr = enemy;
         if (health <= 0) {
-            Entity* enemyPtr = malloc(sizeof(Entity));
-            *enemyPtr = enemy;
-            Event eventDeath = {EVENT_TYPE_DEATH, enemyPtr};
+            Event eventDeath = {EVENT_TYPE_DEATH, enemy_ptr};
             emitEvent(eventDeath);
+        } else {
+            Event event_damaged = {EVENT_TYPE_INFO, enemy_ptr};
+            emitEvent(event_damaged);
         }
     }
+    
     PositionComponent positionBullet = *getPositionComponent(bullet);
     setEmitterPosition("Explosion", positionBullet.x, positionBullet.y);
     instanciateParticleEmitter("Explosion");
@@ -185,6 +189,9 @@ void onTrap_CollideWith_Enemy(Event event) {
         int trapAttack = getDataValue(trap, DATA_ATTACK);
         int enemyHealth = getDataValue(enemy, DATA_HEALTH) - trapAttack;
         setDataValue(enemy, DATA_HEALTH, enemyHealth);
+        PositionComponent center_pos = *getCenterPosition(enemy);
+        setEmitterPosition("Trap", center_pos.x, center_pos.y);
+        instanciateParticleEmitter("Trap");
 
         // Si la santé de l'ennemi est inférieure ou égale à 0, émettre un événement de mort
         if (enemyHealth <= 0) {
@@ -222,11 +229,14 @@ void onEnemy_CollideWith_Player(Event event) {
         getHitboxComponent(player)->is_active = false;
         addTimerComponent(player, "immunity", 0.250f, false);
 
+        Entity* player_ptr = malloc(sizeof(Entity));
+        *player_ptr = player;
         if (health <= 0) {
-            Entity* playerEntity = malloc(sizeof(Entity));
-            *playerEntity = player;
-            Event eventDeath = {EVENT_TYPE_DEATH, playerEntity};
+            Event eventDeath = {EVENT_TYPE_DEATH, player_ptr};
             emitEvent(eventDeath);
+        } else {
+            Event event_damaged = {EVENT_TYPE_INFO, player_ptr};
+            emitEvent(event_damaged);
         }
 
         if (getDataValue(player, DATA_LEVEL) >= 7.0f) {
@@ -272,7 +282,7 @@ void onDeath(Event event) {
         PositionComponent pos = POSITION_ZERO;
         addPositionComponent(end_screen, pos);
         SpriteComponent sprite = {
-            loadTexture("Assets/Default/DefaultEndScreen.png", g_renderer), 
+            loadTexture("Assets/TowerDefense/EndScreen.png", g_renderer), 
             (SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}
         };
         addSpriteComponent(end_screen, sprite);
@@ -314,3 +324,74 @@ void onDeath(Event event) {
         killChance();
     }
 }
+
+void onDamaged(Event event) {
+    if (event.data == NULL) {
+        fprintf(stderr, "event.data is NULL\n");
+        return;
+    }
+
+    Entity entity = *(Entity*)event.data; 
+    printf("entity : %d\n", entity);
+
+    // Récupérer les valeurs de santé actuelle et maximale
+    float curr_health = getDataValue(entity, DATA_HEALTH);
+    float max_health = getDataValue(entity, DATA_MAX_HEALTH);
+    float health_percentage = (curr_health / max_health) * 100.0f;
+
+    const char* sprite_file = NULL;
+
+    // Vérification du tag pour distinguer le joueur de l'ennemi
+    if (hasTag(entity, "Player")) {
+        // Déterminer le sprite à charger en fonction du pourcentage de santé
+        if (health_percentage > 70.0f) {
+            sprite_file = "Assets/TowerDefense/TurretFullHealth.png";
+        } else if (health_percentage > 40.0f) {
+            sprite_file = "Assets/TowerDefense/TurretMidHealth.png";
+        } else {
+            sprite_file = "Assets/TowerDefense/TurretLowHealth.png";
+        }
+
+        // Charger la texture correspondante
+        SDL_Texture* texture = loadTexture(sprite_file, g_renderer);
+
+        // Obtenir la taille du joueur (assumant que getSizeComponent retourne un pointeur valide)
+        SizeComponent size = *getSizeComponent(entity);
+
+        // Créer un SpriteComponent avec la nouvelle texture
+        SpriteComponent sprite = {
+            texture, 
+            (SDL_Rect){0, 0, (int)size.width, (int)size.height}
+        };
+
+        // Ajouter ou remplacer le composant de sprite du joueur
+        addSpriteComponent(entity, sprite);
+
+    } else if (hasTag(entity, "Enemy")) {
+        // Déterminer le sprite à charger en fonction du pourcentage de santé
+        if (health_percentage > 70.0f) {
+            sprite_file = "Assets/TowerDefense/EnemyFullHealth.png";
+        } else if (health_percentage > 40.0f) {
+            sprite_file = "Assets/TowerDefense/EnemyMidHealth.png";
+        } else {
+            sprite_file = "Assets/TowerDefense/EnemyLowHealth.png";
+        }
+
+        // Charger la texture correspondante
+        SDL_Texture* texture = loadTexture(sprite_file, g_renderer);
+
+        // Obtenir la taille de l'ennemi (assumant que getSizeComponent retourne un pointeur valide)
+        SizeComponent size = *getSizeComponent(entity);
+
+        // Créer un SpriteComponent avec la nouvelle texture
+        SpriteComponent sprite = {
+            texture, 
+            (SDL_Rect){0, 0, (int)size.width, (int)size.height}
+        };
+
+        // Ajouter ou remplacer le composant de sprite de l'ennemi
+        addSpriteComponent(entity, sprite);
+        
+    }
+}
+

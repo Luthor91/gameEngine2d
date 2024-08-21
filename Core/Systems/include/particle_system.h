@@ -45,7 +45,6 @@ typedef struct ParticleEmitter {
     int initialized; // État d'initialisation (1 = initialisé, 0 = non initialisé)
 } ParticleEmitter;
 
-// Déclarations des fonctions
 void initParticleEmitter(const char* name, int particleCount, SDL_Texture* texture, int x, int y, float spreadness, float expansionRate);
 void updateParticles(float deltaTime);
 ParticleEmitter* getEmitters();
@@ -56,5 +55,10 @@ void activateEmitter(const char* name);
 void deactivateEmitter(const char* name);
 void freeParticleEmitter(ParticleEmitter* emitter);
 void instanciateParticleEmitter(const char* sourceName);
+
+void freeParticleTextures(Particle* particles, int count);
+// Fonction pour libérer les ressources des émetteurs de particules
+void freeParticleEmitters(ParticleEmitter* emitters, int emitterCount);
+
 
 #endif  // PARTICLE_SYSTEM_H

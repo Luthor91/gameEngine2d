@@ -12,6 +12,7 @@ void onBullet_CollideWith_Barrel(Event event);
 void onEnemy_CollideWith_Player(Event event);
 void onTrap_CollideWith_Enemy(Event event);
 void onDeath(Event event);
+void onDamaged(Event event);
 void onLeveling_Up(Event event);
 
 #endif

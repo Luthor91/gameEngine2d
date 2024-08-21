@@ -239,3 +239,26 @@ void instanciateParticleEmitter(const char* sourceName) {
     targetEmitter->initialized = 1;
     activeEmitterCount++;
 }
+
+// Fonction pour libérer les textures des particules
+void freeParticleTextures(Particle* particles, int count) {
+    for (int i = 0; i < count; i++) {
+        if (particles[i].active && particles[i].texture != NULL) {
+            SDL_DestroyTexture(particles[i].texture);
+            particles[i].texture = NULL;
+        }
+    }
+}
+
+// Fonction pour libérer les ressources des émetteurs de particules
+void freeParticleEmitters(ParticleEmitter* emitters, int emitterCount) {
+    for (int i = 0; i < emitterCount; i++) {
+        ParticleEmitter* emitter = &emitters[i];
+        if (emitter->initialized) {
+            // Libérer les textures des particules associées à cet émetteur
+            freeParticleTextures(emitter->particles, emitter->particleCount);
+            // Réinitialiser les champs de l'émetteur
+            emitter->initialized = 0;
+        }
+    }
+}

@@ -8,6 +8,7 @@ int main(int argc, char* argv[]) {
     addEventListener(EVENT_TYPE_LEFT_MOUSECLICK, onBullet_Shoot);
     addEventListener(EVENT_TYPE_LEVEL_UP, onLeveling_Up);
     addEventListener(EVENT_TYPE_DEATH, onDeath);
+    addEventListener(EVENT_TYPE_INFO, onDamaged);
 
     addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Enemy);
     addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Barrel);
@@ -33,7 +34,7 @@ int main(int argc, char* argv[]) {
     PositionComponent backgroundPosition = POSITION_ZERO;
     addPositionComponent(background, backgroundPosition);
     SpriteComponent backgroundSprite = {
-        loadTexture("Assets/Default/DefaultBackground_Space.png", g_renderer), 
+        loadTexture("Assets/TowerDefense/BackgroundSpace.png", g_renderer), 
         (SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}
     };
     addSpriteComponent(background, backgroundSprite);
@@ -44,11 +45,11 @@ int main(int argc, char* argv[]) {
     SizeComponent playerSize = {32, 32};
     HitboxComponent playerHitbox = { 0, 0, playerSize.width, playerSize.height, true};
     DataComponent playerData = DATA_COMPONENT_DEFAULT;
-    SDL_Texture* playerTexture = loadTexture("Assets/Default/DefaultTurret.png", g_renderer);
+    SDL_Texture* playerTexture = loadTexture("Assets/TowerDefense/TurretFullHealth.png", g_renderer);
     addPositionComponent(playerEntity, playerPosition);
     SpriteComponent playerSprite = {
         playerTexture, 
-        (SDL_Rect){0, 0, 32, 32}
+        (SDL_Rect){0, 0, (int)playerSize.width, (int)playerSize.height}
     };
     addSpriteComponent(playerEntity, playerSprite);
     addSizeComponent(playerEntity, playerSize);
@@ -56,7 +57,8 @@ int main(int argc, char* argv[]) {
     addDataComponent(playerEntity, playerData);
     addTag(playerEntity, "Player");
     setDataValue(playerEntity, DATA_HEALTH, 100.0f);
-    setDataValue(playerEntity, DATA_SPEED, 0.5f); 
+    setDataValue(playerEntity, DATA_MAX_HEALTH, getDataValue(playerEntity, DATA_HEALTH));
+    setDataValue(playerEntity, DATA_SPEED, 2.5f); 
     setDataValue(playerEntity, DATA_ATTACK, 35.0f); 
     setDataValue(playerEntity, DATA_PASSIVE, 2.0f); 
     setDataValue(playerEntity, DATA_LEVEL, 1.0f); 
@@ -80,13 +82,13 @@ int main(int argc, char* argv[]) {
 
     // Ajouts d'emitter de particules
     SDL_Texture* particle_texture_explosion = loadColor(g_renderer, COLOR_RED, 1, 1);
-    initParticleEmitter("Explosion", 64, particle_texture_explosion, 0, 0, 2.0f, 1.0f);
+    initParticleEmitter("Explosion", 64, particle_texture_explosion, 0, 0, 2.0f, 2.0f);
 
     SDL_Texture* particle_texture_poison = loadColor(g_renderer, COLOR_GREEN, 1, 1);
-    initParticleEmitter("Poison", 64, particle_texture_poison, 0, 0, 2.0f, 1.0f);
+    initParticleEmitter("Poison", 64, particle_texture_poison, 0, 0, 2.0f, 2.0f);
 
     SDL_Texture* particle_texture_trap = loadColor(g_renderer, COLOR_BLACK, 1, 1);
-    initParticleEmitter("Trap", 64, particle_texture_trap, 0, 0, 2.0f, 1.0f);
+    initParticleEmitter("Trap", 64, particle_texture_trap, 0, 0, 2.0f, 2.0f);
 
     // Lancement du jeu
     changeState(STATE_PLAYING);
