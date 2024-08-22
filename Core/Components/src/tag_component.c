@@ -96,11 +96,11 @@ bool hasAnyTag(Event event, ...) {
     if (event.data == NULL) return false;
 
     // Convertir event.data en pointeur vers l'entité
-    Entity* entityPtr = (Entity*)event.data;
-    if (entityPtr == NULL) return false;
+    Entity* ptr_entity = (Entity*)event.data;
+    if (ptr_entity == NULL) return false;
 
     // Récupérer l'entité
-    Entity entity = *entityPtr;
+    Entity entity = *ptr_entity;
 
     // Initialiser la liste d'arguments
     va_list args;
@@ -121,6 +121,26 @@ bool hasAnyTag(Event event, ...) {
 
     // Aucun tag correspondant trouvé
     return false;
+}
+
+Entity getFirstEntityWithTag(const char* tag) {
+    for (Entity i = 0; i < MAX_ENTITIES; ++i) {
+        TagComponent* tagComp = &tagComponents[i];
+        if (strcmp(tagComp->tags[i], tag) == 0) {
+            return i;
+        }
+    }
+    return INVALID_ENTITY_ID;
+}
+
+Entity getLastEntityWithTag(const char* tag) {
+    for (Entity i = MAX_ENTITIES - 1; i >= 0; i--) {
+        TagComponent* tagComp = &tagComponents[i];
+        if (strcmp(tagComp->tags[i], tag) == 0) {
+            return i;
+        }
+    }
+    return INVALID_ENTITY_ID;
 }
 
 Entity* getEntitiesWithTag(const char* tag, int* outCount) {

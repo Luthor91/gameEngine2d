@@ -63,9 +63,9 @@ void updateTimers(float deltaTime) {
                 timer->elapsedTime += deltaTime;
                 // Vérifier si le timer a expiré
                 while (timer->elapsedTime >= timer->duration) {
-                    // Émettre un événement de type EVENT_TYPE_TIMER
-                    TimerData* timerData = TimerData_Init(timer->name, entity);
-                    Event timerEvent = { EVENT_TYPE_TIMER_EXPIRED, timerData };
+                    // Émettre un événement de type EVENT_TIMER
+                    TimerData* timer_data = TimerData_Init(timer->name, entity);
+                    Event timerEvent = { getEventType("EVENT_TIMER_EXPIRED"), timer_data };
                     emitEvent(timerEvent);
 
                     // Réinitialiser le timer
@@ -138,13 +138,13 @@ bool CheckTimerName(Event event, const char* name) {
         return false;
     }
 
-    TimerData* timerData = (TimerData*)event.data;
-    if (timerData == NULL) {
+    TimerData* timer_data = (TimerData*)event.data;
+    if (timer_data == NULL) {
         printf("Error: Failed to cast event.data to TimerData*\n");
         return false;
     }
 
-    if (strcmp(timerData->name, name) == 0) return true;
+    if (strcmp(timer_data->name, name) == 0) return true;
 
     return false;
 }

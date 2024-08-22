@@ -1,78 +1,85 @@
 #include "event.h"
 
 void onBullet_Shoot(Event event) {
-    if(getDataValue(playerEntity, DATA_CAPABLE) == 0.0f) {
+    int DATA_CAPABLE = getDataType("DATA_CAPABLE");
+    int DATA_SPEED = getDataType("DATA_SPEED");
+    int DATA_COUNT_SHOOT = getDataType("DATA_COUNT_SHOOT");
+    int DATA_LEVEL = getDataType("DATA_LEVEL");
+    int DATA_PASSIVE = getDataType("DATA_PASSIVE");
+    int DATA_ATTACK = getDataType("DATA_ATTACK");
+
+    if(getDataValue(player_entity, DATA_CAPABLE) == 0.0f) {
         return;
     } else {
-        float attack_speed = getDataValue(playerEntity, DATA_SPEED);
-        addTimerComponent(playerEntity, "reloading", attack_speed, false);
-        setDataValue(playerEntity, DATA_CAPABLE, 0.0f);
+        float attack_speed = getDataValue(player_entity, DATA_SPEED);
+        addTimerComponent(player_entity, "reloading", attack_speed, false);
+        setDataValue(player_entity, DATA_CAPABLE, 0.0f);
         setDataValue(
-            playerEntity, 
+            player_entity, 
             DATA_COUNT_SHOOT, 
-            getDataValue(playerEntity, DATA_COUNT_SHOOT)+1.0f
+            getDataValue(player_entity, DATA_COUNT_SHOOT)+1.0f
         );
         setDataValue(
-            playerEntity, 
+            player_entity, 
             DATA_COUNT_SHOOT, 
-            getDataValue(playerEntity, DATA_COUNT_SHOOT)+1.0f
+            getDataValue(player_entity, DATA_COUNT_SHOOT)+1.0f
         );
     }
-
-    float coeff_passive = 1.0f;
-    bool is_third_attack = (int)getDataValue(playerEntity, DATA_COUNT_SHOOT) % 3 == 0;
-    if (getDataValue(playerEntity, DATA_LEVEL) >= 2.0 && is_third_attack) {
-        setDataValue(playerEntity, DATA_COUNT_SHOOT, 0.0f);
-        coeff_passive = getDataValue(playerEntity, DATA_PASSIVE);
-    }
-        
-    int mouseX, mouseY;
-    SDL_GetMouseState(&mouseX, &mouseY);
+    
+    int mouse_x, mouse_y;
+    SDL_GetMouseState(&mouse_x, &mouse_y);
 
     Entity bullet = createEntity();
 
-    PositionComponent* playerPosition = getPositionComponent(playerEntity);
-    SpriteComponent* playerSprite = getSpriteComponent(playerEntity);
+    PositionComponent* player_position = getPositionComponent(player_entity);
+    SpriteComponent* player_sprite = getSpriteComponent(player_entity);
 
     // Calculer le centre du sprite du joueur
-    float playerCenterX = playerPosition->x + playerSprite->srcRect.w / 2;
-    float playerCenterY = playerPosition->y + playerSprite->srcRect.h / 2;
+    float player_center_x = player_position->x + player_sprite->srcRect.w / 2;
+    float player_center_y = player_position->y + player_sprite->srcRect.h / 2;
     
     // Récupérer la position du curseur de la souris  
-    PositionComponent bulletPosition = {playerCenterX, playerCenterY};
-    VelocityComponent bulletVelocity = VELOCITY_ZERO;
-    SizeComponent bulletSize = {12*coeff_passive, 12*coeff_passive};
-    HitboxComponent bulletHitbox = {0, 0, bulletSize.width, bulletSize.height, true};
-    DataComponent bulletData = DATA_COMPONENT_DEFAULT;
+    PositionComponent bullet_position = {player_center_x, player_center_y};
+    VelocityComponent bullet_velocity = VELOCITY_ZERO;
+    SizeComponent bullet_size = {12, 12};
+    HitboxComponent bullet_hitbox = {0, 0, bullet_size.width, bullet_size.height, true};
+    DataComponent bullet_data = DATA_COMPONENT_DEFAULT;
 
     // Calculer la direction du tir
-    float directionX = mouseX - playerCenterX;
-    float directionY = mouseY - playerCenterY;
-    float length = sqrtf(directionX * directionX + directionY * directionY);
+    float direction_x = mouse_x - player_center_x;
+    float direction_y = mouse_y - player_center_y;
+    float length = sqrtf(direction_x * direction_x + direction_y * direction_y);
     
     // Normaliser la direction
     if (length != 0) {
-        directionX /= length;
-        directionY /= length;
+        direction_x /= length;
+        direction_y /= length;
     }
 
-    bulletVelocity.velocityX = directionX * 500.0f * coeff_passive;
-    bulletVelocity.velocityY = directionY * 500.0f * coeff_passive;
-    addPositionComponent(bullet, bulletPosition);
-    addSizeComponent(bullet, bulletSize);
-    addVelocityComponent(bullet, bulletVelocity);
-    SpriteComponent bulletSprite = {
-        loadColor(g_renderer, coeff_passive == 2.0 ? COLOR_RED : COLOR_BLACK, bulletSize.width, bulletSize.height),
-        (SDL_Rect){0, 0, bulletSize.width, bulletSize.height}
+    bullet_velocity.velocityX = direction_x * 500.0f;
+    bullet_velocity.velocityY = direction_y * 500.0f;
+    addPositionComponent(bullet, bullet_position);
+    addSizeComponent(bullet, bullet_size);
+    addVelocityComponent(bullet, bullet_velocity);
+    SpriteComponent bullet_sprite = {
+        loadColor(g_renderer, COLOR_BLACK, bullet_size.width, bullet_size.height),
+        (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
     };
-    addSpriteComponent(bullet, bulletSprite);
-    addHitboxComponent(bullet, bulletHitbox);
-    addDataComponent(bullet, bulletData);
-    setDataValue(bullet, DATA_ATTACK, getDataValue(playerEntity, DATA_ATTACK) * coeff_passive);
+    addSpriteComponent(bullet, bullet_sprite);
+    addHitboxComponent(bullet, bullet_hitbox);
+    addDataComponent(bullet, bullet_data);
+    setDataValue(bullet, DATA_ATTACK, getDataValue(player_entity, DATA_ATTACK));
     addTag(bullet, "Bullet");
 
-    if ((int)getDataValue(playerEntity, DATA_COUNT_SHOOT) % 3 == 0 && getDataValue(playerEntity, DATA_LEVEL) >= 3.0) {
-        summonSecondBullet(bullet, directionX, directionY, coeff_passive);
+    bool is_third_attack = (int)getDataValue(player_entity, DATA_COUNT_SHOOT) % 3 == 0;
+    if (is_third_attack) {
+        float level = getDataValue(player_entity, getDataType("DATA_LEVEL"));
+        if (level >= 2.0f) {
+            amplify_bullet(bullet);
+        }
+        if (level >= 3.0f) {
+            summonSecondBullet(bullet, bullet_velocity.velocityX, bullet_velocity.velocityY);
+        }
     }
 }
 
@@ -82,8 +89,8 @@ void onBait_Spawn(Event event) {
     if (count > 0) return;  
 
     // Extraire les coordonnées de la souris depuis event->data
-    SDL_Point* cursorPos = (SDL_Point*)event.data;
-    if (cursorPos == NULL) {
+    SDL_Point* cursor_position = (SDL_Point*)event.data;
+    if (cursor_position == NULL) {
         printf("Cursor position data is null\n");
         return;
     }
@@ -98,10 +105,10 @@ void onBait_Spawn(Event event) {
     // Configurer les composants pour l'entité "bait"
     SizeComponent size = {20.0f, 20.0f}; // Taille du bait, par exemple 20x20
     PositionComponent position = {
-        cursorPos->x - size.width / 2, // Centrer la position sur la souris
-        cursorPos->y - size.height / 2
+        cursor_position->x - size.width / 2, // Centrer la position sur la souris
+        cursor_position->y - size.height / 2
     };
-    SpriteComponent baitSprite = {
+    SpriteComponent bait_sprite = {
         loadColor(g_renderer, COLOR_RED, size.width, size.height),
         (SDL_Rect){0, 0, size.width, size.height}
     };
@@ -109,7 +116,7 @@ void onBait_Spawn(Event event) {
     // Ajouter les composants à l'entité
     addPositionComponent(bait, position);
     addSizeComponent(bait, size);
-    addSpriteComponent(bait, baitSprite);
+    addSpriteComponent(bait, bait_sprite);
     addTag(bait, "Bait");
 
     // Faire changer la direction des ennemis vers le "bait"
@@ -127,40 +134,36 @@ void onBait_Spawn(Event event) {
 void onBullet_CollideWith_Enemy(Event event) {
     if (!checkCollisionTags(event, "Enemy", "Bullet")) return;
 
-    CollisionData* collisionData = (CollisionData*)event.data;
-    Entity enemy = collisionData->entity1;
-    Entity bullet = collisionData->entity2;
+    CollisionData* collision_data = (CollisionData*)event.data;
+    Entity enemy = collision_data->entity1;
+    Entity bullet = collision_data->entity2;
+
+    int DATA_ATTACK = getDataType("DATA_ATTACK");
+    int DATA_HEALTH = getDataType("DATA_HEALTH");
 
     if (hasDataValue(enemy, DATA_HEALTH)) {
         int health = getDataValue(enemy, DATA_HEALTH) - getDataValue(bullet, DATA_ATTACK);
         setDataValue(enemy, DATA_HEALTH, health);
-
-        // Si la santé de l'ennemi tombe à 0 ou en dessous, émettre un événement de mort
-        Entity* enemy_ptr = malloc(sizeof(Entity));
-        *enemy_ptr = enemy;
-        if (health <= 0) {
-            Event eventDeath = {EVENT_TYPE_DEATH, enemy_ptr};
-            emitEvent(eventDeath);
-        } else {
-            Event event_damaged = {EVENT_TYPE_INFO, enemy_ptr};
-            emitEvent(event_damaged);
-        }
+        handle_damage_received(enemy, health);
     }
     
-    PositionComponent positionBullet = *getPositionComponent(bullet);
-    setEmitterPosition("Explosion", positionBullet.x, positionBullet.y);
+    PositionComponent bullet_position = *getPositionComponent(bullet);
+    setEmitterPosition("Explosion", bullet_position.x, bullet_position.y);
     instanciateParticleEmitter("Explosion");
     disableComponentEntity(bullet);
 }
 
 void onBullet_CollideWith_Barrel(Event event) {
     if (!checkCollisionTags(event, "Barrel", "Bullet")) return;
-    CollisionData* collisionData = (CollisionData*)event.data; // Note the pointer type
-    Entity barrel = collisionData->entity1;
-    Entity bullet = collisionData->entity2;
-    setDataValue(barrel, DATA_SCORE, getDataValue(barrel, DATA_SCORE)+1.0f);
+    
+    int DATA_ACCUMULATION = getDataType("DATA_ACCUMULATION");
 
-    if (getDataValue(barrel, DATA_SCORE) >= 5.0f) {
+    CollisionData* collision_data = (CollisionData*)event.data; // Note the pointer type
+    Entity barrel = collision_data->entity1;
+    Entity bullet = collision_data->entity2;
+    setDataValue(barrel, DATA_ACCUMULATION, getDataValue(barrel, DATA_ACCUMULATION)+1.0f);
+
+    if (getDataValue(barrel, DATA_ACCUMULATION) >= 5.0f) {
         explodeBarrel(barrel);
     }
     disableComponentEntity(bullet);
@@ -170,40 +173,44 @@ void onTrap_CollideWith_Enemy(Event event) {
     if (!checkCollisionTags(event, "Enemy", "Trap")) return;
 
     // Convertir les données de l'événement en pointeur vers CollisionData
-    CollisionData* collisionData = (CollisionData*)event.data;
-    if (collisionData == NULL) {
+    CollisionData* collision_data = (CollisionData*)event.data;
+    if (collision_data == NULL) {
         printf("CollisionData is NULL\n");
         return;
     }
 
     // Récupérer les entités impliquées dans la collision
-    Entity enemy = collisionData->entity1;
-    Entity trap = collisionData->entity2;
+    Entity enemy = collision_data->entity1;
+    Entity trap = collision_data->entity2;
 
     // Imprimer les tags des entités
-    const char* trapTag = getFirstTag(trap);
-    const char* enemyTag = getFirstTag(enemy);
+    const char* trap_tag = getFirstTag(trap);
+    const char* enemy_tag = getFirstTag(enemy);
+
+    int DATA_HEALTH = getDataType("DATA_HEALTH");
+    int DATA_ATTACK = getDataType("DATA_ATTACK");
+
 
     // Vérifier et mettre à jour la santé de l'ennemi
     if (hasDataValue(enemy, DATA_HEALTH)) {
-        int trapAttack = getDataValue(trap, DATA_ATTACK);
-        int enemyHealth = getDataValue(enemy, DATA_HEALTH) - trapAttack;
-        setDataValue(enemy, DATA_HEALTH, enemyHealth);
+        int trap_attack = getDataValue(trap, DATA_ATTACK);
+        int enemy_health = getDataValue(enemy, DATA_HEALTH) - trap_attack;
+        setDataValue(enemy, DATA_HEALTH, enemy_health);
         PositionComponent center_pos = *getCenterPosition(enemy);
         setEmitterPosition("Trap", center_pos.x, center_pos.y);
         instanciateParticleEmitter("Trap");
 
         // Si la santé de l'ennemi est inférieure ou égale à 0, émettre un événement de mort
-        if (enemyHealth <= 0) {
+        if (enemy_health <= 0) {
             // Créer une nouvelle entité et émettre un événement de mort
-            Entity* enemyEntityPtr = (Entity*)malloc(sizeof(Entity));
-            if (enemyEntityPtr == NULL) {
+            Entity* ptr_entemy = (Entity*)malloc(sizeof(Entity));
+            if (ptr_entemy == NULL) {
                 printf("Memory allocation failed for enemy entity pointer\n");
                 return;
             }
-            *enemyEntityPtr = enemy;
-            Event eventDeath = {EVENT_TYPE_DEATH, enemyEntityPtr};
-            emitEvent(eventDeath);
+            *ptr_entemy = enemy;
+            Event event_death = {getEventType("EVENT_DEATH"), ptr_entemy};
+            emitEvent(event_death);
         }
     }
 
@@ -215,11 +222,15 @@ void onEnemy_CollideWith_Player(Event event) {
     if (!checkCollisionTags(event, "Player", "Enemy")) return;
 
     // Convertir event.data en pointeur vers CollisionData
-    CollisionData* collisionData = (CollisionData*)event.data;
+    CollisionData* collision_data = (CollisionData*)event.data;
 
     // Récupérer les entités impliquées dans la collision
-    Entity player = collisionData->entity1;
-    Entity enemy = collisionData->entity2;
+    Entity player = collision_data->entity1;
+    Entity enemy = collision_data->entity2;
+
+    int DATA_HEALTH = getDataType("DATA_HEALTH");
+    int DATA_ATTACK = getDataType("DATA_ATTACK");
+    int DATA_LEVEL = getDataType("DATA_LEVEL");
 
     // Gestion de la collision pour l'ennemi
     if (hasDataValue(player, DATA_HEALTH)) {
@@ -228,22 +239,15 @@ void onEnemy_CollideWith_Player(Event event) {
         setDataValue(player, DATA_HEALTH, health);
         getHitboxComponent(player)->is_active = false;
         addTimerComponent(player, "immunity", 0.250f, false);
+        handle_damage_received(player, health);
 
-        Entity* player_ptr = malloc(sizeof(Entity));
-        *player_ptr = player;
-        if (health <= 0) {
-            Event eventDeath = {EVENT_TYPE_DEATH, player_ptr};
-            emitEvent(eventDeath);
-        } else {
-            Event event_damaged = {EVENT_TYPE_INFO, player_ptr};
-            emitEvent(event_damaged);
-        }
-
-        if (getDataValue(player, DATA_LEVEL) >= 7.0f) {
+        float level = getDataValue(player, DATA_LEVEL);
+        if (level >= 7.0f) {
             summonPoison();
         }
-        if (getDataValue(player, DATA_LEVEL) >= 8.0f) {
-            addEventListener(EVENT_TYPE_RIGHT_MOUSECLICK, onBait_Spawn);
+        if (level >= 8.0f) {
+            removeEventListener(getEventType("EVENT_RIGHT_MOUSECLICK"), onBait_Spawn);
+            addEventListener(getEventType("EVENT_RIGHT_MOUSECLICK"), onBait_Spawn);
         }
 
         
@@ -255,13 +259,20 @@ void onLeveling_Up(Event event) {
     if (!hasAnyTag(event, "Player", NULL)) return;
 
     Entity entity = *(Entity*)event.data; 
+    
+    int DATA_LEVEL = getDataType("DATA_LEVEL");
+    int DATA_ATTACK = getDataType("DATA_ATTACK");
+    int DATA_HEALTH = getDataType("DATA_HEALTH");
+    int DATA_SPEED = getDataType("DATA_SPEED");
+
     setDataValue(entity, DATA_LEVEL, getDataValue(entity, DATA_LEVEL)+1.0f);
     setDataValue(entity, DATA_ATTACK, getDataValue(entity, DATA_ATTACK)*1.25);
     setDataValue(entity, DATA_HEALTH, getDataValue(entity, DATA_HEALTH)*1.1);
     setDataValue(entity, DATA_SPEED, getDataValue(entity, DATA_SPEED)*0.75);
 
-    if (getDataValue(entity, DATA_LEVEL) >= 6.0f) {
-        addTimerComponent(entity, "spawn_barrel", 15.0f, true);
+    float level = getDataValue(entity, DATA_LEVEL);
+    if (level >= 6.0f) {
+        addTimerComponent(entity,  "spawn_barrel", 15.0f, true);
     } 
 
     printf("Leveling up to %.1f !\n\tAttack : %f\n\tHealth : %f\n\tAttack Speed : %f attacks per second\n", 
@@ -273,10 +284,10 @@ void onLeveling_Up(Event event) {
 void onDeath(Event event) {
     if (!hasAnyTag(event, "Player", "Enemy", NULL)) return;
 
-    Entity* entityPtr = (Entity*)event.data;
-    Entity entity = *entityPtr; 
+    Entity* ptr_entity = (Entity*)event.data;
+    Entity entity = *ptr_entity; 
 
-    if (entity == playerEntity) {
+    if (entity == player_entity) {
         disableComponentEntitiesFromRange(0, MAX_ENTITIES);
         Entity end_screen = createEntity();
         PositionComponent pos = POSITION_ZERO;
@@ -290,37 +301,41 @@ void onDeath(Event event) {
     }
 
     // Obtenir les composants nécessaires pour la position
-    PositionComponent* posComponent = getPositionComponent(entity);
-    SizeComponent* sizeComponent = getSizeComponent(entity);
+    PositionComponent* entity_position = getPositionComponent(entity);
+    SizeComponent* entity_size = getSizeComponent(entity);
     
     // Vérifiez que les composants sont valides
-    if (posComponent == NULL || sizeComponent == NULL) {
+    if (entity_position == NULL || entity_size == NULL) {
         printf("Position or size component is NULL\n");
         return;
     }
 
     // Calculer la position de la mort
-    PositionComponent deathPosition = {
-        posComponent->x + sizeComponent->width / 2,
-        posComponent->y + sizeComponent->height / 2
-    };
+    PositionComponent death_position = *getCenterPosition(entity_position);
+
+    int DATA_KILLED = getDataType("DATA_KILLED");
+    int DATA_LEVEL = getDataType("DATA_LEVEL");
 
     // Désactiver l'entité
     disableComponentEntity(entity);
     setDataValue(
         entity, 
-        DATA_SCORE, 
-        getDataValue(entity, DATA_SCORE)+1.0f
+        DATA_KILLED, 
+        getDataValue(entity, DATA_KILLED)+1.0f
     );
 
     // Vérifier si le joueur doit monter de niveau
-    if ((int)getDataValue(entity, DATA_SCORE) % 5 == 0) {
-        Event levelUpEvent = {EVENT_TYPE_LEVEL_UP, &playerEntity};
+    bool should_level_up = (int)getDataValue(entity, DATA_KILLED) % 5 == 0;
+    if (should_level_up) {
+        Event levelUpEvent = {getEventType("EVENT_LEVEL_UP"), &player_entity};
         emitEvent(levelUpEvent);
     }
-    if (getDataValue(playerEntity, DATA_LEVEL) >= 4.0) {
-        summonTrap(deathPosition);
-    } else if (getDataValue(playerEntity, DATA_LEVEL) >= 5.0) {
+
+    float level = getDataValue(player_entity, DATA_LEVEL);
+    if (level >= 4.0) {
+        summonTrap(death_position);
+    }
+    if (level >= 5.0) {
         killChance();
     }
 }
@@ -332,8 +347,10 @@ void onDamaged(Event event) {
     }
 
     Entity entity = *(Entity*)event.data; 
-    printf("entity : %d\n", entity);
 
+    int DATA_MAX_HEALTH = getDataType("DATA_MAX_HEALTH");
+    int DATA_HEALTH = getDataType("DATA_HEALTH");
+    
     // Récupérer les valeurs de santé actuelle et maximale
     float curr_health = getDataValue(entity, DATA_HEALTH);
     float max_health = getDataValue(entity, DATA_MAX_HEALTH);

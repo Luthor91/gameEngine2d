@@ -11,7 +11,7 @@ bool hasHitbox[MAX_ENTITIES] = { false };
 bool hasSize[MAX_ENTITIES] = { false };
 bool hasTags[MAX_ENTITIES] = { false };
 bool hasDatas[MAX_ENTITIES] = { false };
-Entity playerEntity = 0;
+Entity player_entity = 0;
 
 static Entity nextEntityID = 0;
 

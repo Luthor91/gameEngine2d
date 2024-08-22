@@ -1,21 +1,21 @@
 #include "../include/game_system.h"
 
 // Définition de la variable globale pour l'état actuel du jeu
-GameState currentState = STATE_INIT;
+GameState current_state = STATE_INIT;
 
 // Fonction pour initialiser l'état du jeu
 void initStateMachine() {
-    currentState = STATE_INIT;
+    current_state = STATE_INIT;
 }
 
 // Fonction pour changer l'état du jeu
 void changeState(GameState newState) {
-    currentState = newState;
+    current_state = newState;
 }
 
 // Fonction pour gérer l'état actuel
 void handleState() {
-    switch (currentState) {
+    switch (current_state) {
         case STATE_INIT:
             handleInitState();
             break;

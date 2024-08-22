@@ -28,4 +28,7 @@ void removeAllTags(Entity entity);
 bool hasTag(Entity entity, const char* tag);
 Entity* getEntitiesWithTag(const char* tag, int* outCount);
 
+Entity getFirstEntityWithTag(const char* tag);
+Entity getLastEntityWithTag(const char* tag);
+
 #endif // TAG_COMPONENT_H

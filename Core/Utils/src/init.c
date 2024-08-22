@@ -2,6 +2,7 @@
 
 int Init_All() {
     srand(time(NULL));
+    initializeEventTypes();
     g_window = createWindow("Game Window");
     g_renderer = createRenderer(g_window);
     initStateMachine();

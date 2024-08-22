@@ -20,21 +20,31 @@ CollisionData* CollisionData_Init(Entity entity1, Entity entity2) {
 
 // Fonction pour mettre à jour le système de collision
 void updateCollisionSystem() {
-    // Parcourir toutes les entités et vérifier les collisions
+    // Obtenez l'index pour le type d'événement de collision
+    EventType EVENT_COLLIDE = getEventType("EVENT_COLLIDE");
+
     for (Entity entity1 = 0; entity1 < getEntityCount(); ++entity1) {
         if (!hasHitbox[entity1] || !hasPosition[entity1] || !isEntityEnabled(entity1)) continue;
 
         for (Entity entity2 = entity1 + 1; entity2 < getEntityCount(); ++entity2) {
             if (!hasHitbox[entity2] || !hasPosition[entity2] || !isEntityEnabled(entity2)) continue;
 
-                if (checkCollision(entity1, entity2)) {
-                    CollisionData* collider1 = CollisionData_Init(entity1, entity2);
-                    Event collisionEvent1 = { EVENT_TYPE_COLLIDE, collider1 };
-                    emitEvent(collisionEvent1);
-                }
+            if (checkCollision(entity1, entity2)) {
+                // Initialisez les données de collision
+                CollisionData* collider1 = CollisionData_Init(entity1, entity2);
+
+                // Créez l'événement de collision
+                Event collisionEvent1;
+                collisionEvent1.type = EVENT_COLLIDE; // Assurez-vous que 'type' est un int
+                collisionEvent1.data = collider1; // 'data' est de type void*
+
+                // Émettez l'événement
+                emitEvent(collisionEvent1);
+            }
         }
     }
 }
+
 
 // Fonction pour vérifier la collision entre deux entités
 bool checkCollision(Entity entity1, Entity entity2) {
@@ -79,12 +89,12 @@ bool checkCollisionTags(Event event, const char* tag1, const char* tag2) {
     if (event.data == NULL) return false;
     
     // Extraction des données de collision de l'événement
-    CollisionData* collisionData = (CollisionData*)event.data;
-    if (collisionData == NULL) return false;
+    CollisionData* collision_data = (CollisionData*)event.data;
+    if (collision_data == NULL) return false;
 
     // Récupération des entités impliquées dans la collision
-    Entity entity1 = collisionData->entity1;
-    Entity entity2 = collisionData->entity2;
+    Entity entity1 = collision_data->entity1;
+    Entity entity2 = collision_data->entity2;
 
     // Vérification que les entités sont valides et activées
     if (!isEntityEnabled(entity1) || !isEntityEnabled(entity2)) return false;

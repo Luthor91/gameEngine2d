@@ -15,7 +15,7 @@ typedef enum GameState {
 } GameState;
 
 // Variable globale pour suivre l'état actuel du jeu
-extern GameState currentState;
+extern GameState current_state;
 
 // Fonction pour initialiser l'état du jeu
 void initStateMachine();

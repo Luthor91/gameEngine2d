@@ -8,54 +8,54 @@ void onBullet_Shoot(Event event) {
     if(!can_shoot) {
         return;
     } else {
-        addTimerComponent(playerEntity, "reloading", 1.0f);
+        addTimerComponent(player_entity, "reloading", 1.0f);
         can_shoot = false;
     }
         
     Entity bullet = createEntity();
 
-    PositionComponent* playerPosition = getPositionComponent(playerEntity);
-    SpriteComponent* playerSprite = getSpriteComponent(playerEntity);
+    PositionComponent* player_position = getPositionComponent(player_entity);
+    SpriteComponent* player_sprite = getSpriteComponent(player_entity);
 
     // Calculer le centre du sprite du joueur
-    float playerCenterX = playerPosition->x + playerSprite->srcRect.w / 2;
-    float playerCenterY = playerPosition->y + playerSprite->srcRect.h / 2;
+    float player_center_x = player_position->x + player_sprite->srcRect.w / 2;
+    float player_center_y = player_position->y + player_sprite->srcRect.h / 2;
     
     // Récupérer la position du curseur de la souris
-    int mouseX, mouseY;
-    SDL_GetMouseState(&mouseX, &mouseY);
+    int mouse_x, mouse_y;
+    SDL_GetMouseState(&mouse_x, &mouse_y);
     
-    PositionComponent bulletPosition = {playerCenterX, playerCenterY};
+    PositionComponent bullet_position = {player_center_x, player_center_y};
     VelocityComponent bulletVelocity = VELOCITY_ZERO;
-    SizeComponent bulletSize = {12, 12};
-    HitboxComponent bulletHitbox = {0, 0, bulletSize.width, bulletSize.height, true};
+    SizeComponent bullet_size = {12, 12};
+    HitboxComponent bullet_hitbox = {0, 0, bullet_size.width, bullet_size.height, true};
     
     // Calculer la direction du tir
-    float directionX = mouseX - playerPosition->x;
-    float directionY = mouseY - playerPosition->y;
-    float length = sqrtf(directionX * directionX + directionY * directionY);
+    float direction_x = mouse_x - player_position->x;
+    float direction_y = mouse_y - player_position->y;
+    float length = sqrtf(direction_x * direction_x + direction_y * direction_y);
     
     // Normaliser la direction
     if (length != 0) {
-        directionX /= length;
-        directionY /= length;
+        direction_x /= length;
+        direction_y /= length;
     }
     
     float bulletSpeed = 1000.0f;
-    bulletVelocity.velocityX = directionX * bulletSpeed;
-    bulletVelocity.velocityY = directionY * bulletSpeed;
-    SDL_Texture* bulletTexture = loadColor(g_renderer, COLOR_BLACK, bulletSize.width, bulletSize.height);
+    bulletVelocity.velocityX = direction_x * bulletSpeed;
+    bulletVelocity.velocityY = direction_y * bulletSpeed;
+    SDL_Texture* bulletTexture = loadColor(g_renderer, COLOR_BLACK, bullet_size.width, bullet_size.height);
 
-    addPositionComponent(bullet, bulletPosition);
-    addSizeComponent(bullet, bulletSize);
+    addPositionComponent(bullet, bullet_position);
+    addSizeComponent(bullet, bullet_size);
     addVelocityComponent(bullet, bulletVelocity);
-    addSpriteComponent(bullet, bulletTexture, (SDL_Rect){0, 0, bulletSize.width, bulletSize.height});
-    addHitboxComponent(bullet, bulletHitbox);
+    addSpriteComponent(bullet, bulletTexture, (SDL_Rect){0, 0, bullet_size.width, bullet_size.height});
+    addHitboxComponent(bullet, bullet_hitbox);
     addTag(bullet, "Bullet");
 }
 
 void onMove(Event event) {
-    Entity player = playerEntity;
+    Entity player = player_entity;
     if (!hasVelocity[player] || player == INVALID_ENTITY_ID) return;
     
     VelocityComponent* velocity = getVelocityComponent(player);
@@ -79,15 +79,15 @@ void onBullet_CollideWith_Enemy(Event event) {
         return;
     }
 
-    CollisionData* collisionData = (CollisionData*)event.data;
+    CollisionData* collision_data = (CollisionData*)event.data;
 
-    if (collisionData == NULL) {
+    if (collision_data == NULL) {
         return;
     }
 
     // Récupérer les entités impliquées dans la collision
-    Entity entity1 = collisionData->entity1;
-    Entity entity2 = collisionData->entity2;
+    Entity entity1 = collision_data->entity1;
+    Entity entity2 = collision_data->entity2;
 
     if (!isEntityEnabled(entity1) || !isEntityEnabled(entity2))  return;
     if (!hasTag(entity1, "Enemy") && !hasTag(entity2, "Bullet")) return;
@@ -102,8 +102,8 @@ void onBullet_CollideWith_Enemy(Event event) {
 
         if (health <= 0) {
             Entity enemyEntity = enemy;
-            Event eventDeath = {EVENT_TYPE_DEATH, &enemyEntity};
-            emitEvent(eventDeath);
+            Event event_death = {EVENT_DEATH, &enemyEntity};
+            emitEvent(event_death);
         }
     }
     disableComponentEntity(bullet);
@@ -114,15 +114,15 @@ void onEnemy_CollideWith_Player(Event event) {
         return;
     }
 
-    CollisionData* collisionData = (CollisionData*)event.data;
+    CollisionData* collision_data = (CollisionData*)event.data;
 
-    if (collisionData == NULL) {
+    if (collision_data == NULL) {
         return;
     }
 
     // Récupérer les entités impliquées dans la collision
-    Entity entity1 = collisionData->entity1;
-    Entity entity2 = collisionData->entity2;
+    Entity entity1 = collision_data->entity1;
+    Entity entity2 = collision_data->entity2;
 
     if ( !isEntityEnabled(entity1) || !isEntityEnabled(entity2)) {
        return;
@@ -146,10 +146,10 @@ void onEnemy_CollideWith_Player(Event event) {
         addTimerComponent(player, "immunity", 0.250f);
 
         if (health <= 0) {
-            Entity* playerEntity = malloc(sizeof(Entity));
-            *playerEntity = player;
-            Event eventDeath = {EVENT_TYPE_DEATH, playerEntity};
-            emitEvent(eventDeath);
+            Entity* player_entity = malloc(sizeof(Entity));
+            *player_entity = player;
+            Event event_death = {EVENT_DEATH, player_entity};
+            emitEvent(event_death);
         }
     }
     disableComponentEntity(enemy);
@@ -165,7 +165,7 @@ void onDeath(Event event) {
     if (hasTag(entity, "Enemy") || hasTag(entity, "Player")) {
         printf("Entity %u has died\n", entity);
         disableComponentEntity(entity);
-        if (entity == playerEntity) {
+        if (entity == player_entity) {
             changeState(STATE_GAME_OVER);
         }
     }
@@ -176,15 +176,15 @@ void uponReloading(Event event) {
         return;
     }
 
-    TimerData* timerData = (TimerData*)event.data;
+    TimerData* timer_data = (TimerData*)event.data;
 
-    if (timerData == NULL) {
+    if (timer_data == NULL) {
         return;
     }
 
     // Récupérer les entités impliquées dans la collision
-    Entity player = timerData->entity;
-    char* name = timerData->name;   
+    Entity player = timer_data->entity;
+    char* name = timer_data->name;   
 
     if(strcmp(name, "reloading") == 0) {
         can_shoot = true;
@@ -198,15 +198,15 @@ void uponInvincibilityFinished(Event event) {
         return;
     }
 
-    TimerData* timerData = (TimerData*)event.data;
+    TimerData* timer_data = (TimerData*)event.data;
 
-    if (timerData == NULL) {
+    if (timer_data == NULL) {
         printf("Error: Failed to cast event.data to TimerData*\n");
         return;
     }
 
-    Entity player = timerData->entity;
-    char* name = timerData->name;
+    Entity player = timer_data->entity;
+    char* name = timer_data->name;
 
     if (strcmp(name, "immunity") == 0) {
         getHitboxComponent(player)->is_active = true;
@@ -218,27 +218,27 @@ int main(int argc, char* argv[]) {
     Init_All();
 
     // Ajouter des listeners pour les événements
-    addEventListener(EVENT_TYPE_MOVE, onMove);
-    addEventListener(EVENT_TYPE_LEFT_MOUSECLICK, onBullet_Shoot);
-    addEventListener(EVENT_TYPE_COLLIDE, onBullet_CollideWith_Enemy);
-    addEventListener(EVENT_TYPE_COLLIDE, onEnemy_CollideWith_Player);
-    addEventListener(EVENT_TYPE_DEATH, onDeath);
-    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponReloading);
-    addEventListener(EVENT_TYPE_TIMER_EXPIRED, uponInvincibilityFinished);
+    addEventListener(EVENT_MOVE, onMove);
+    addEventListener(EVENT_LEFT_MOUSECLICK, onBullet_Shoot);
+    addEventListener(EVENT_COLLIDE, onBullet_CollideWith_Enemy);
+    addEventListener(EVENT_COLLIDE, onEnemy_CollideWith_Player);
+    addEventListener(EVENT_DEATH, onDeath);
+    addEventListener(EVENT_TIMER_EXPIRED, uponReloading);
+    addEventListener(EVENT_TIMER_EXPIRED, uponInvincibilityFinished);
 
     srand(time(NULL));  // Initialise le générateur de nombres aléatoires
     
     // Définition du fond d'écran
     Entity background = createEntity();
-    PositionComponent backgroundPosition = POSITION_ZERO;
+    PositionComponent background_position = POSITION_ZERO;
     SDL_Texture* backgroundTexture = loadColor(g_renderer, COLOR_WHITE, WINDOW_WIDTH, WINDOW_HEIGHT);
-    addPositionComponent(background, backgroundPosition);
+    addPositionComponent(background, background_position);
     addSpriteComponent(background, backgroundTexture, (SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT});
 
     // Créer plusieurs ennemis avec des positions aléatoires
     for (int i = 0; i < NUM_ENEMIES; ++i) {
         Entity enemy = createEntity();
-        float speedMultiplier = 10.0f;
+        float speed_multiplier = 10.0f;
 
         // Générer une position aléatoire le long des bords de l'écran
         int edge = rand() % 4;  // 0 = haut, 1 = droite, 2 = bas, 3 = gauche
@@ -262,62 +262,62 @@ int main(int argc, char* argv[]) {
                 break;
         }
 
-        PositionComponent enemyPosition = {x, y};
-        SizeComponent enemySize = {32, 32};
-        HitboxComponent enemyHitbox = { 0, 0, enemySize.width, enemySize.height, true};
-        DataComponent enemyData = DATA_COMPONENT_DEFAULT;
-        SDL_Texture* enemyTexture = loadTexture("Assets/Default/DefaultObject.png", g_renderer);
+        PositionComponent enemy_position = {x, y};
+        SizeComponent enemy_size = {32, 32};
+        HitboxComponent enemy_hitbox = { 0, 0, enemy_size.width, enemy_size.height, true};
+        DataComponent enemy_data = DATA_COMPONENT_DEFAULT;
+        SDL_Texture* enemy_texture = loadTexture("Assets/Default/DefaultObject.png", g_renderer);
 
         // Calcul de la direction vers le centre de l'écran
         int centerX = WINDOW_WIDTH / 2;
         int centerY = WINDOW_HEIGHT / 2;
-        float deltaX = centerX - x;
-        float deltaY = centerY - y;
-        float magnitude = sqrt(deltaX * deltaX + deltaY * deltaY);
-        VelocityComponent enemyVelocity = { 
-            (deltaX / magnitude) * speedMultiplier, 
-            (deltaY / magnitude) * speedMultiplier 
+        float delta_x = centerX - x;
+        float delta_y = centerY - y;
+        float magnitude = sqrt(delta_x * delta_x + delta_y * delta_y);
+        VelocityComponent enemy_velocity = { 
+            (delta_x / magnitude) * speed_multiplier, 
+            (delta_y / magnitude) * speed_multiplier 
         };
 
         // Ajouter les composants à l'entité
-        addPositionComponent(enemy, enemyPosition);
-        addSizeComponent(enemy, enemySize);
-        addHitboxComponent(enemy, enemyHitbox);
-        addDataComponent(enemy, enemyData);
-        addSpriteComponent(enemy, enemyTexture, (SDL_Rect){0, 0, enemySize.width, enemySize.height});
-        addVelocityComponent(enemy, enemyVelocity);
+        addPositionComponent(enemy, enemy_position);
+        addSizeComponent(enemy, enemy_size);
+        addHitboxComponent(enemy, enemy_hitbox);
+        addDataComponent(enemy, enemy_data);
+        addSpriteComponent(enemy, enemy_texture, (SDL_Rect){0, 0, enemy_size.width, enemy_size.height});
+        addVelocityComponent(enemy, enemy_velocity);
         setDataValue(enemy, DATA_HEALTH, 100);
         addTag(enemy, "Enemy");
     }
 
     // Définition du player
-    playerEntity = createEntity();
+    player_entity = createEntity();
     InputComponent playerInput = INPUT_EMPTY;
-    PositionComponent playerPosition = {WINDOW_WIDTH/2 - 16, WINDOW_HEIGHT/2};
+    PositionComponent player_position = {WINDOW_WIDTH/2 - 16, WINDOW_HEIGHT/2};
     VelocityComponent playerVelocity = VELOCITY_ZERO;
-    SizeComponent playerSize = {32, 32};
-    HitboxComponent playerHitbox = { 0, 0, playerSize.width, playerSize.height, true};
-    DataComponent playerData = DATA_COMPONENT_DEFAULT;
-    SDL_Texture* playerTexture = loadTexture("Assets/Default/DefaultObject.png", g_renderer);
-    addInputComponent(playerEntity, playerInput);  
-    addPositionComponent(playerEntity, playerPosition);
-    addVelocityComponent(playerEntity, playerVelocity);
-    addSpriteComponent(playerEntity, playerTexture, (SDL_Rect){0, 0, 32, 32});
-    addSizeComponent(playerEntity, playerSize);
-    addHitboxComponent(playerEntity, playerHitbox);
-    addDataComponent(playerEntity, playerData);
-    addTag(playerEntity, "Player");
-    setDataValue(playerEntity, DATA_HEALTH, 100);
+    SizeComponent player_size = {32, 32};
+    HitboxComponent player_hitbox = { 0, 0, player_size.width, player_size.height, true};
+    DataComponent player_data = DATA_COMPONENT_DEFAULT;
+    SDL_Texture* player_texture = loadTexture("Assets/Default/DefaultObject.png", g_renderer);
+    addInputComponent(player_entity, playerInput);  
+    addPositionComponent(player_entity, player_position);
+    addVelocityComponent(player_entity, playerVelocity);
+    addSpriteComponent(player_entity, player_texture, (SDL_Rect){0, 0, 32, 32});
+    addSizeComponent(player_entity, player_size);
+    addHitboxComponent(player_entity, player_hitbox);
+    addDataComponent(player_entity, player_data);
+    addTag(player_entity, "Player");
+    setDataValue(player_entity, DATA_HEALTH, 100);
 
     // Configurer les bindings
-    bindEvent(playerEntity, SDLK_z, EVENT_TYPE_MOVE, "Up");
-    bindEvent(playerEntity, SDLK_s, EVENT_TYPE_MOVE, "Down");
-    bindEvent(playerEntity, SDLK_q, EVENT_TYPE_MOVE, "Left");
-    bindEvent(playerEntity, SDLK_d, EVENT_TYPE_MOVE, "Right");
-    bindEvent(playerEntity, SDL_BUTTON_LEFT, EVENT_TYPE_LEFT_MOUSECLICK, "Shoot");
+    bindEvent(player_entity, SDLK_z, EVENT_MOVE, "Up");
+    bindEvent(player_entity, SDLK_s, EVENT_MOVE, "Down");
+    bindEvent(player_entity, SDLK_q, EVENT_MOVE, "Left");
+    bindEvent(player_entity, SDLK_d, EVENT_MOVE, "Right");
+    bindEvent(player_entity, SDL_BUTTON_LEFT, EVENT_LEFT_MOUSECLICK, "Shoot");
 
     changeState(STATE_PLAYING);
-    while (currentState != STATE_EXIT) {
+    while (current_state != STATE_EXIT) {
         handleState();
     }
 

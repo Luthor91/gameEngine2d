@@ -31,7 +31,7 @@ extern bool hasSize[MAX_ENTITIES];
 extern bool hasTags[MAX_ENTITIES];
 extern bool hasDatas[MAX_ENTITIES];
 
-extern Entity playerEntity;
+extern Entity player_entity;
 
 // Générateur d'ID simple pour les entités
 Entity createEntity();

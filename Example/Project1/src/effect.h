@@ -4,12 +4,15 @@
 #include "../../../Core/core.h"
 #include "global.h"
 
-void summonSecondBullet(Entity bullet, float directionX, float directionY, float coeff_passive);
-void summonTrap(PositionComponent deathPosition);
+void amplify_bullet(Entity bullet);
+void summonSecondBullet(Entity bullet, float direction_x, float direction_y);
+void summonTrap(PositionComponent death_position);
 void killChance();
 void summonBarrel();
 void explodeBarrel(Entity barrel);
 void summonPoison();
-void adjustEnemyDirection(Entity enemy, PositionComponent baitPosition);
+void adjustEnemyDirection(Entity enemy, PositionComponent bait_position);
+
+void handle_damage_received(Entity entity, float health);
 
 #endif

@@ -18,32 +18,44 @@
 #define MAX_LISTENERS 64              // Nombre maximum de types d'écouteurs d'événements
 
 #define MAX_EVENT_QUEUE_SIZE MAX_EVENTS       // Taille maximale de la file d'attente d'événements (identique à MAX_EVENTS)
-#define MAX_EVENT_TYPE_COUNT MAX_LISTENERS    // Nombre maximum de types d'événements (identique à MAX_LISTENERS)
+#define MAX_EVENT_COUNT MAX_LISTENERS    // Nombre maximum de types d'événements (identique à MAX_LISTENERS)
 #define MAX_LISTENER_COUNT MAX_LISTENERS      // Nombre maximum de types d'écouteurs d'événements (identique à MAX_LISTENERS)
 #define MAX_LISTENERS_PER_EVENT 16            // Nombre maximum d'écouteurs pour un type d'événement donné
+#define MAX_EVENT_TYPES 256 // Nombre total maximal de types d'événements
 
-// Types d'événements
-typedef enum EventType {
-    EVENT_TYPE_MOVE,
-    EVENT_TYPE_JUMP,
-    EVENT_TYPE_SHOOT,
-    EVENT_TYPE_DASH,
-    EVENT_TYPE_DEATH,
-    EVENT_TYPE_LEVEL_UP,
-    EVENT_TYPE_COLLIDE,
-    EVENT_TYPE_INFO,
-    EVENT_TYPE_QUIT,
-    EVENT_TYPE_KEYDOWN,
-    EVENT_TYPE_KEYUP,
-    EVENT_TYPE_MIDDLE_MOUSECLICK,
-    EVENT_TYPE_RIGHT_MOUSECLICK,
-    EVENT_TYPE_LEFT_MOUSECLICK,
-    EVENT_TYPE_MIDDLE_MOUSEHELD,
-    EVENT_TYPE_RIGHT_MOUSEHELD,
-    EVENT_TYPE_LEFT_MOUSEHELD,
-    EVENT_TYPE_TIMER_EXPIRED,
-    EVENT_TYPE_GENERIC,
-    // Ajoutez ici d'autres types d'événements nécessaires
+// Valeur spéciale pour indiquer un échec
+#define EVENT_NOT_FOUND_INDEX -1
+#define EVENT_NOT_FOUND (EventType){"UNKNOWN_EVENT_TYPE\0", EVENT_NOT_FOUND_INDEX}
+
+
+// Liste des types d'événements prédéfinis
+#define EVENT_LIST \
+    X(EVENT_MOVE) \
+    X(EVENT_JUMP) \
+    X(EVENT_SHOOT) \
+    X(EVENT_DASH) \
+    X(EVENT_DEATH) \
+    X(EVENT_LEVEL_UP) \
+    X(EVENT_COLLIDE) \
+    X(EVENT_INFO) \
+    X(EVENT_QUIT) \
+    X(EVENT_KEYDOWN) \
+    X(EVENT_KEYUP) \
+    X(EVENT_MIDDLE_MOUSECLICK) \
+    X(EVENT_RIGHT_MOUSECLICK) \
+    X(EVENT_LEFT_MOUSECLICK) \
+    X(EVENT_MIDDLE_MOUSEHELD) \
+    X(EVENT_RIGHT_MOUSEHELD) \
+    X(EVENT_LEFT_MOUSEHELD) \
+    X(EVENT_TIMER_EXPIRED) \
+    X(EVENT_GENERIC) \
+    /* Ajoutez ici d'autres types d'événements nécessaires */
+
+
+
+typedef struct EventType {
+    char name[32];
+    int index;
 } EventType;
 
 // Structure de l'événement
@@ -70,6 +82,7 @@ typedef struct EventBinding {
 } EventBinding;
 
 // Fonctions pour gérer les événements
+void initializeEventTypes();
 void addEventListener(EventType type, EventListener listener);
 void removeEventListener(EventType type, EventListener listener);
 void emitEvent(Event event);
@@ -77,5 +90,12 @@ void bindEvent(Entity entity, SDL_Keycode key, EventType eventType, void* eventD
 
 void processEvents();
 void updateEvent();  // Pour gérer les événements SDL et les convertir en événements internes
+
+// Fonction pour ajouter un type d'événement dynamique
+int addEventType(const char* eventName);
+
+// Fonction pour récupérer l'index d'un événement dynamique par son nom
+EventType getEventType(const char* eventName);
+int getEventTypeIndex(const char* eventName);
 
 #endif // EVENT_SYSTEM_H

@@ -2,37 +2,46 @@
 
 void uponReloading(Event event) {
     if (!CheckTimerName(event, "reloading")) return;
-    setDataValue(playerEntity, DATA_CAPABLE, 1.0f);    
+    setDataValue(
+        player_entity, 
+        getDataType("DATA_CAPABLE"), 
+        1.0f
+    );    
 }
 
 void uponInvincibilityFinished(Event event) {
     if (!CheckTimerName(event, "immunity")) return;
 
-    TimerData* timerData = (TimerData*)event.data;
-    Entity player = timerData->entity;
+    TimerData* timer_data = (TimerData*)event.data;
+    Entity player = timer_data->entity;
     getHitboxComponent(player)->is_active = true;
 }
 
 void uponIncreasingDifficulty(Event event) {
     if (!CheckTimerName(event, "difficulty_increase")) return;
-    if(getDataValue(playerEntity, DATA_DIFFICULTY) > 10.0f) return;
+    int DATA_DIFFICULTY = getDataType("DATA_DIFFICULTY");
+    if(getDataValue(player_entity, DATA_DIFFICULTY) > 10.0f) return;
     setDataValue(
-        playerEntity, 
+        player_entity, 
         DATA_DIFFICULTY, 
-        getDataValue(playerEntity, DATA_DIFFICULTY)+1.0f
+        getDataValue(player_entity, DATA_DIFFICULTY)+1.0f
     );
-    printf("Difficulty increasing to %lf\n", getDataValue(playerEntity, DATA_DIFFICULTY));
+    printf("Difficulty increasing to %lf\n", getDataValue(player_entity, DATA_DIFFICULTY));
 }
 
 void uponSpawnEnemies(Event event) {
     if (!CheckTimerName(event, "spawn_enemies")) return;
     printf("spawning enemies\n");
+    int DATA_DIFFICULTY = getDataType("DATA_DIFFICULTY");
+    int DATA_HEALTH = getDataType("DATA_HEALTH");
+    int DATA_MAX_HEALTH = getDataType("DATA_MAX_HEALTH");
+    int DATA_ATTACK = getDataType("DATA_ATTACK");
 
     for (int i = 0; i < ENEMIES_PER_SPAWN; ++i) {
         Entity enemy = (createEntity() != INVALID_ENTITY_ID) ? createEntity() : getFirstEmptyEntity();
         if (enemy == INVALID_ENTITY_ID) return;
         
-        float speedMultiplier = 50.0f * (1 + (getDataValue(playerEntity, DATA_DIFFICULTY)/2.0f));
+        float speed_multiplier = 10.0f * (1 + (getDataValue(player_entity, DATA_DIFFICULTY)/2.0f));
         int edge = rand() % 4, x = 0, y = 0;
 
         switch (edge) {
@@ -50,35 +59,35 @@ void uponSpawnEnemies(Event event) {
                 break;
         }
 
-        PositionComponent enemyPosition = {x, y};
-        SizeComponent enemySize = {32, 32};
-        HitboxComponent enemyHitbox = { 0, 0, enemySize.width, enemySize.height, true};
-        DataComponent enemyData = DATA_COMPONENT_DEFAULT;
-        SDL_Texture* enemyTexture = loadTexture("Assets/TowerDefense/EnemyFullHealth.png", g_renderer);
+        PositionComponent enemy_position = {x, y};
+        SizeComponent enemy_size = {32, 32};
+        HitboxComponent enemy_hitbox = { 0, 0, enemy_size.width, enemy_size.height, true};
+        DataComponent enemy_data = DATA_COMPONENT_DEFAULT;
+        SDL_Texture* enemy_texture = loadTexture("Assets/TowerDefense/EnemyFullHealth.png", g_renderer);
 
         // Calcul de la direction vers le centre de l'écran
-        float deltaX = (WINDOW_WIDTH / 2) - x;
-        float deltaY = (WINDOW_HEIGHT / 2) - y;
-        float magnitude = sqrt(deltaX * deltaX + deltaY * deltaY);
-        VelocityComponent enemyVelocity = { 
-            (deltaX / magnitude) * speedMultiplier, 
-            (deltaY / magnitude) * speedMultiplier 
+        float delta_x = (WINDOW_WIDTH / 2) - x;
+        float delta_y = (WINDOW_HEIGHT / 2) - y;
+        float magnitude = sqrt(delta_x * delta_x + delta_y * delta_y);
+        VelocityComponent enemy_velocity = { 
+            (delta_x / magnitude) * speed_multiplier, 
+            (delta_y / magnitude) * speed_multiplier 
         };
 
         // Ajouter les composants à l'entité
-        addPositionComponent(enemy, enemyPosition);
-        addSizeComponent(enemy, enemySize);
-        addHitboxComponent(enemy, enemyHitbox);
-        addDataComponent(enemy, enemyData);
-        SpriteComponent enemySprite = {
-            enemyTexture, 
-            (SDL_Rect){0, 0, enemySize.width, enemySize.height}
+        addPositionComponent(enemy, enemy_position);
+        addSizeComponent(enemy, enemy_size);
+        addHitboxComponent(enemy, enemy_hitbox);
+        addDataComponent(enemy, enemy_data);
+        SpriteComponent enemy_sprite = {
+            enemy_texture, 
+            (SDL_Rect){0, 0, enemy_size.width, enemy_size.height}
         };
-        addSpriteComponent(enemy, enemySprite);
-        addVelocityComponent(enemy, enemyVelocity);
-        setDataValue(enemy, DATA_HEALTH, 100*getDataValue(playerEntity, DATA_DIFFICULTY));
-        setDataValue(enemy, DATA_MAX_HEALTH, getDataValue(playerEntity, DATA_HEALTH));
-        setDataValue(enemy, DATA_ATTACK, 20*getDataValue(playerEntity, DATA_DIFFICULTY));
+        addSpriteComponent(enemy, enemy_sprite);
+        addVelocityComponent(enemy, enemy_velocity);
+        setDataValue(enemy, DATA_HEALTH, 100*getDataValue(player_entity, DATA_DIFFICULTY));
+        setDataValue(enemy, DATA_MAX_HEALTH, getDataValue(player_entity, DATA_HEALTH));
+        setDataValue(enemy, DATA_ATTACK, 20*getDataValue(player_entity, DATA_DIFFICULTY));
         addTag(enemy, "Enemy");
     }
 }
@@ -87,8 +96,8 @@ void uponDispawnTrap(Event event) {
     if (!CheckTimerName(event, "dispawn_trap")) return;
     printf("dispawn traps\n");
 
-    TimerData* timerData = (TimerData*)event.data;
-    Entity trap = timerData->entity;
+    TimerData* timer_data = (TimerData*)event.data;
+    Entity trap = timer_data->entity;
     disableComponentEntity(trap);
 }
 
@@ -102,8 +111,8 @@ void uponDispawnBarrel(Event event) {
     if (!CheckTimerName(event, "dispawn_barrel")) return;
     printf("dispawn barrel\n");
 
-    TimerData* timerData = (TimerData*)event.data;
-    Entity barrel = timerData->entity;
+    TimerData* timer_data = (TimerData*)event.data;
+    Entity barrel = timer_data->entity;
     disableComponentEntity(barrel);
 }
 
@@ -116,11 +125,14 @@ void uponSpawnPoison(Event event) {
 void uponApplyingPoisonTicks(Event event) {
     if (!CheckTimerName(event, "apply_poison_tick")) return;
 
-    TimerData* timerData = (TimerData*)event.data;
-    Entity poison = timerData->entity;
+    TimerData* timer_data = (TimerData*)event.data;
+    Entity poison = timer_data->entity;
     HitboxComponent hitbox = *getHitboxComponent(poison);
     PositionComponent* poison_pos = getPositionComponent(poison);
     SizeComponent* poison_size = getSizeComponent(poison);
+
+    int DATA_HEALTH = getDataType("DATA_HEALTH");
+    int DATA_ATTACK = getDataType("DATA_ATTACK");
 
     if (poison_pos == NULL || poison_size == NULL) {
         printf("Poison is missing Position or Size component\n");
@@ -157,17 +169,7 @@ void uponApplyingPoisonTicks(Event event) {
             PositionComponent pos_centered = *getCenterPosition(enemy);
             setEmitterPosition("Poison", pos_centered.x, pos_centered.y);
             instanciateParticleEmitter("Poison");
-
-            // Si la santé de l'ennemi tombe à 0 ou en dessous, émettre un événement de mort
-            Entity* enemy_ptr = malloc(sizeof(Entity));
-            *enemy_ptr = enemy;
-            if (health <= 0) {
-                Event eventDeath = {EVENT_TYPE_DEATH, enemy_ptr};
-                emitEvent(eventDeath);
-            } else {
-                Event event_damaged = {EVENT_TYPE_INFO, enemy_ptr};
-                emitEvent(event_damaged);
-            }
+            handle_damage_received(enemy, health);
             printf("Enemy %d hit by poison for %.2f damage\n", enemy, damage);
         }
     }
@@ -175,7 +177,7 @@ void uponApplyingPoisonTicks(Event event) {
     hitbox.is_active = !hitbox.is_active;
     setDataValue(poison, DATA_ATTACK, getDataValue(poison, DATA_ATTACK) * 0.95);
 
-    if (getDataValue(poison, DATA_ATTACK) < getDataValue(playerEntity, DATA_ATTACK) * 0.05) {
+    if (getDataValue(poison, DATA_ATTACK) < getDataValue(player_entity, DATA_ATTACK) * 0.05) {
         removeTimerComponent(poison, "apply_poison_tick"); 
         disableComponentEntity(poison);
     }
@@ -188,9 +190,9 @@ void uponDispawnBait(Event event) {
     if (!CheckTimerName(event, "dispawn_bait")) return;
     printf("dispawn bait\n");
 
-    TimerData* timerData = (TimerData*)event.data;
-    Entity bait = timerData->entity;
-    PositionComponent position_player = *getPositionComponent(playerEntity);
+    TimerData* timer_data = (TimerData*)event.data;
+    Entity bait = timer_data->entity;
+    PositionComponent position_player = *getPositionComponent(player_entity);
     // Faire changer la direction des ennemis vers le joueur
     int count = 0;
     Entity* enemies = getEntitiesWithTag("Enemy", &count);

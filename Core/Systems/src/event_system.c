@@ -7,15 +7,50 @@ static Event eventQueue[MAX_EVENTS];
 static int eventQueueCount = 0;
 static int listenerCount = 0;
 
+static EventType eventTypes[MAX_EVENT_TYPES];
+static int eventTypeCount = 0;
+
+void initializeEventTypes() {
+    const char* predefinedEventNames[] = {
+        "EVENT_MOVE",
+        "EVENT_JUMP",
+        "EVENT_SHOOT",
+        "EVENT_DASH",
+        "EVENT_DEATH",
+        "EVENT_LEVEL_UP",
+        "EVENT_COLLIDE",
+        "EVENT_INFO",
+        "EVENT_QUIT",
+        "EVENT_KEYDOWN",
+        "EVENT_KEYUP",
+        "EVENT_MIDDLE_MOUSECLICK",
+        "EVENT_RIGHT_MOUSECLICK",
+        "EVENT_LEFT_MOUSECLICK",
+        "EVENT_MIDDLE_MOUSEHELD",
+        "EVENT_RIGHT_MOUSEHELD",
+        "EVENT_LEFT_MOUSEHELD",
+        "EVENT_TIMER_EXPIRED",
+        "EVENT_GENERIC"
+    };
+
+    int predefinedEventCount = sizeof(predefinedEventNames) / sizeof(predefinedEventNames[0]);
+
+    for (int i = 0; i < predefinedEventCount; ++i) {
+        strncpy(eventTypes[eventTypeCount].name, predefinedEventNames[i], sizeof(eventTypes[eventTypeCount].name) - 1);
+        eventTypes[eventTypeCount].index = eventTypeCount;
+        eventTypeCount++;
+    }
+}
+
+
 // Ajout d'un écouteur d'événements
-void addEventListener(EventType type, EventListener listener) {     
+void addEventListener(EventType type, EventListener listener) {
     for (int i = 0; i < MAX_EVENTS; ++i) {
-        if (eventListeners[i].type == type) {
+        if (eventListeners[i].type.index == type.index) {
             if (eventListeners[i].listenerCount < MAX_LISTENERS) {
                 eventListeners[i].listeners[eventListeners[i].listenerCount++] = listener;
-                printf("Listener added for event type %d\n", type);
             } else {
-                printf("Max listeners reached for event type %d\n", type);
+                printf("Max listeners reached for event type %d\n", type.index);
             }
             return;
         } else if (eventListeners[i].listenerCount == 0) {
@@ -23,16 +58,16 @@ void addEventListener(EventType type, EventListener listener) {
             eventListeners[i].listeners[0] = listener;
             eventListeners[i].listenerCount = 1;
             listenerCount++;
-            printf("Listener added for new event type %d\n", type);
             return;
         }
     }
 }
 
+
 // Retrait d'un écouteur d'événements
 void removeEventListener(EventType type, EventListener listener) {
     for (int i = 0; i < MAX_EVENTS; ++i) {
-        if (eventListeners[i].type == type) {
+        if (eventListeners[i].type.index == type.index) {
             for (int j = 0; j < eventListeners[i].listenerCount; ++j) {
                 if (eventListeners[i].listeners[j] == listener) {
                     memmove(&eventListeners[i].listeners[j], &eventListeners[i].listeners[j + 1],
@@ -82,19 +117,19 @@ void processEvents() {
 
         Event event = eventQueue[i];
 
-        if (event.type < 0 || event.type >= MAX_EVENT_TYPE_COUNT) {
-            printf("Error: Invalid event type %d\n", event.type);
+        if (event.type.index < 0 || event.type.index >= MAX_EVENT_COUNT) {
+            printf("Error: Invalid event type %d\n", event.type.index);
             continue;
         }
 
-        for (int j = 0; j < listenerCount; ++j) {  // Correction: '<' instead of '<='
+        for (int j = 0; j < listenerCount; ++j) {
             if (j < 0 || j >= MAX_LISTENER_COUNT) {
                 printf("Error: Invalid listener index %d\n", j);
                 continue;
             }
 
-            if (eventListeners[j].type == event.type) {
-                for (int k = 0; k < eventListeners[j].listenerCount; ++k) {  // Correction: '<' instead of '<='
+            if (eventListeners[j].type.index == event.type.index) {
+                for (int k = 0; k < eventListeners[j].listenerCount; ++k) {
                     if (k < 0 || k >= MAX_LISTENERS_PER_EVENT) {
                         printf("Error: Invalid listener function index %d\n", k);
                         continue;
@@ -113,7 +148,7 @@ void processEvents() {
 // Met à jour les événements et émet les événements liés aux touches
 void updateEvent() {
     SDL_Event sdlEvent;
-    static int mouseX, mouseY; // Pour garder la position de la souris
+    static int mouse_x, mouse_y; // Pour garder la position de la souris
     static bool leftMouseHeld = false;
     static bool rightMouseHeld = false;
     static bool middleMouseHeld = false;
@@ -121,61 +156,69 @@ void updateEvent() {
     while (SDL_PollEvent(&sdlEvent)) {
         if (sdlEvent.type == SDL_QUIT) {
             changeState(STATE_EXIT);
-        }      
-        bool eventHandled = false; 
+        }
+
+        int leftMouseClickType = getEventTypeIndex("EVENT_LEFT_MOUSECLICK");
+        int rightMouseClickType = getEventTypeIndex("EVENT_RIGHT_MOUSECLICK");
+        int middleMouseClickType = getEventTypeIndex("EVENT_MIDDLE_MOUSECLICK");
+        int leftMouseHeldType = getEventTypeIndex("EVENT_LEFT_MOUSEHELD");
+        int rightMouseHeldType = getEventTypeIndex("EVENT_RIGHT_MOUSEHELD");
+        int middleMouseHeldType = getEventTypeIndex("EVENT_MIDDLE_MOUSEHELD");
 
         if (sdlEvent.type == SDL_MOUSEBUTTONDOWN) {
-            SDL_GetMouseState(&mouseX, &mouseY);
-            SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
-            cursorPos->x = mouseX;
-            cursorPos->y = mouseY;
+            SDL_GetMouseState(&mouse_x, &mouse_y);
+            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
+            cursor_position->x = mouse_x;
+            cursor_position->y = mouse_y;
+
+            Event event;
+            event.data = cursor_position; // Assign pointer to data
 
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
-                leftMouseHeld = true; // Indiquer que le bouton gauche est maintenu
-                Event clickEvent = {EVENT_TYPE_LEFT_MOUSECLICK, cursorPos};
-                emitEvent(clickEvent);
+                leftMouseHeld = true;
+                event.type.index = leftMouseClickType;
             } else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) {
-                rightMouseHeld = true; // Indiquer que le bouton droit est maintenu
-                Event clickEvent = {EVENT_TYPE_RIGHT_MOUSECLICK, cursorPos};
-                emitEvent(clickEvent);
+                rightMouseHeld = true;
+                event.type.index = rightMouseClickType;
             } else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
-                middleMouseHeld = true; // Indiquer que le bouton milieu est maintenu
-                Event clickEvent = {EVENT_TYPE_MIDDLE_MOUSECLICK, cursorPos};
-                emitEvent(clickEvent);
+                middleMouseHeld = true;
+                event.type.index = middleMouseClickType;
             }
+
+            emitEvent(event);
         } else if (sdlEvent.type == SDL_MOUSEBUTTONUP) {
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
-                leftMouseHeld = false; // Bouton gauche relâché
+                leftMouseHeld = false;
             } else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) {
-                rightMouseHeld = false; // Bouton droit relâché
+                rightMouseHeld = false;
             } else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
-                middleMouseHeld = false; // Bouton milieu relâché
+                middleMouseHeld = false;
             }
         }
 
         // Émettre des événements de maintien de clic
         if (leftMouseHeld) {
-            SDL_GetMouseState(&mouseX, &mouseY);
-            SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
-            cursorPos->x = mouseX;
-            cursorPos->y = mouseY;
-            Event holdEvent = {EVENT_TYPE_LEFT_MOUSEHELD, cursorPos};
+            SDL_GetMouseState(&mouse_x, &mouse_y);
+            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
+            cursor_position->x = mouse_x;
+            cursor_position->y = mouse_y;
+            Event holdEvent = {(EventType){.index = leftMouseHeldType}, cursor_position};
             emitEvent(holdEvent);
         }
         if (rightMouseHeld) {
-            SDL_GetMouseState(&mouseX, &mouseY);
-            SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
-            cursorPos->x = mouseX;
-            cursorPos->y = mouseY;
-            Event holdEvent = {EVENT_TYPE_RIGHT_MOUSEHELD, cursorPos};
+            SDL_GetMouseState(&mouse_x, &mouse_y);
+            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
+            cursor_position->x = mouse_x;
+            cursor_position->y = mouse_y;
+            Event holdEvent = {(EventType){.index = rightMouseHeldType}, cursor_position};
             emitEvent(holdEvent);
         }
         if (middleMouseHeld) {
-            SDL_GetMouseState(&mouseX, &mouseY);
-            SDL_Point* cursorPos = (SDL_Point*)malloc(sizeof(SDL_Point));
-            cursorPos->x = mouseX;
-            cursorPos->y = mouseY;
-            Event holdEvent = {EVENT_TYPE_MIDDLE_MOUSEHELD, cursorPos};
+            SDL_GetMouseState(&mouse_x, &mouse_y);
+            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
+            cursor_position->x = mouse_x;
+            cursor_position->y = mouse_y;
+            Event holdEvent = {(EventType){.index = middleMouseHeldType}, cursor_position};
             emitEvent(holdEvent);
         }
 
@@ -201,4 +244,47 @@ void updateEvent() {
             }
         }
     }
+}
+
+
+// Fonction pour ajouter un type d'événement prédéfini
+int addEventType(const char* eventName) {
+    // Vérifiez si le type existe déjà
+    for (int i = 0; i < eventTypeCount; ++i) {
+        if (strcmp(eventTypes[i].name, eventName) == 0) {
+            return eventTypes[i].index; // Retourne l'index existant
+        }
+    }
+
+    // Ne pas dépasser la capacité maximale d'événements prédéfinis
+    if (eventTypeCount >= MAX_EVENT_TYPES) {
+        return -1; // Erreur : nombre maximum de types atteint
+    }
+
+    // Ajouter le nouveau type d'événement
+    strncpy(eventTypes[eventTypeCount].name, eventName, sizeof(eventTypes[eventTypeCount].name) - 1);
+    eventTypes[eventTypeCount].name[sizeof(eventTypes[eventTypeCount].name) - 1] = '\0'; // Assurez-vous que la chaîne est terminée
+    eventTypes[eventTypeCount].index = eventTypeCount; // Assigne un nouvel index
+    return eventTypes[eventTypeCount++].index;
+}
+
+
+// Fonction pour récupérer l'index d'un type d'événement par son nom
+int getEventTypeIndex(const char* eventName) {
+    for (int i = 0; i < eventTypeCount; ++i) {
+        if (strcmp(eventTypes[i].name, eventName) == 0) {
+            return eventTypes[i].index;
+        }
+    }
+    return EVENT_NOT_FOUND_INDEX; // Type non trouvé
+}
+
+// Fonction pour récupérer l'index d'un type d'événement par son nom
+EventType getEventType(const char* eventName) {
+    for (int i = 0; i < eventTypeCount; ++i) {
+        if (strcmp(eventTypes[i].name, eventName) == 0) {
+            return eventTypes[i];
+        }
+    }
+    return EVENT_NOT_FOUND;
 }
