@@ -1,19 +1,19 @@
 #include "event.h"
 
 void onBullet_Shoot(Event event) {
-    int DATA_CAPABLE = getDataType("DATA_CAPABLE");
+    int DATA_CAN_SHOOT = getDataType("DATA_CAN_SHOOT");
     int DATA_SPEED = getDataType("DATA_SPEED");
     int DATA_COUNT_SHOOT = getDataType("DATA_COUNT_SHOOT");
     int DATA_LEVEL = getDataType("DATA_LEVEL");
     int DATA_PASSIVE = getDataType("DATA_PASSIVE");
     int DATA_ATTACK = getDataType("DATA_ATTACK");
 
-    if(getDataValue(player_entity, DATA_CAPABLE) == 0.0f) {
+    if(getDataValue(player_entity, DATA_CAN_SHOOT) == 0.0f) {
         return;
     } else {
         float attack_speed = getDataValue(player_entity, DATA_SPEED);
         addTimerComponent(player_entity, "reloading", attack_speed, false);
-        setDataValue(player_entity, DATA_CAPABLE, 0.0f);
+        setDataValue(player_entity, DATA_CAN_SHOOT, 0.0f);
         setDataValue(
             player_entity, 
             DATA_COUNT_SHOOT, 
@@ -265,14 +265,16 @@ void onLeveling_Up(Event event) {
     int DATA_HEALTH = getDataType("DATA_HEALTH");
     int DATA_SPEED = getDataType("DATA_SPEED");
 
+    if (getDataValue(entity, DATA_LEVEL) >= 10.0f) return;
+
     setDataValue(entity, DATA_LEVEL, getDataValue(entity, DATA_LEVEL)+1.0f);
     setDataValue(entity, DATA_ATTACK, getDataValue(entity, DATA_ATTACK)*1.25);
     setDataValue(entity, DATA_HEALTH, getDataValue(entity, DATA_HEALTH)*1.1);
-    setDataValue(entity, DATA_SPEED, getDataValue(entity, DATA_SPEED)*0.75);
+    setDataValue(entity, DATA_SPEED, getDataValue(entity, DATA_SPEED)*0.85);
 
     float level = getDataValue(entity, DATA_LEVEL);
-    if (level >= 6.0f) {
-        addTimerComponent(entity,  "spawn_barrel", 15.0f, true);
+    if (level == 6.0f) {
+        addTimerComponent(entity, "spawn_barrel", 15.0f, true);
     } 
 
     printf("Leveling up to %.1f !\n\tAttack : %f\n\tHealth : %f\n\tAttack Speed : %f attacks per second\n", 
@@ -311,21 +313,19 @@ void onDeath(Event event) {
     }
 
     // Calculer la position de la mort
-    PositionComponent death_position = *getCenterPosition(entity_position);
+    PositionComponent death_position = *getCenterPosition(entity);
 
     int DATA_KILLED = getDataType("DATA_KILLED");
     int DATA_LEVEL = getDataType("DATA_LEVEL");
 
-    // Désactiver l'entité
-    disableComponentEntity(entity);
     setDataValue(
-        entity, 
+        player_entity, 
         DATA_KILLED, 
-        getDataValue(entity, DATA_KILLED)+1.0f
+        getDataValue(player_entity, DATA_KILLED)+1.0f
     );
 
     // Vérifier si le joueur doit monter de niveau
-    bool should_level_up = (int)getDataValue(entity, DATA_KILLED) % 5 == 0;
+    bool should_level_up = (int)getDataValue(player_entity, DATA_KILLED) % 1 == 0;
     if (should_level_up) {
         Event levelUpEvent = {getEventType("EVENT_LEVEL_UP"), &player_entity};
         emitEvent(levelUpEvent);
@@ -338,6 +338,8 @@ void onDeath(Event event) {
     if (level >= 5.0) {
         killChance();
     }
+
+    disableComponentEntity(entity);
 }
 
 void onDamaged(Event event) {

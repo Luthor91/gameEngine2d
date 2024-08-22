@@ -130,7 +130,7 @@ void summonBarrel() {
     };
 
     int DATA_ATTACK = getDataType("DATA_ATTACK");
-    int DATA_KILLED = getDataType("DATA_KILLED");
+    int DATA_ACCUMULATION = getDataType("DATA_ACCUMULATION");
 
     // Ajouter les composants à l'entité
     addPositionComponent(barrel, position);
@@ -140,7 +140,7 @@ void summonBarrel() {
     addSpriteComponent(barrel, barrel_sprite);
     addDataComponent(barrel, barrel_data);
     setDataValue(barrel, DATA_ATTACK, getDataValue(player_entity, DATA_ATTACK) * 0.1);
-    setDataValue(barrel, DATA_KILLED, 0.0f);
+    setDataValue(barrel, DATA_ACCUMULATION, 0.0f);
     addTag(barrel, "Barrel");
     addTimerComponent(barrel, "dispawn_barrel", 5.0f, false);
 }

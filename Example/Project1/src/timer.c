@@ -4,7 +4,7 @@ void uponReloading(Event event) {
     if (!CheckTimerName(event, "reloading")) return;
     setDataValue(
         player_entity, 
-        getDataType("DATA_CAPABLE"), 
+        getDataType("DATA_CAN_SHOOT"), 
         1.0f
     );    
 }
@@ -20,7 +20,7 @@ void uponInvincibilityFinished(Event event) {
 void uponIncreasingDifficulty(Event event) {
     if (!CheckTimerName(event, "difficulty_increase")) return;
     int DATA_DIFFICULTY = getDataType("DATA_DIFFICULTY");
-    if(getDataValue(player_entity, DATA_DIFFICULTY) > 10.0f) return;
+    if(getDataValue(player_entity, DATA_DIFFICULTY) >= 10.0f) return;
     setDataValue(
         player_entity, 
         DATA_DIFFICULTY, 
@@ -41,7 +41,7 @@ void uponSpawnEnemies(Event event) {
         Entity enemy = (createEntity() != INVALID_ENTITY_ID) ? createEntity() : getFirstEmptyEntity();
         if (enemy == INVALID_ENTITY_ID) return;
         
-        float speed_multiplier = 10.0f * (1 + (getDataValue(player_entity, DATA_DIFFICULTY)/2.0f));
+        float speed_multiplier = 5.0f * (getDataValue(player_entity, DATA_DIFFICULTY) + 1);
         int edge = rand() % 4, x = 0, y = 0;
 
         switch (edge) {
