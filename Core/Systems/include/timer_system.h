@@ -55,4 +55,6 @@ void addDelayedFunction(Entity entity, float delay, CallbackFunction callback, v
 
 bool CheckTimerName(Event event, const char* name);
 
+bool isTimerValid(Entity entity, const char* name);
+
 #endif // TIMER_SYSTEM_H

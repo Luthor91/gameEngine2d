@@ -47,6 +47,7 @@ int main(int argc, char* argv[]) {
     int DATA_CAN_SHOOT = addDataType("DATA_CAN_SHOOT");
     int DATA_COUNT_SHOOT = addDataType("DATA_COUNT_SHOOT");
     int DATA_ACCUMULATION = addDataType("DATA_ACCUMULATION");
+    int DATA_MAX_PROC = addDataType("DATA_MAX_PROC");
      
     // Définition du fond d'écran
     Entity background = createEntity();
@@ -77,7 +78,7 @@ int main(int argc, char* argv[]) {
     addTag(player_entity, "Player");
     setDataValue(player_entity, DATA_HEALTH, 100.0f);
     setDataValue(player_entity, DATA_MAX_HEALTH, getDataValue(player_entity, DATA_HEALTH));
-    setDataValue(player_entity, DATA_SPEED, 2.5f); 
+    setDataValue(player_entity, DATA_SPEED, 0.5f); 
     setDataValue(player_entity, DATA_ATTACK, 50.0f); 
     setDataValue(player_entity, DATA_PASSIVE, 2.0f); 
     setDataValue(player_entity, DATA_LEVEL, 1.0f);   
@@ -91,7 +92,7 @@ int main(int argc, char* argv[]) {
     // Définition d'evènements supplémentaires
     bindEvent(player_entity, SDL_BUTTON_LEFT, EVENT_LEFT_MOUSECLICK, "Shoot");
     addTimerComponent(player_entity, "difficulty_increase", 30.0f, true);
-    addTimerComponent(player_entity, "spawn_enemies", 25.0f, true);
+    addTimerComponent(player_entity, "spawn_enemies", 0.50f, true);//15
     emitEvent((Event)
         {
             EVENT_TIMER_EXPIRED, 
@@ -100,13 +101,15 @@ int main(int argc, char* argv[]) {
     );
 
     // Ajouts d'emitter de particules
-    SDL_Texture* particle_texture_explosion = loadColor(g_renderer, COLOR_RED, 1, 1);
+    SDL_Texture* particle_texture_explosion = loadColor(g_renderer, COLOR_BLACK, 1, 1);
     SDL_Texture* particle_texture_poison = loadColor(g_renderer, COLOR_GREEN, 1, 1);
-    SDL_Texture* particle_texture_trap = loadColor(g_renderer, COLOR_BLACK, 1, 1);
+    SDL_Texture* particle_texture_trap = loadColor(g_renderer, COLOR_GRAY, 1, 1);
+    SDL_Texture* particle_texture_barrel = loadColor(g_renderer, COLOR_RED, 2, 2);
     
     initParticleEmitter("Explosion", 128, particle_texture_explosion, 0, 0, 2.0f, 2.0f);
     initParticleEmitter("Poison", 128, particle_texture_poison, 0, 0, 2.0f, 2.0f);
     initParticleEmitter("Trap", 128, particle_texture_trap, 0, 0, 2.0f, 2.0f);
+    initParticleEmitter("Barrel", 256, particle_texture_barrel, 0, 0, 3.5f, 3.5f);
 
     // Lancement du jeu
     changeState(STATE_PLAYING);

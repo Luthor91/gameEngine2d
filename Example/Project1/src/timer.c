@@ -18,27 +18,37 @@ void uponInvincibilityFinished(Event event) {
 }
 
 void uponIncreasingDifficulty(Event event) {
-    if (!CheckTimerName(event, "difficulty_increase")) return;
+    if (!CheckTimerName(event, "difficulty_increase")) return;  
+
     int DATA_DIFFICULTY = getDataType("DATA_DIFFICULTY");
-    if(getDataValue(player_entity, DATA_DIFFICULTY) >= 10.0f) return;
-    setDataValue(
-        player_entity, 
-        DATA_DIFFICULTY, 
-        getDataValue(player_entity, DATA_DIFFICULTY)+1.0f
-    );
+
+    if (!hasDataValue(player_entity, DATA_DIFFICULTY)) return;
+
+    float difficulty = getDataValue(player_entity, DATA_DIFFICULTY);
+
+    if(difficulty >= 10.0f) return;
+
+    setDataValue(player_entity, DATA_DIFFICULTY, difficulty+1.0f);
     printf("Difficulty increasing to %lf\n", getDataValue(player_entity, DATA_DIFFICULTY));
 }
 
 void uponSpawnEnemies(Event event) {
     if (!CheckTimerName(event, "spawn_enemies")) return;
-    printf("spawning enemies\n");
+    
     int DATA_DIFFICULTY = getDataType("DATA_DIFFICULTY");
     int DATA_HEALTH = getDataType("DATA_HEALTH");
     int DATA_MAX_HEALTH = getDataType("DATA_MAX_HEALTH");
     int DATA_ATTACK = getDataType("DATA_ATTACK");
 
+    if (!hasDataValue(player_entity, DATA_DIFFICULTY)) return;
+    float difficulty = getDataValue(player_entity, DATA_DIFFICULTY);
+
+    int count = 0;
+    getEntitiesWithTag("Enemy", &count);
+
     for (int i = 0; i < ENEMIES_PER_SPAWN; ++i) {
-        Entity enemy = (createEntity() != INVALID_ENTITY_ID) ? createEntity() : getFirstEmptyEntity();
+        if (count + i >= MAX_ENEMIES_SCREEN) return;
+        Entity enemy = createEntity();
         if (enemy == INVALID_ENTITY_ID) return;
         
         float speed_multiplier = 5.0f * (getDataValue(player_entity, DATA_DIFFICULTY) + 1);
@@ -85,16 +95,16 @@ void uponSpawnEnemies(Event event) {
         };
         addSpriteComponent(enemy, enemy_sprite);
         addVelocityComponent(enemy, enemy_velocity);
-        setDataValue(enemy, DATA_HEALTH, 100*getDataValue(player_entity, DATA_DIFFICULTY));
-        setDataValue(enemy, DATA_MAX_HEALTH, getDataValue(player_entity, DATA_HEALTH));
-        setDataValue(enemy, DATA_ATTACK, 20*getDataValue(player_entity, DATA_DIFFICULTY));
+
+        setDataValue(enemy, DATA_HEALTH, 100*difficulty);
+        setDataValue(enemy, DATA_MAX_HEALTH, getDataValue(enemy, DATA_HEALTH));
+        setDataValue(enemy, DATA_ATTACK, 20*difficulty);
         addTag(enemy, "Enemy");
     }
 }
 
 void uponDispawnTrap(Event event) {  
     if (!CheckTimerName(event, "dispawn_trap")) return;
-    printf("dispawn traps\n");
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity trap = timer_data->entity;
@@ -103,17 +113,17 @@ void uponDispawnTrap(Event event) {
 
 void uponSpawnBarrel(Event event) {
     if (!CheckTimerName(event, "spawn_barrel")) return;
-    printf("spawn barrel\n");
     summonBarrel();
 }
 
 void uponDispawnBarrel(Event event) {  
     if (!CheckTimerName(event, "dispawn_barrel")) return;
-    printf("dispawn barrel\n");
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity barrel = timer_data->entity;
-    disableComponentEntity(barrel);
+
+    if (isEntityValid(barrel)) disableComponentEntity(barrel);
+    return;
 }
 
 void uponSpawnPoison(Event event) {
@@ -127,64 +137,69 @@ void uponApplyingPoisonTicks(Event event) {
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity poison = timer_data->entity;
-    HitboxComponent hitbox = *getHitboxComponent(poison);
-    PositionComponent* poison_pos = getPositionComponent(poison);
-    SizeComponent* poison_size = getSizeComponent(poison);
 
+    if (!hasHitboxComponent(poison) || !hasPositionComponent(poison) || !hasSizeComponent(poison)) return;
+    HitboxComponent hitbox = *getHitboxComponent(poison);
+    PositionComponent poison_pos = *getPositionComponent(poison);
+    SizeComponent poison_size = *getSizeComponent(poison);
+
+    int DATA_MAX_PROC = getDataType("DATA_MAX_PROC");
     int DATA_HEALTH = getDataType("DATA_HEALTH");
     int DATA_ATTACK = getDataType("DATA_ATTACK");
 
-    if (poison_pos == NULL || poison_size == NULL) {
-        printf("Poison is missing Position or Size component\n");
-        return;
-    }
-
     SDL_Rect poison_area = {
-        .x = poison_pos->x,
-        .y = poison_pos->y,
-        .w = poison_size->width,
-        .h = poison_size->height
+        .x = poison_pos.x,
+        .y = poison_pos.y,
+        .w = poison_size.width,
+        .h = poison_size.height
     };
 
+    if (!hasDataValue(poison, DATA_ATTACK) || !hasDataValue(poison, DATA_MAX_PROC)) return;
     float damage = getDataValue(poison, DATA_ATTACK);
+    float max_poison_proc = getDataValue(poison, DATA_MAX_PROC);
+    int current_poison_proc = 0;
+
     int count = 0;
     Entity* enemies = getEntitiesWithTag("Enemy", &count);
-
     for (int index = 0; index < count; index++) {
+        printf("proc poison : %d/%f\n", current_poison_proc, max_poison_proc);
+        if (current_poison_proc > max_poison_proc) break;
+        
         Entity enemy = enemies[index];
-        PositionComponent* enemy_pos = getPositionComponent(enemy);
-        SizeComponent* enemy_size = getSizeComponent(enemy);
+
+        if (!hasPositionComponent(enemy) || !hasSizeComponent(enemy) || !hasDataValue(enemy, DATA_HEALTH)) continue;
+        PositionComponent enemy_pos = *getPositionComponent(enemy);
+        SizeComponent enemy_size = *getSizeComponent(enemy);
 
         SDL_Rect enemy_area = {
-            .x = enemy_pos->x,
-            .y = enemy_pos->y,
-            .w = enemy_size->width,
-            .h = enemy_size->height
+            .x = enemy_pos.x,
+            .y = enemy_pos.y,
+            .w = enemy_size.width,
+            .h = enemy_size.height
         };
 
-        if (SDL_HasIntersection(&poison_area, &enemy_area)) {
+        if (SDL_HasIntersection(&poison_area, &enemy_area) ) {
+            printf("Damage poison for entity %d, current proc : %d\n", enemy, current_poison_proc);
+
             float health = getDataValue(enemy, DATA_HEALTH) - damage;
             setDataValue(enemy, DATA_HEALTH, health);
 
             PositionComponent pos_centered = *getCenterPosition(enemy);
             setEmitterPosition("Poison", pos_centered.x, pos_centered.y);
             instanciateParticleEmitter("Poison");
+
             handle_damage_received(enemy, health);
-            printf("Enemy %d hit by poison for %.2f damage\n", enemy, damage);
+            current_poison_proc++;
         }
     }
 
     hitbox.is_active = !hitbox.is_active;
     setDataValue(poison, DATA_ATTACK, getDataValue(poison, DATA_ATTACK) * 0.95);
-
-    if (getDataValue(poison, DATA_ATTACK) < getDataValue(player_entity, DATA_ATTACK) * 0.05) {
+    if (getDataValue(poison, DATA_ATTACK) < getDataValue(player_entity, DATA_ATTACK) / 20.0f) {
         removeTimerComponent(poison, "apply_poison_tick"); 
         disableComponentEntity(poison);
     }
-
-    printf("damage : %f\n", getDataValue(poison, DATA_ATTACK));
 }
-
 
 void uponDispawnBait(Event event) {  
     if (!CheckTimerName(event, "dispawn_bait")) return;

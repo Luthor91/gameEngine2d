@@ -3,9 +3,12 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include "../../Entities/include/entity.h"
 
-#define DATA_COMPONENT_DEFAULT { {0} }
+#define DATA_COMPONENT_DEFAULT {{0}}
+#define DATA_INVALID_VALUE -99999.99f
+#define DATA_MAX_DYNAMIC_TYPE 128
 
 // Liste des types de données possibles
 #define DATA_TYPE_LIST \

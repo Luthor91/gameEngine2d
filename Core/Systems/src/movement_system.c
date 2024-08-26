@@ -2,9 +2,8 @@
 
 void updateMovement(float deltaTime) {
     for (Entity entity = 0; entity < getEntityCount(); ++entity) {
-        if (!hasPositionComponent(entity) || !hasVelocityComponent(entity)) {
-            continue;
-        }
+        if (!hasPositionComponent(entity) || !hasVelocityComponent(entity)) continue;
+
         PositionComponent* pos = getPositionComponent(entity);
         VelocityComponent* vel = getVelocityComponent(entity);
         pos->x += vel->velocityX * deltaTime;

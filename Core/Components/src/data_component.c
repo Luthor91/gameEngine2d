@@ -6,7 +6,7 @@
 static DataComponent dataComponents[MAX_ENTITIES] = { [0 ... MAX_ENTITIES-1] = DATA_COMPONENT_DEFAULT };
 
 // Tableau pour les types de données dynamiques
-static DynamicDataType dynamicTypes[128];
+static DynamicDataType dynamicTypes[DATA_MAX_DYNAMIC_TYPE];
 static int dynamicTypeCount = 0;
 
 // Fonction pour obtenir le DataComponent d'une entité
@@ -40,7 +40,7 @@ float getDataValue(Entity entity, int type) {
             }
         }
     }
-    return -1;
+    return DATA_INVALID_VALUE;
 }
 
 // Fonction pour définir une valeur pour un DataType spécifique pour une entité donnée
@@ -58,6 +58,8 @@ void setDataValue(Entity entity, int type, float value) {
                 }
             }
         }
+
+        
     }
 }
 
@@ -82,14 +84,14 @@ bool hasDataValue(Entity entity, int type) {
 
 // Fonction pour ajouter un type de données dynamique
 int addDataType(const char* typeName) {
-    if (dynamicTypeCount >= 128) {
-        return -1; // Erreur : nombre maximum de types atteint
+    if (dynamicTypeCount >= DATA_MAX_DYNAMIC_TYPE) {
+        return DATA_INVALID_VALUE; // Erreur : nombre maximum de types atteint
     }
 
     // Vérifier si le type existe déjà
     for (int i = 0; i < dynamicTypeCount; ++i) {
         if (strcmp(dynamicTypes[i].name, typeName) == 0) {
-            return -1; // Retourne l'index existant
+            return DATA_INVALID_VALUE; // Retourne l'index existant
         }
     }
 
@@ -101,8 +103,8 @@ int addDataType(const char* typeName) {
 
 // Fonction pour ajouter un type de données dynamique
 int getDataType(const char* typeName) {
-    if (dynamicTypeCount >= 128) {
-        return -1; // Erreur : nombre maximum de types atteint
+    if (dynamicTypeCount >= DATA_MAX_DYNAMIC_TYPE) {
+        return DATA_INVALID_VALUE; // Erreur : nombre maximum de types atteint
     }
 
     // Vérifier si le type existe déjà
@@ -111,5 +113,5 @@ int getDataType(const char* typeName) {
             return dynamicTypes[i].index; // Retourne l'index existant
         }
     }
-    return -1;
+    return DATA_INVALID_VALUE;
 }

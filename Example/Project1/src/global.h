@@ -6,6 +6,6 @@
 #include "timer.h"
 
 #define ENEMIES_PER_SPAWN 10
-#define NUM_ENEMIES 50
+#define MAX_ENEMIES_SCREEN 1024
 
 #endif // GLOBAL_H

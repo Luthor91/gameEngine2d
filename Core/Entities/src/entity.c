@@ -13,30 +13,38 @@ bool hasTags[MAX_ENTITIES] = { false };
 bool hasDatas[MAX_ENTITIES] = { false };
 Entity player_entity = 0;
 
-static Entity nextEntityID = 0;
+static Entity currentEntityCount = 0;
 
 Entity createEntity() {
-    if (nextEntityID >= MAX_ENTITIES) return INVALID_ENTITY_ID;
+    if (currentEntityCount >= MAX_ENTITIES) return INVALID_ENTITY_ID;
 
-    Entity newEntity = nextEntityID++;
-    entityStates[newEntity] = true;
-    return newEntity;
+    // Rechercher un emplacement libre
+    for (Entity entity = 0; entity < MAX_ENTITIES; entity++) {
+        if (!entityStates[entity]) {
+            entityStates[entity] = true;
+            currentEntityCount++;
+            return entity;
+        }
+    }
+
+    // Si aucune place libre n'est trouvée
+    return INVALID_ENTITY_ID;
 }
 
 Entity createEntityWithId(int id) {
-    if (id >= MAX_ENTITIES) {
-        return INVALID_ENTITY_ID; // Indique que la création de l'entité a échoué
+    if (id >= MAX_ENTITIES || entityStates[id]) {
+        return INVALID_ENTITY_ID; // L'entité avec cet ID est déjà utilisée ou l'ID est invalide
     }
-    Entity newEntity = (Entity)id;
-    entityStates[newEntity] = true;
-    return newEntity;
+    entityStates[id] = true;
+    currentEntityCount++;
+    return id;
 }
 
 Entity copyEntity(Entity entity) {
     Entity new_entity = createEntity();
 
     if (new_entity == INVALID_ENTITY_ID) return INVALID_ENTITY_ID;
-    entityStates[new_entity] = true;
+    
     hasPosition[new_entity] = hasPosition[entity];
     hasVelocity[new_entity] = hasVelocity[entity];
     hasSprite[new_entity] = hasSprite[entity];
@@ -48,6 +56,7 @@ Entity copyEntity(Entity entity) {
     hasTags[new_entity] = hasTags[entity];
     hasDatas[new_entity] = hasDatas[entity];
 
+    // Copier les composants
     if (hasAnimationComponent(entity)) {
         addAnimationComponent(new_entity, *getAnimationComponent(entity));
     }
@@ -80,38 +89,22 @@ Entity copyEntity(Entity entity) {
     }
 
     return new_entity;
-
 }
 
 Entity getEntity(int id) {
-    if (id < 0 || id >= MAX_ENTITIES) {
+    if (id < 0 || id >= MAX_ENTITIES || !entityStates[id]) {
         return INVALID_ENTITY_ID;
     }
     return (Entity)id;
 }
 
 Entity getFirstEmptyEntity() {
-    // Parcours des entités existantes pour trouver une entité libre
-    for (Entity entity = 0; entity < MAX_ENTITIES; entity++) {
-        if (entityStates[entity] == false) {  // Trouver une entité libre
-            entityStates[entity] = true;      // Marquer l'entité comme utilisée
-            return entity;                    // Retourner l'ID de l'entité
-        }
-    }
-    
-    // Si aucune entité libre n'est trouvée, tenter de créer une nouvelle entité
-    if (nextEntityID < MAX_ENTITIES) {
-        Entity newEntity = nextEntityID++;
-        entityStates[newEntity] = true;        // Marquer l'entité comme utilisée
-        return newEntity;
-    }
-    
-    return INVALID_ENTITY_ID;  // Retourner un ID d'entité invalide si aucune entité ne peut être trouvée ou créée
+    return createEntity();
 }
 
 Entity getFirstValidEntity() {
     for (Entity entity = 0; entity < MAX_ENTITIES; entity++) {
-        if(entityStates[entity] == true) {
+        if (entityStates[entity]) {
             return entity;
         }
     }
@@ -120,7 +113,6 @@ Entity getFirstValidEntity() {
 
 void disableComponentEntity(Entity entity) {
     if (entity < MAX_ENTITIES && entityStates[entity]) {
-        // Désactiver les composants
         entityStates[entity] = false;
         hasPosition[entity] = false;
         hasVelocity[entity] = false;
@@ -133,27 +125,30 @@ void disableComponentEntity(Entity entity) {
         hasTags[entity] = false;
 
         removeAllTags(entity);
+
+        currentEntityCount--;
     }
 }
 
 void deactivateEntity(Entity entity) {
-    if (entity < MAX_ENTITIES) {
+    if (entity < MAX_ENTITIES && entityStates[entity]) {
         entityStates[entity] = false;
+        currentEntityCount--;
     }
 }
 
 void activateEntity(Entity entity) {
-    if (entity < MAX_ENTITIES) {
+    if (entity < MAX_ENTITIES && !entityStates[entity]) {
         entityStates[entity] = true;
+        currentEntityCount++;
     }
 }
 
 void disableComponentEntitiesFromRange(int start, int end) {
-    if (start < 0 || end >= MAX_ENTITIES || start > end)  return;
+    if (start < 0 || end >= MAX_ENTITIES || start > end) return;
 
-    // Parcourir chaque entité dans la plage spécifiée
     for (int entity = start; entity <= end; entity++) {
-        if (entityStates[entity] == true) {
+        if (entityStates[entity]) {
             disableComponentEntity(entity);
         }
     }
@@ -161,7 +156,6 @@ void disableComponentEntitiesFromRange(int start, int end) {
 
 void destroyEntity(Entity entity) {
     if (entity < MAX_ENTITIES && entityStates[entity]) {
-        // Désactiver les composants
         entityStates[entity] = false;
         hasPosition[entity] = false;
         hasVelocity[entity] = false;
@@ -171,11 +165,17 @@ void destroyEntity(Entity entity) {
         hasAnimation[entity] = false;
         hasHitbox[entity] = false;
         hasSize[entity] = false;
+
+        currentEntityCount--;
     }
 }
 
 int getEntityCount() {
-    return (int)nextEntityID;
+    return (int)currentEntityCount;
+}
+
+bool isEntityValid(Entity entity) {
+    return entity < MAX_ENTITIES && entityStates[entity] && entity != INVALID_ENTITY_ID;
 }
 
 bool isEntityEnabled(Entity entity) {

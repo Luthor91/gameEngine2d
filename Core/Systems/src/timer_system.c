@@ -64,8 +64,10 @@ void updateTimers(float deltaTime) {
                 // Vérifier si le timer a expiré
                 while (timer->elapsedTime >= timer->duration) {
                     // Émettre un événement de type EVENT_TIMER
-                    TimerData* timer_data = TimerData_Init(timer->name, entity);
-                    Event timerEvent = { getEventType("EVENT_TIMER_EXPIRED"), timer_data };
+                    Event timerEvent = { 
+                        getEventType("EVENT_TIMER_EXPIRED"), 
+                        TimerData_Init(timer->name, entity) 
+                    };
                     emitEvent(timerEvent);
 
                     // Réinitialiser le timer
@@ -113,7 +115,6 @@ TimerComponent* getTimerComponent(Entity entity, int index) {
     if (entity >= MAX_ENTITIES || index >= MAX_TIMERS_PER_ENTITY) {
         return NULL;
     }
-    
     return &timerComponents[entity][index];
 }
 

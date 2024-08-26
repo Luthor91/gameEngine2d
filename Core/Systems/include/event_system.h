@@ -13,15 +13,15 @@
 
 // Définitions des constantes
 #define MAX_KEYS 512
-#define MAX_BINDINGS 256
-#define MAX_EVENTS 256                // Nombre maximum d'événements dans la file d'attente
-#define MAX_LISTENERS 64              // Nombre maximum de types d'écouteurs d'événements
+#define MAX_BINDINGS 4096
+#define MAX_EVENTS 16384                // Nombre maximum d'événements dans la file d'attente
+#define MAX_LISTENERS 8192              // Nombre maximum de types d'écouteurs d'événements
 
 #define MAX_EVENT_QUEUE_SIZE MAX_EVENTS       // Taille maximale de la file d'attente d'événements (identique à MAX_EVENTS)
 #define MAX_EVENT_COUNT MAX_LISTENERS    // Nombre maximum de types d'événements (identique à MAX_LISTENERS)
 #define MAX_LISTENER_COUNT MAX_LISTENERS      // Nombre maximum de types d'écouteurs d'événements (identique à MAX_LISTENERS)
-#define MAX_LISTENERS_PER_EVENT 16            // Nombre maximum d'écouteurs pour un type d'événement donné
-#define MAX_EVENT_TYPES 256 // Nombre total maximal de types d'événements
+#define MAX_LISTENERS_PER_EVENT 4096            // Nombre maximum d'écouteurs pour un type d'événement donné
+#define MAX_EVENT_TYPES 4096 // Nombre total maximal de types d'événements
 
 // Valeur spéciale pour indiquer un échec
 #define EVENT_NOT_FOUND_INDEX -1

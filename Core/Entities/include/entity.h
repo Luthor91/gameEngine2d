@@ -2,6 +2,7 @@
 #define ENTITY_H
 
 typedef unsigned int Entity;
+// Max entity on screen
 #define MAX_ENTITIES 4096
 
 #include <stdbool.h>
@@ -50,6 +51,7 @@ void activateEntity(Entity entity);
 void destroyEntity(Entity entity);
 int getEntityCount();
 
+bool isEntityValid(Entity entity);
 bool isEntityEnabled(Entity entity);
 bool hasPositionComponent(Entity entity);
 bool hasVelocityComponent(Entity entity);

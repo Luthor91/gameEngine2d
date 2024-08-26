@@ -7,8 +7,8 @@
 #include <math.h>
 #include <time.h>
 
-#define MAX_EMITTERS 64
-#define MAX_PARTICLES 128 
+#define MAX_EMITTERS 4096
+#define MAX_PARTICLES 1024 
 #define MAX_PARTICLE_LIFETIME 0.5f  // Durée de vie maximale d'une particule
 #define M_PI           3.14159265358979323846
 

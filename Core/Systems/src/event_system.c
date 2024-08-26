@@ -84,9 +84,8 @@ void removeEventListener(EventType type, EventListener listener) {
 void emitEvent(Event event) {
     if (eventQueueCount < MAX_EVENTS) {
         eventQueue[eventQueueCount++] = event;
-        //printf("Event emitted with type: %d\n", event.type);
     } else {
-        printf("Event queue is full, cannot emit event of type %d\n", event.type);
+        printf("Event queue is full, cannot emit event of type %d\n", event.type.index);
     }
 }
 
