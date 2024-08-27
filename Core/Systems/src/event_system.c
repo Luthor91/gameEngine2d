@@ -152,6 +152,11 @@ void updateEvent() {
     static bool rightMouseHeld = false;
     static bool middleMouseHeld = false;
 
+    static Uint32 lastLeftClickTime = 0;
+    static Uint32 lastRightClickTime = 0;
+    static Uint32 lastMiddleClickTime = 0;
+    static const Uint32 clickThreshold = 200; // Temps en millisecondes pour considérer des clics comme successifs
+
     while (SDL_PollEvent(&sdlEvent)) {
         if (sdlEvent.type == SDL_QUIT) {
             changeState(STATE_EXIT);
@@ -164,6 +169,8 @@ void updateEvent() {
         int rightMouseHeldType = getEventTypeIndex("EVENT_RIGHT_MOUSEHELD");
         int middleMouseHeldType = getEventTypeIndex("EVENT_MIDDLE_MOUSEHELD");
 
+        Uint32 currentTime = SDL_GetTicks(); // Obtenez le temps actuel en millisecondes
+
         if (sdlEvent.type == SDL_MOUSEBUTTONDOWN) {
             SDL_GetMouseState(&mouse_x, &mouse_y);
             SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
@@ -171,20 +178,30 @@ void updateEvent() {
             cursor_position->y = mouse_y;
 
             Event event;
-            event.data = cursor_position; // Assign pointer to data
+            event.data = cursor_position; // Assignez le pointeur aux données
 
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
                 leftMouseHeld = true;
-                event.type.index = leftMouseClickType;
+                if (currentTime - lastLeftClickTime > clickThreshold) {
+                    event.type.index = leftMouseClickType;
+                    emitEvent(event);
+                    lastLeftClickTime = currentTime;
+                }
             } else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) {
                 rightMouseHeld = true;
-                event.type.index = rightMouseClickType;
+                if (currentTime - lastRightClickTime > clickThreshold) {
+                    event.type.index = rightMouseClickType;
+                    emitEvent(event);
+                    lastRightClickTime = currentTime;
+                }
             } else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
                 middleMouseHeld = true;
-                event.type.index = middleMouseClickType;
+                if (currentTime - lastMiddleClickTime > clickThreshold) {
+                    event.type.index = middleMouseClickType;
+                    emitEvent(event);
+                    lastMiddleClickTime = currentTime;
+                }
             }
-
-            emitEvent(event);
         } else if (sdlEvent.type == SDL_MOUSEBUTTONUP) {
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
                 leftMouseHeld = false;
@@ -244,7 +261,6 @@ void updateEvent() {
         }
     }
 }
-
 
 // Fonction pour ajouter un type d'événement prédéfini
 int addEventType(const char* eventName) {

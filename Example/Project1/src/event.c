@@ -1,82 +1,76 @@
 #include "event.h"
 
 void onBullet_Shoot(Event event) {
+    // Prérequis pour tirer
     int DATA_CAN_SHOOT = getDataType("DATA_CAN_SHOOT");
+    float can_shoot = getDataValue(player_entity, DATA_CAN_SHOOT);
+    if (can_shoot == 0.0f) return;
+
+    // Variables pour gérer les données du joueur
     int DATA_SPEED = getDataType("DATA_SPEED");
     int DATA_COUNT_SHOOT = getDataType("DATA_COUNT_SHOOT");
     int DATA_LEVEL = getDataType("DATA_LEVEL");
-    int DATA_PASSIVE = getDataType("DATA_PASSIVE");
     int DATA_ATTACK = getDataType("DATA_ATTACK");
 
-    int count_bullet = (int)getDataValue(player_entity, DATA_COUNT_SHOOT);
-
-    if( getDataValue(player_entity, DATA_CAN_SHOOT) < 1.0f) return;
-    
+    // Mise à jour des données du joueur
     float attack_speed = getDataValue(player_entity, DATA_SPEED);
+    int count_bullet = (int)getDataValue(player_entity, DATA_COUNT_SHOOT);
+    float level = getDataValue(player_entity, DATA_LEVEL);
+    float attack_value = getDataValue(player_entity, DATA_ATTACK);
+
+    // Mise en place du rechargement
     addTimerComponent(player_entity, "reloading", attack_speed, false);
     setDataValue(player_entity, DATA_CAN_SHOOT, 0.0f);
-    setDataValue(
-        player_entity, 
-        DATA_COUNT_SHOOT, 
-        (float)count_bullet + 1.0f
-    ); 
+    setDataValue(player_entity, DATA_COUNT_SHOOT, count_bullet + 1.0f);
 
+    // Récupération de la position de la souris
     int mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);
 
-    Entity bullet = createEntity();
-    if (!isEntityValid(bullet)) return;
-
-    if (!hasPositionComponent(player_entity) || !hasSpriteComponent(player_entity)) return;
-    PositionComponent player_position = *getPositionComponent(player_entity);
-    SpriteComponent player_sprite = *getSpriteComponent(player_entity);
-
-    // Calculer le centre du sprite du joueur
-    float player_center_x = player_position.x + player_sprite.srcRect.w / 2;
-    float player_center_y = player_position.y + player_sprite.srcRect.h / 2;
-    
-    // Récupérer la position du curseur de la souris  
-    PositionComponent bullet_position = {player_center_x, player_center_y};
-    VelocityComponent bullet_velocity = VELOCITY_ZERO;
-    SizeComponent bullet_size = {12, 12};
-    HitboxComponent bullet_hitbox = {0, 0, bullet_size.width, bullet_size.height, true};
-    DataComponent bullet_data = DATA_COMPONENT_DEFAULT;
-    SpriteComponent bullet_sprite = {
-        loadColor(g_renderer, COLOR_BLACK, bullet_size.width, bullet_size.height),
-        (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
-    };
-
-    // Calculer la direction du tir
-    float direction_x = mouse_x - player_center_x;
-    float direction_y = mouse_y - player_center_y;
+    // Calcul de la direction du tir
+    PositionComponent player_position = *getCenterPosition(player_entity);
+    float direction_x = mouse_x - player_position.x;
+    float direction_y = mouse_y - player_position.y;
     float length = sqrtf(direction_x * direction_x + direction_y * direction_y);
     
-    // Normaliser la direction
+    // Normalisation de la direction
     if (length != 0) {
         direction_x /= length;
         direction_y /= length;
     }
 
-    bullet_velocity.velocityX = direction_x * 500.0f;
-    bullet_velocity.velocityY = direction_y * 500.0f;
+    // Création de l'entité bullet après avoir vérifié les conditions nécessaires
+    Entity bullet = createEntity();
+    if (!isEntityValid(bullet)) return;
 
+    // Initialisation des composants du bullet
+    PositionComponent bullet_position = {player_position.x, player_position.y};
+    VelocityComponent bullet_velocity = {direction_x * 500.0f, direction_y * 500.0f};
+    SizeComponent bullet_size = {12, 12};
+    HitboxComponent bullet_hitbox = {0, 0, bullet_size.width, bullet_size.height, true};
+    SpriteComponent bullet_sprite = {
+        loadColor(g_renderer, COLOR_BLACK, bullet_size.width, bullet_size.height),
+        (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
+    };
+    DataComponent bullet_data = DATA_COMPONENT_DEFAULT;
+
+    // Ajout des composants à l'entité bullet
     addPositionComponent(bullet, bullet_position);
     addSizeComponent(bullet, bullet_size);
     addVelocityComponent(bullet, bullet_velocity);
     addSpriteComponent(bullet, bullet_sprite);
     addHitboxComponent(bullet, bullet_hitbox);
     addDataComponent(bullet, bullet_data);
-    setDataValue(bullet, DATA_ATTACK, getDataValue(player_entity, DATA_ATTACK));
+    setDataValue(bullet, DATA_ATTACK, attack_value);
     addTag(bullet, "Bullet");
 
-    float level = getDataValue(player_entity, DATA_LEVEL);
+    // Gestion des effets basés sur le niveau et le nombre de tirs
     bool is_third_attack = count_bullet % 3 == 0;
     bool is_fifth_attack = count_bullet % 5 == 0;
 
     if (is_fifth_attack && level >= 2.0f) {
         amplify_bullet(bullet);
-    }
-    if (is_third_attack && level >= 3.0f) {
+    } else if (is_third_attack && level >= 3.0f) {
         summonSecondBullet(bullet, bullet_velocity.velocityX, bullet_velocity.velocityY);
     }
 }
@@ -95,7 +89,7 @@ void onBait_Spawn(Event event) {
     if (bait == INVALID_ENTITY_ID)  return;
 
     // Configurer les composants pour l'entité "bait"
-    SizeComponent size = {20.0f, 20.0f}; // Taille du bait, par exemple 20x20
+    SizeComponent size = {20.0f, 20.0f}; // Taille du bait
     PositionComponent position = {
         cursor_position->x - size.width / 2, // Centrer la position sur la souris
         cursor_position->y - size.height / 2
