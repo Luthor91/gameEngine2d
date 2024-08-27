@@ -23,6 +23,7 @@ void updateCollisionSystem() {
     // Obtenez l'index pour le type d'événement de collision
     EventType EVENT_COLLIDE = getEventType("EVENT_COLLIDE");
 
+    // Boucle pour chaque paire unique d'entités
     for (Entity entity1 = 0; entity1 < getEntityCount(); ++entity1) {
         if (!hasHitbox[entity1] || !hasPosition[entity1] || !isEntityEnabled(entity1)) continue;
 
@@ -30,21 +31,25 @@ void updateCollisionSystem() {
             if (!hasHitbox[entity2] || !hasPosition[entity2] || !isEntityEnabled(entity2)) continue;
 
             if (checkCollision(entity1, entity2)) {
-                // Initialisez les données de collision
-                CollisionData* collider1 = CollisionData_Init(entity1, entity2);
+                // Initialisez les données de collision pour les deux entités
+                CollisionData* colliderData = CollisionData_Init(entity1, entity2);
+
+                if (colliderData == NULL) {
+                    printf("Failed to allocate memory for collision data.\n");
+                    continue;
+                }
 
                 // Créez l'événement de collision
-                Event collisionEvent1;
-                collisionEvent1.type = EVENT_COLLIDE; // Assurez-vous que 'type' est un int
-                collisionEvent1.data = collider1; // 'data' est de type void*
+                Event collisionEvent;
+                collisionEvent.type = EVENT_COLLIDE;
+                collisionEvent.data = colliderData;
 
                 // Émettez l'événement
-                emitEvent(collisionEvent1);
+                emitEvent(collisionEvent);
             }
         }
     }
 }
-
 
 // Fonction pour vérifier la collision entre deux entités
 bool checkCollision(Entity entity1, Entity entity2) {

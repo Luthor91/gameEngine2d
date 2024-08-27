@@ -155,7 +155,7 @@ void updateEvent() {
     static Uint32 lastLeftClickTime = 0;
     static Uint32 lastRightClickTime = 0;
     static Uint32 lastMiddleClickTime = 0;
-    static const Uint32 clickThreshold = 200; // Temps en millisecondes pour considérer des clics comme successifs
+    static const Uint32 clickThreshold = 50;
 
     while (SDL_PollEvent(&sdlEvent)) {
         if (sdlEvent.type == SDL_QUIT) {
