@@ -3,10 +3,6 @@
 // Effet lvl 2
 void amplify_bullet(Entity bullet) {
     int DATA_ATTACK = getDataType("DATA_ATTACK");
-    int DATA_COUNT_SHOOT = getDataType("DATA_COUNT_SHOOT");
-
-    if (!hasDataValue(player_entity, DATA_COUNT_SHOOT) || !hasDataValue(bullet, DATA_ATTACK)) return;
-    setDataValue(player_entity, DATA_COUNT_SHOOT, 0.0f);
 
     if (!hasSizeComponent(bullet) || !hasVelocityComponent(bullet) || !hasHitboxComponent(bullet)) return;
     SizeComponent bullet_size = *getSizeComponent(bullet);
@@ -21,11 +17,12 @@ void amplify_bullet(Entity bullet) {
     bullet_hitbox.width = bullet_size.width;
 
     SpriteComponent sprite = {
-    loadColor(g_renderer, COLOR_RED, bullet_size.width, bullet_size.height),
+        loadColor(g_renderer, COLOR_RED, bullet_size.width, bullet_size.height),
         (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
     };
     addSpriteComponent(bullet, sprite);
     setDataValue(bullet, DATA_ATTACK, getDataValue(bullet, DATA_ATTACK)*2.0f);
+    addTag(bullet, "Bullet");
 }
 
 // Effet lvl 3
@@ -41,9 +38,9 @@ void summonSecondBullet(Entity bullet, float direction_x, float direction_y) {
     Entity second_bullet = copyEntity(bullet);
     SizeComponent bullet_size = *getSizeComponent(bullet);
     HitboxComponent bullet_hitbox = *getHitboxComponent(bullet);
-    VelocityComponent velocity_second_bullet = {direction_x * 0.40f, direction_y * 0.40f};
+    VelocityComponent velocity_second_bullet = {direction_x * 0.75f, direction_y * 0.75f};
 
-    bullet_size.width /=coeff_passive;
+    bullet_size.width /= coeff_passive;
     bullet_size.height /= coeff_passive;
     bullet_hitbox.width = bullet_size.width;
     bullet_hitbox.height = bullet_size.height;
@@ -55,7 +52,8 @@ void summonSecondBullet(Entity bullet, float direction_x, float direction_y) {
 
     addVelocityComponent(second_bullet, velocity_second_bullet);
     addSpriteComponent(second_bullet, second_bullet_sprite);
-    setDataValue(second_bullet, DATA_ATTACK, getDataValue(player_entity, DATA_ATTACK));
+    setDataValue(second_bullet, DATA_ATTACK, getDataValue(player_entity, DATA_ATTACK) * 0.75);
+    addTag(second_bullet, "Bullet");
 }
 
 // Effet lvl 4
@@ -106,17 +104,16 @@ void killChance() {
     if (DATA_LEVEL == -1 || DATA_HEALTH == -1 || DATA_ATTACK == -1 ) return;
     if (!hasDataValue(player_entity, DATA_LEVEL)) return;
     
-    if (getDataValue(player_entity, DATA_LEVEL)/2 >= rand() % 99) {
+    if (getDataValue(player_entity, DATA_LEVEL)*2 >= rand() % 99) {
         Entity bullet = createEntity();
         Entity target = enemies[index];
 
         if (!hasPositionComponent(target) || !hasSizeComponent(target)) return;
-        PositionComponent pos_target = *getPositionComponent(target);
-        SizeComponent size_target = *getSizeComponent(target);
+        PositionComponent pos_target = *getCenterPosition(target);
 
         PositionComponent pos = { 
-            pos_target.x + size_target.width/2, 
-            pos_target.y + size_target.height/2
+            pos_target.x, 
+            pos_target.y
         };
         HitboxComponent hitbox = {0, 0, 1, 1, true};
         DataComponent data = DATA_COMPONENT_DEFAULT;
@@ -242,10 +239,7 @@ void summonPoison() {
 
     // Créer et configurer une nouvelle entité
     Entity poison = createEntity();
-    if (poison == INVALID_ENTITY_ID) {
-        printf("Failed to create poison entity\n");
-        return;
-    }
+    if (poison == INVALID_ENTITY_ID) return;
     
     if (!hasDataValue(player_entity, DATA_ATTACK)) return;
     float player_attack = getDataValue(player_entity, DATA_ATTACK);
@@ -277,7 +271,7 @@ void summonPoison() {
     setDataValue(poison, DATA_ATTACK, player_attack);
     setDataValue(poison, DATA_MAX_PROC, 25.0f);
     addTag(poison, "Poison");
-    addTimerComponent(poison, "apply_poison_tick", 0.250, true);
+    addTimerComponent(poison, "apply_poison_tick", 0.125f, true);
 }
 
 // Effet lvl 8
@@ -310,7 +304,7 @@ void adjustEnemyDirection(Entity enemy, PositionComponent bait_position) {
 }
 
 // Utility
-void handle_damage_received(Entity entity, float health) {
+void handle_damage_received(Entity entity, float health) { 
     Entity* ptr_entity = malloc(sizeof(Entity));
     *ptr_entity = entity;
     if (health <= 0) {

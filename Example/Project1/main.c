@@ -65,17 +65,18 @@ int main(int argc, char* argv[]) {
     SizeComponent player_size = {32, 32};
     HitboxComponent player_hitbox = { 0, 0, player_size.width, player_size.height, true};
     DataComponent player_data = DATA_COMPONENT_DEFAULT;
-    SDL_Texture* player_texture = loadTexture("Assets/TowerDefense/TurretFullHealth.png", g_renderer);
-    addPositionComponent(player_entity, player_position);
     SpriteComponent player_sprite = {
-        player_texture, 
+        loadTexture("Assets/TowerDefense/TurretFullHealth.png", g_renderer), 
         (SDL_Rect){0, 0, (int)player_size.width, (int)player_size.height}
     };
+
+    addPositionComponent(player_entity, player_position);
     addSpriteComponent(player_entity, player_sprite);
     addSizeComponent(player_entity, player_size);
     addHitboxComponent(player_entity, player_hitbox);
     addDataComponent(player_entity, player_data);
     addTag(player_entity, "Player");
+    
     setDataValue(player_entity, DATA_HEALTH, 100.0f);
     setDataValue(player_entity, DATA_MAX_HEALTH, getDataValue(player_entity, DATA_HEALTH));
     setDataValue(player_entity, DATA_SPEED, 0.5f); 
@@ -92,7 +93,7 @@ int main(int argc, char* argv[]) {
     // Définition d'evènements supplémentaires
     bindEvent(player_entity, SDL_BUTTON_LEFT, EVENT_LEFT_MOUSECLICK, "Shoot");
     addTimerComponent(player_entity, "difficulty_increase", 30.0f, true);
-    addTimerComponent(player_entity, "spawn_enemies", 0.50f, true);//15
+    addTimerComponent(player_entity, "spawn_enemies", 15.50f, true);
     emitEvent((Event)
         {
             EVENT_TIMER_EXPIRED, 

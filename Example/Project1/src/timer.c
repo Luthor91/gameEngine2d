@@ -49,7 +49,7 @@ void uponSpawnEnemies(Event event) {
     for (int i = 0; i < ENEMIES_PER_SPAWN; ++i) {
         if (count + i >= MAX_ENEMIES_SCREEN) return;
         Entity enemy = createEntity();
-        if (enemy == INVALID_ENTITY_ID) return;
+        if (enemy == INVALID_ENTITY_ID) continue;
         
         float speed_multiplier = 5.0f * (getDataValue(player_entity, DATA_DIFFICULTY) + 1);
         int edge = rand() % 4, x = 0, y = 0;
@@ -83,21 +83,20 @@ void uponSpawnEnemies(Event event) {
             (delta_x / magnitude) * speed_multiplier, 
             (delta_y / magnitude) * speed_multiplier 
         };
-
+        SpriteComponent enemy_sprite = {
+            enemy_texture, 
+            (SDL_Rect){0, 0, enemy_size.width, enemy_size.height}
+        };
         // Ajouter les composants à l'entité
         addPositionComponent(enemy, enemy_position);
         addSizeComponent(enemy, enemy_size);
         addHitboxComponent(enemy, enemy_hitbox);
         addDataComponent(enemy, enemy_data);
-        SpriteComponent enemy_sprite = {
-            enemy_texture, 
-            (SDL_Rect){0, 0, enemy_size.width, enemy_size.height}
-        };
         addSpriteComponent(enemy, enemy_sprite);
         addVelocityComponent(enemy, enemy_velocity);
 
         setDataValue(enemy, DATA_HEALTH, 100*difficulty);
-        setDataValue(enemy, DATA_MAX_HEALTH, getDataValue(enemy, DATA_HEALTH));
+        setDataValue(enemy, DATA_MAX_HEALTH, 100*difficulty);
         setDataValue(enemy, DATA_ATTACK, 20*difficulty);
         addTag(enemy, "Enemy");
     }
@@ -162,7 +161,6 @@ void uponApplyingPoisonTicks(Event event) {
     int count = 0;
     Entity* enemies = getEntitiesWithTag("Enemy", &count);
     for (int index = 0; index < count; index++) {
-        printf("proc poison : %d/%f\n", current_poison_proc, max_poison_proc);
         if (current_poison_proc > max_poison_proc) break;
         
         Entity enemy = enemies[index];
@@ -179,10 +177,12 @@ void uponApplyingPoisonTicks(Event event) {
         };
 
         if (SDL_HasIntersection(&poison_area, &enemy_area) ) {
-            printf("Damage poison for entity %d, current proc : %d\n", enemy, current_poison_proc);
-
             float health = getDataValue(enemy, DATA_HEALTH) - damage;
             setDataValue(enemy, DATA_HEALTH, health);
+            setDataValue(
+                player_entity, DATA_HEALTH, 
+                getDataValue(player_entity, DATA_HEALTH) + (damage / 100)
+            );
 
             PositionComponent pos_centered = *getCenterPosition(enemy);
             setEmitterPosition("Poison", pos_centered.x, pos_centered.y);
