@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "Build and Run l_td",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/main", // Remplacez par le chemin vers l'exécutable généré
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build l_td",
+            "miDebuggerPath": "/usr/bin/gdb", // Chemin vers gdb si besoin de spécifier
+            "logging": {
+                "engineLogging": false,
+                "trace": true,
+                "traceResponse": true
+            }
+        }
+    ]
+}

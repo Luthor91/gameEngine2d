@@ -6,6 +6,8 @@ typedef unsigned int Entity;
 #define MAX_ENTITIES 4096
 
 #include <stdbool.h>
+#include "../../Systems/include/event_system.h"
+
 #include "../../Components/include/position_component.h"
 #include "../../Components/include/velocity_component.h"
 #include "../../Components/include/sprite_component.h"

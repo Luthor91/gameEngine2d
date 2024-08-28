@@ -42,7 +42,6 @@ void initializeEventTypes() {
     }
 }
 
-
 // Ajout d'un écouteur d'événements
 void addEventListener(EventType type, EventListener listener) {
     for (int i = 0; i < MAX_EVENTS; ++i) {
@@ -59,6 +58,23 @@ void addEventListener(EventType type, EventListener listener) {
             eventListeners[i].listenerCount = 1;
             listenerCount++;
             return;
+        }
+    }
+}
+
+// Fonction pour supprimer tous les événements associés à une entité
+void removeAllEvents(Entity entity) {
+    if (entity >= MAX_ENTITIES) {
+        return;
+    }
+
+    // Parcours de tous les bindings d'événements pour cette entité
+    for (int i = 0; i < MAX_BINDINGS; ++i) {
+        // Si un binding est trouvé, le supprimer
+        if (entityBindings[entity][i].key != 0) {
+            entityBindings[entity][i].key = 0; // Réinitialise la touche liée à cet événement
+            entityBindings[entity][i].eventType = (EventType){0}; // Réinitialise le type d'événement
+            entityBindings[entity][i].eventData = NULL; // Supprime les données associées à l'événement
         }
     }
 }
@@ -140,6 +156,7 @@ void processEvents() {
                 }
             }
         }
+        eventQueue[i] = (Event){0};
     }
     eventQueueCount = 0;  // Réinitialiser la file d'attente des événements
 }
@@ -155,7 +172,7 @@ void updateEvent() {
     static Uint32 lastLeftClickTime = 0;
     static Uint32 lastRightClickTime = 0;
     static Uint32 lastMiddleClickTime = 0;
-    static const Uint32 clickThreshold = 50;
+    static const Uint32 clickThreshold = 100;
 
     while (SDL_PollEvent(&sdlEvent)) {
         if (sdlEvent.type == SDL_QUIT) {
@@ -211,7 +228,7 @@ void updateEvent() {
                 middleMouseHeld = false;
             }
         }
-
+        
         // Émettre des événements de maintien de clic
         if (leftMouseHeld) {
             SDL_GetMouseState(&mouse_x, &mouse_y);

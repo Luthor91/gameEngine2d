@@ -3,7 +3,7 @@
 // Fonction pour rendre les entités et les particules
 void renderEntities() {
     if (g_renderer == NULL) { return; }
-    
+            
     SDL_RenderClear(g_renderer);
 
     // Rendu des entités

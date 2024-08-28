@@ -95,8 +95,23 @@ int hasTimerComponent(Entity entity) {
     return 0;
 }
 
+// Fonction pour désactiver tous les TimerComponent attachés à une entité
+void removeAllTimers(Entity entity) {
+    if (entity >= MAX_ENTITIES) {
+        return;
+    }
+
+    for (int i = 0; i < MAX_TIMERS_PER_ENTITY; ++i) {
+        TimerComponent* timer = &timerComponents[entity][i];
+        if (timer->active) {
+            timer->active = false;
+        }
+    }
+}
+
+
 // Fonction pour désactiver un TimerComponent spécifique attaché à une entité
-void removeTimerComponent(Entity entity, const char* name) {
+void removeAllTimersByName(Entity entity, const char* name) {
     if (entity >= MAX_ENTITIES) {
         return;
     }

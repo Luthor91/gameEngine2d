@@ -61,6 +61,7 @@ void handlePlayingState() {
     processEvents();
     updateAnimations();
     renderEntities();
+    cleanupSystem();
     Time_SetFPSLimit(DEFAULT_FPS_HIGH);
 }
 

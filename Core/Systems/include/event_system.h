@@ -84,6 +84,7 @@ typedef struct EventBinding {
 // Fonctions pour gérer les événements
 void initializeEventTypes();
 void addEventListener(EventType type, EventListener listener);
+void removeAllEvents(Entity entity);
 void removeEventListener(EventType type, EventListener listener);
 void emitEvent(Event event);
 void bindEvent(Entity entity, SDL_Keycode key, EventType eventType, void* eventData);

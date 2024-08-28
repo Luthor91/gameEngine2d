@@ -41,8 +41,9 @@ void updateTimers(float deltaTime);
 // Fonction pour vérifier si une entité a un TimerComponent actif
 int hasTimerComponent(Entity entity);
 
-// Fonction pour désactiver un TimerComponent spécifique attaché à une entité
-void removeTimerComponent(Entity entity, const char* name);
+void removeAllTimersByName(Entity entity, const char* name);
+// Fonction pour désactiver tous les TimerComponent attachés à une entité
+void removeAllTimers(Entity entity);
 
 // Fonction pour obtenir un TimerComponent spécifique attaché à une entité
 TimerComponent* getTimerComponent(Entity entity, int index);

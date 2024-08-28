@@ -125,6 +125,8 @@ void disableComponentEntity(Entity entity) {
         hasTags[entity] = false;
 
         removeAllTags(entity);
+        removeAllTimers(entity);
+        removeAllEvents(entity);
 
         currentEntityCount--;
     }

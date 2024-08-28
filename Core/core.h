@@ -33,6 +33,7 @@
 #include "Systems/include/timer_system.h"
 #include "Systems/include/sound_system.h"
 #include "Systems/include/particle_system.h"
+#include "Systems/include/cleanup_system.h"
 
 //#include "Managers/include/event_manager.h"
 
