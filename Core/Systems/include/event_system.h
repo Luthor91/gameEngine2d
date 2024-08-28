@@ -27,6 +27,8 @@
 #define EVENT_NOT_FOUND_INDEX -1
 #define EVENT_NOT_FOUND (EventType){"UNKNOWN_EVENT_TYPE\0", EVENT_NOT_FOUND_INDEX}
 
+#define MAX_EVENT_TYPE_NAME_LENGTH 35
+#define MAX_EVENT_NAME_LENGTH 35
 
 // Liste des types d'événements prédéfinis
 #define EVENT_LIST \
@@ -51,18 +53,18 @@
     X(EVENT_GENERIC) \
     /* Ajoutez ici d'autres types d'événements nécessaires */
 
-
-
 typedef struct EventType {
-    char name[32];
+    char name[MAX_EVENT_NAME_LENGTH];
     int index;
 } EventType;
 
 // Structure de l'événement
 typedef struct Event {
-    EventType type;
-    void* data; // Pointeur générique pour les données associées à l'événement
+    EventType type; 
+    char name[MAX_EVENT_TYPE_NAME_LENGTH];       // Nom de l'événement (nouvel attribut ajouté)
+    void* data;          // Pointeur générique pour les données associées à l'événement
 } Event;
+
 
 // Pointeur de fonction pour les écouteurs d'événements
 typedef void (*EventListener)(Event event);
@@ -98,5 +100,8 @@ int addEventType(const char* eventName);
 // Fonction pour récupérer l'index d'un événement dynamique par son nom
 EventType getEventType(const char* eventName);
 int getEventTypeIndex(const char* eventName);
+
+// Fonction qui vérifie si le nom d'un événement correspond à une chaîne donnée
+bool isEventName(Event event, const char* name);
 
 #endif // EVENT_SYSTEM_H

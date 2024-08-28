@@ -64,10 +64,11 @@ void updateTimers(float deltaTime) {
                 // Vérifier si le timer a expiré
                 while (timer->elapsedTime >= timer->duration) {
                     // Émettre un événement de type EVENT_TIMER
-                    Event timerEvent = { 
-                        getEventType("EVENT_TIMER_EXPIRED"), 
-                        TimerData_Init(timer->name, entity) 
-                    };
+                    Event timerEvent;
+                    timerEvent.type = getEventType("EVENT_TIMER_EXPIRED");
+                    timerEvent.data = TimerData_Init(timer->name, entity) ;
+                    strncpy(timerEvent.name, "right_hold", sizeof(timerEvent.name) - 1);  // Nom par défaut "right_hold"
+                    timerEvent.name[sizeof(timerEvent.name) - 1] = '\0'; // Assure la terminaison de la chaîne
                     emitEvent(timerEvent);
 
                     // Réinitialiser le timer

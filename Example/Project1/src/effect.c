@@ -23,6 +23,7 @@ void amplify_bullet(Entity bullet) {
     addSpriteComponent(bullet, sprite);
     setDataValue(bullet, DATA_ATTACK, getDataValue(bullet, DATA_ATTACK)*2.0f);
     addTag(bullet, "Bullet");
+    addEntityToOutOfBoundsCleanup(bullet);
 }
 
 // Effet lvl 3
@@ -54,6 +55,7 @@ void summonSecondBullet(Entity bullet, float direction_x, float direction_y) {
     addSpriteComponent(second_bullet, second_bullet_sprite);
     setDataValue(second_bullet, DATA_ATTACK, getDataValue(player_entity, DATA_ATTACK) * 0.75);
     addTag(second_bullet, "Bullet");
+    addEntityToOutOfBoundsCleanup(second_bullet);
 }
 
 // Effet lvl 4
@@ -308,10 +310,19 @@ void handle_damage_received(Entity entity, float health) {
     Entity* ptr_entity = malloc(sizeof(Entity));
     *ptr_entity = entity;
     if (health <= 0) {
-        Event event_death = {getEventType("EVENT_DEATH"), ptr_entity};
+        Event event_death;
+        event_death.type = getEventType("EVENT_DEATH");
+        event_death.data = ptr_entity;
+        strncpy(event_death.name, "spawn_enemies", sizeof(event_death.name) - 1);
+        event_death.name[sizeof(event_death.name) - 1] = '\0';
         emitEvent(event_death);
+
     } else {
-        Event event_damaged = {getEventType("EVENT_INFO"), ptr_entity};
+        Event event_damaged;
+        event_damaged.type = getEventType("EVENT_INFO");
+        event_damaged.data = ptr_entity;
+        strncpy(event_damaged.name, "spawn_enemies", sizeof(event_damaged.name) - 1);
+        event_damaged.name[sizeof(event_damaged.name) - 1] = '\0';
         emitEvent(event_damaged);
     }
 }

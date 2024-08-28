@@ -43,6 +43,8 @@ void updateCollisionSystem() {
                 Event collisionEvent;
                 collisionEvent.type = EVENT_COLLIDE;
                 collisionEvent.data = colliderData;
+                strncpy(collisionEvent.name, "collision", sizeof(collisionEvent.name) - 1);
+                collisionEvent.name[sizeof(collisionEvent.name) - 1] = '\0';
 
                 // Émettez l'événement
                 emitEvent(collisionEvent);

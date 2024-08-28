@@ -63,6 +63,7 @@ void onBullet_Shoot(Event event) {
     addDataComponent(bullet, bullet_data);
     setDataValue(bullet, DATA_ATTACK, attack_value);
     addTag(bullet, "Bullet");
+    addEntityToOutOfBoundsCleanup(bullet);
 
     // Gestion des effets basés sur le niveau et le nombre de tirs
     bool is_third_attack = count_bullet % 3 == 0;
@@ -230,8 +231,6 @@ void onTrap_CollideWith_Enemy(Event event) {
     instanciateParticleEmitter("Trap");
     handle_damage_received(enemy, enemy_health);
 
-    // Désactiver le trap après la collision
-    removeTimerComponent(trap, "dispawn_trap");
     disableComponentEntity(trap);
 }
 
@@ -267,8 +266,8 @@ void onEnemy_CollideWith_Player(Event event) {
     disableComponentEntity(enemy);
 }
 
-void onLeveling_Up(Event event) {   
-    if (!hasAnyTag(event, "Player", NULL)) return;
+void onLeveling_Up(Event event) {
+    if (!isEventName(event, "level_up")) return;
 
     Entity entity = *(Entity*)event.data; 
     
@@ -298,31 +297,34 @@ void onLeveling_Up(Event event) {
     );
 }
 
-void onDeath(Event event) {
-    if (!hasAnyTag(event, "Player", "Enemy", NULL)) return;
+void onDeathPlayer(Event event) {
+    if (!hasAnyTag(event, "Player", NULL) && !isEventName(event, "death")) return;
 
     Entity* ptr_entity = (Entity*)event.data;
     Entity entity = *ptr_entity; 
 
     if (!hasPositionComponent(entity) || !hasSizeComponent(entity)) return;    
 
-    if (entity == player_entity) {
-        disableComponentEntitiesFromRange(0, MAX_ENTITIES);
-        Entity end_screen = createEntity();
-        PositionComponent pos = POSITION_ZERO;
-        addPositionComponent(end_screen, pos);
-        SpriteComponent sprite = {
-            loadTexture("Assets/TowerDefense/EndScreen.png", g_renderer), 
-            (SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}
-        };
-        addSpriteComponent(end_screen, sprite);
-        return;
-    }
+    disableComponentEntitiesFromRange(0, MAX_ENTITIES);
+    Entity end_screen = createEntity();
+    PositionComponent pos = POSITION_ZERO;
+    SpriteComponent sprite = {
+        loadTexture("Assets/TowerDefense/EndScreen.png", g_renderer), 
+        (SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}
+    };
 
-    // Obtenir les composants nécessaires pour la position
-    PositionComponent* entity_position = getPositionComponent(entity);
-    SizeComponent* entity_size = getSizeComponent(entity);
-    
+    addPositionComponent(end_screen, pos);
+    addSpriteComponent(end_screen, sprite);
+}
+
+void onDeathEnemy(Event event) {
+    if (!hasAnyTag(event, "Enemy", NULL) && !isEventName(event, "death")) return;
+
+    Entity* ptr_entity = (Entity*)event.data;
+    Entity entity = *ptr_entity; 
+
+    if (!hasPositionComponent(entity) || !hasSizeComponent(entity)) return;    
+
     int DATA_KILLED = getDataType("DATA_KILLED");
     int DATA_LEVEL = getDataType("DATA_LEVEL");
 
@@ -332,11 +334,13 @@ void onDeath(Event event) {
         getDataValue(player_entity, DATA_KILLED)+1.0f
     );
 
-    // Vérifier si le joueur doit monter de niveau
     bool should_level_up = (int)getDataValue(player_entity, DATA_KILLED) % 2 == 0;
     if (should_level_up) {
-        Event levelUpEvent = {getEventType("EVENT_LEVEL_UP"), &player_entity};
-        emitEvent(levelUpEvent);
+        Event level_up;
+        level_up.type = getEventType("EVENT_LEVEL_UP");
+        strncpy(level_up.name, "level_up", sizeof(level_up.name) - 1);
+        level_up.name[sizeof(level_up.name) - 1] = '\0';
+        emitEvent(level_up);
     }
 
     float level = getDataValue(player_entity, DATA_LEVEL);
@@ -348,10 +352,7 @@ void onDeath(Event event) {
 }
 
 void onDamaged(Event event) {
-    if (event.data == NULL) {
-        fprintf(stderr, "event.data is NULL\n");
-        return;
-    }
+    if (!isEventName(event, "damaged")) return;
 
     Entity entity = *(Entity*)event.data;
     if (entity == INVALID_ENTITY_ID) return;
@@ -420,4 +421,3 @@ void onDamaged(Event event) {
         
     }
 }
-

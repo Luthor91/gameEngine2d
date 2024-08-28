@@ -196,7 +196,6 @@ void uponApplyingPoisonTicks(Event event) {
     hitbox.is_active = !hitbox.is_active;
     setDataValue(poison, DATA_ATTACK, getDataValue(poison, DATA_ATTACK) * 0.95);
     if (getDataValue(poison, DATA_ATTACK) < getDataValue(player_entity, DATA_ATTACK) / 20.0f) {
-        removeTimerComponent(poison, "apply_poison_tick"); 
         disableComponentEntity(poison);
     }
 }

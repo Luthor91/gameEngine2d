@@ -4,6 +4,8 @@
 int main(int argc, char* argv[]) {
     Init_All();
 
+    registerCleanupFunction(cleanupOutOfBoundsEntities);
+
     EventType EVENT_LEFT_MOUSECLICK = getEventType("EVENT_LEFT_MOUSECLICK");
     EventType EVENT_LEVEL_UP = getEventType("EVENT_LEVEL_UP");
     EventType EVENT_DEATH = getEventType("EVENT_DEATH");
@@ -14,7 +16,8 @@ int main(int argc, char* argv[]) {
     // Ajouter des listeners pour les événements
     addEventListener(EVENT_LEFT_MOUSECLICK, onBullet_Shoot);
     addEventListener(EVENT_LEVEL_UP, onLeveling_Up);
-    addEventListener(EVENT_DEATH, onDeath);
+    addEventListener(EVENT_DEATH, onDeathPlayer);
+    addEventListener(EVENT_DEATH, onDeathEnemy);
     addEventListener(EVENT_INFO, onDamaged);
 
     addEventListener(EVENT_COLLIDE, onBullet_CollideWith_Enemy);
@@ -52,11 +55,12 @@ int main(int argc, char* argv[]) {
     // Définition du fond d'écran
     Entity background = createEntity();
     PositionComponent background_position = POSITION_ZERO;
-    addPositionComponent(background, background_position);
     SpriteComponent background_sprite = {
         loadTexture("Assets/TowerDefense/BackgroundSpace.png", g_renderer), 
         (SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}
     };
+
+    addPositionComponent(background, background_position);
     addSpriteComponent(background, background_sprite);
 
     // Définition du player
@@ -94,12 +98,14 @@ int main(int argc, char* argv[]) {
     bindEvent(player_entity, SDL_BUTTON_LEFT, EVENT_LEFT_MOUSECLICK, "Shoot");
     addTimerComponent(player_entity, "difficulty_increase", 30.0f, true);
     addTimerComponent(player_entity, "spawn_enemies", 15.50f, true);
-    emitEvent((Event)
-        {
-            EVENT_TIMER_EXPIRED, 
-            TimerData_Init("spawn_enemies", background)
-        }
-    );
+
+    Event event_spawn_enemies;
+    event_spawn_enemies.type = EVENT_TIMER_EXPIRED;
+    event_spawn_enemies.data = TimerData_Init("spawn_enemies", background);
+    strncpy(event_spawn_enemies.name, "spawn_enemies", sizeof(event_spawn_enemies.name) - 1);
+    event_spawn_enemies.name[sizeof(event_spawn_enemies.name) - 1] = '\0';
+
+    emitEvent(event_spawn_enemies);
 
     // Ajouts d'emitter de particules
     SDL_Texture* particle_texture_explosion = loadColor(g_renderer, COLOR_BLACK, 1, 1);
@@ -110,11 +116,11 @@ int main(int argc, char* argv[]) {
     initParticleEmitter("Explosion", 128, particle_texture_explosion, 0, 0, 2.0f, 2.0f);
     initParticleEmitter("Poison", 128, particle_texture_poison, 0, 0, 2.0f, 2.0f);
     initParticleEmitter("Trap", 128, particle_texture_trap, 0, 0, 2.0f, 2.0f);
-    initParticleEmitter("Barrel", 256, particle_texture_barrel, 0, 0, 4.5f, 4.5f);
+    initParticleEmitter("Barrel", 256, particle_texture_barrel, 0, 0, 4.0f, 4.0f);
 
     // Lancement du jeu
     changeState(STATE_PLAYING);
-    while (current_state != STATE_EXIT) {
+    while (current_state != STATE_EXIT) {       
         handleState();
     }
 

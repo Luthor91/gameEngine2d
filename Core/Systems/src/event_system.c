@@ -37,10 +37,12 @@ void initializeEventTypes() {
 
     for (int i = 0; i < predefinedEventCount; ++i) {
         strncpy(eventTypes[eventTypeCount].name, predefinedEventNames[i], sizeof(eventTypes[eventTypeCount].name) - 1);
+        eventTypes[eventTypeCount].name[sizeof(eventTypes[eventTypeCount].name) - 1] = '\0';  // Assurez-vous que la chaîne est terminée
         eventTypes[eventTypeCount].index = eventTypeCount;
         eventTypeCount++;
     }
 }
+
 
 // Ajout d'un écouteur d'événements
 void addEventListener(EventType type, EventListener listener) {
@@ -78,7 +80,6 @@ void removeAllEvents(Entity entity) {
         }
     }
 }
-
 
 // Retrait d'un écouteur d'événements
 void removeEventListener(EventType type, EventListener listener) {
@@ -161,7 +162,6 @@ void processEvents() {
     eventQueueCount = 0;  // Réinitialiser la file d'attente des événements
 }
 
-// Met à jour les événements et émet les événements liés aux touches
 void updateEvent() {
     SDL_Event sdlEvent;
     static int mouse_x, mouse_y; // Pour garder la position de la souris
@@ -201,6 +201,8 @@ void updateEvent() {
                 leftMouseHeld = true;
                 if (currentTime - lastLeftClickTime > clickThreshold) {
                     event.type.index = leftMouseClickType;
+                    strncpy(event.name, "left_click", sizeof(event.name) - 1);  // Nom par défaut "left_click"
+                    event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
                     emitEvent(event);
                     lastLeftClickTime = currentTime;
                 }
@@ -208,6 +210,8 @@ void updateEvent() {
                 rightMouseHeld = true;
                 if (currentTime - lastRightClickTime > clickThreshold) {
                     event.type.index = rightMouseClickType;
+                    strncpy(event.name, "right_click", sizeof(event.name) - 1);  // Nom par défaut "right_click"
+                    event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
                     emitEvent(event);
                     lastRightClickTime = currentTime;
                 }
@@ -215,6 +219,8 @@ void updateEvent() {
                 middleMouseHeld = true;
                 if (currentTime - lastMiddleClickTime > clickThreshold) {
                     event.type.index = middleMouseClickType;
+                    strncpy(event.name, "middle_click", sizeof(event.name) - 1);  // Nom par défaut "middle_click"
+                    event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
                     emitEvent(event);
                     lastMiddleClickTime = currentTime;
                 }
@@ -228,87 +234,64 @@ void updateEvent() {
                 middleMouseHeld = false;
             }
         }
-        
-        // Émettre des événements de maintien de clic
+
+        // Gestion des événements de maintien de la souris
         if (leftMouseHeld) {
-            SDL_GetMouseState(&mouse_x, &mouse_y);
-            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
-            cursor_position->x = mouse_x;
-            cursor_position->y = mouse_y;
-            Event holdEvent = {(EventType){.index = leftMouseHeldType}, cursor_position};
-            emitEvent(holdEvent);
+            Event event;
+            event.type.index = leftMouseHeldType;
+            strncpy(event.name, "left_hold", sizeof(event.name) - 1);  // Nom par défaut "left_hold"
+            event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
+            event.data = NULL;
+            emitEvent(event);
         }
+
         if (rightMouseHeld) {
-            SDL_GetMouseState(&mouse_x, &mouse_y);
-            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
-            cursor_position->x = mouse_x;
-            cursor_position->y = mouse_y;
-            Event holdEvent = {(EventType){.index = rightMouseHeldType}, cursor_position};
-            emitEvent(holdEvent);
+            Event event;
+            event.type.index = rightMouseHeldType;
+            strncpy(event.name, "right_hold", sizeof(event.name) - 1);  // Nom par défaut "right_hold"
+            event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
+            event.data = NULL;
+            emitEvent(event);
         }
+
         if (middleMouseHeld) {
-            SDL_GetMouseState(&mouse_x, &mouse_y);
-            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
-            cursor_position->x = mouse_x;
-            cursor_position->y = mouse_y;
-            Event holdEvent = {(EventType){.index = middleMouseHeldType}, cursor_position};
-            emitEvent(holdEvent);
+            Event event;
+            event.type.index = middleMouseHeldType;
+            strncpy(event.name, "middle_hold", sizeof(event.name) - 1);  // Nom par défaut "middle_hold"
+            event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
+            event.data = NULL;
+            emitEvent(event);
         }
 
         // Gestion des événements clavier
         if (sdlEvent.type == SDL_KEYDOWN || sdlEvent.type == SDL_KEYUP) {
-            bool isPressed = (sdlEvent.type == SDL_KEYDOWN);
-            SDL_Keycode key = sdlEvent.key.keysym.sym;
+            int eventTypeIndex = (sdlEvent.type == SDL_KEYDOWN) ? getEventTypeIndex("EVENT_KEYDOWN") : getEventTypeIndex("EVENT_KEYUP");
 
-            for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
-                if (!hasInputComponent(entity)) { continue; }
-
-                InputComponent* input = getInputComponent(entity);
-                if (key < MAX_KEYS) {
-                    input->keys[key] = isPressed;
-                }
-
+            for (int entity = 0; entity < MAX_ENTITIES; ++entity) {
                 for (int i = 0; i < MAX_BINDINGS; ++i) {
-                    if (entityBindings[entity][i].key == key) {
-                        Event event = {entityBindings[entity][i].eventType, entityBindings[entity][i].eventData};
+                    if (entityBindings[entity][i].key == sdlEvent.key.keysym.sym && entityBindings[entity][i].eventType.index == eventTypeIndex) {
+                        Event event;
+                        event.type = entityBindings[entity][i].eventType;
+                        event.data = entityBindings[entity][i].eventData;
+                        strncpy(event.name, eventTypes[eventTypeIndex].name, sizeof(event.name) - 1);
+                        event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
                         emitEvent(event);
                     }
                 }
             }
         }
     }
+
+    processEvents();  // Process all the events that have been emitted
 }
 
-// Fonction pour ajouter un type d'événement prédéfini
-int addEventType(const char* eventName) {
-    // Vérifiez si le type existe déjà
-    for (int i = 0; i < eventTypeCount; ++i) {
-        if (strcmp(eventTypes[i].name, eventName) == 0) {
-            return eventTypes[i].index; // Retourne l'index existant
-        }
-    }
-
-    // Ne pas dépasser la capacité maximale d'événements prédéfinis
-    if (eventTypeCount >= MAX_EVENT_TYPES) {
-        return -1; // Erreur : nombre maximum de types atteint
-    }
-
-    // Ajouter le nouveau type d'événement
-    strncpy(eventTypes[eventTypeCount].name, eventName, sizeof(eventTypes[eventTypeCount].name) - 1);
-    eventTypes[eventTypeCount].name[sizeof(eventTypes[eventTypeCount].name) - 1] = '\0'; // Assurez-vous que la chaîne est terminée
-    eventTypes[eventTypeCount].index = eventTypeCount; // Assigne un nouvel index
-    return eventTypes[eventTypeCount++].index;
-}
-
-
-// Fonction pour récupérer l'index d'un type d'événement par son nom
 int getEventTypeIndex(const char* eventName) {
     for (int i = 0; i < eventTypeCount; ++i) {
         if (strcmp(eventTypes[i].name, eventName) == 0) {
             return eventTypes[i].index;
         }
     }
-    return EVENT_NOT_FOUND_INDEX; // Type non trouvé
+    return -1;  // Renvoie -1 si le type d'événement n'est pas trouvé
 }
 
 // Fonction pour récupérer l'index d'un type d'événement par son nom
@@ -320,3 +303,12 @@ EventType getEventType(const char* eventName) {
     }
     return EVENT_NOT_FOUND;
 }
+
+// Fonction qui vérifie si le nom d'un événement correspond à une chaîne donnée
+bool isEventName(Event event, const char* name) {
+    if (strncmp(event.name, name, sizeof(event.name)) == 0) {
+        return true;
+    }
+    return false;
+}
+
