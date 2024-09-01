@@ -1,23 +1,25 @@
 # Définition des variables
 CC := gcc
-L_SDL2 := -I/usr/include/SDL2
-L_LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm
+OPTS := -fPIC
+L_SDL2 := -I/usr/include/SDL2 
+L_LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm 
 
 # Windows-specific flags
-W_SDL2 := -I"C:/msys64/mingw64/include/SDL2"
+W_SDL2 := -I"C:/msys64/mingw64/include/SDL2" 
 W_LDFLAGS := -L"C:/msys64/mingw64/lib" -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm
 
-SYMBOL := -g -o
+SYMBOL := $(OPTS) -g -o
 
 Components := $(wildcard Core/Components/src/*.c)
 Entities := $(wildcard Core/Entities/src/*.c)
 Global := $(wildcard Core/GLobal/src/*.c)
 Systems := $(wildcard Core/Systems/src/*.c)
 Utils := $(wildcard Core/Utils/src/*.c)
+Globals := $(wildcard Core/Globals/src/*.c)
 
-AllFiles := $(Components) $(Entities) $(Global) $(Systems) $(Utils)
+AllFiles := $(Components) $(Entities) $(Global) $(Systems) $(Utils) $(Globals)
 
-TD_Files := $(wildcard Example/Project1/src/*.c)
+TD_Files := $(wildcard Example/TowerDefense/src/*.c)
 
 ##########
 # INSTALL
@@ -39,4 +41,4 @@ lt_main:
 	$(CC) $(L_SDL2) $(SYMBOL) main Core/main.c $(AllFiles) $(L_LDFLAGS) && ./main
 
 l_td:
-	$(CC) $(L_SDL2) $(SYMBOL) main Example/Project1/main.c $(AllFiles) $(TD_Files) $(L_LDFLAGS) && ./main
+	$(CC) $(L_SDL2) $(SYMBOL) main Example/TowerDefense/main.c $(AllFiles) $(TD_Files) $(L_LDFLAGS) && ./main

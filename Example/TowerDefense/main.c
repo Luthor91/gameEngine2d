@@ -104,7 +104,6 @@ int main(int argc, char* argv[]) {
     event_spawn_enemies.data = TimerData_Init("spawn_enemies", background);
     strncpy(event_spawn_enemies.name, "spawn_enemies", sizeof(event_spawn_enemies.name) - 1);
     event_spawn_enemies.name[sizeof(event_spawn_enemies.name) - 1] = '\0';
-
     emitEvent(event_spawn_enemies);
 
     // Ajouts d'emitter de particules

@@ -7,9 +7,8 @@
 
 #include "Entities/include/entity.h"
 
-#include "Utils/include/init.h"
-#include "Utils/include/time.h"
-#include "Utils/include/renderer_utils.h"
+#include "Utils/include/init_utils.h"
+#include "Utils/include/time_utils.h"
 #include "Utils/include/window_utils.h"
 #include "Utils/include/texture_utils.h"
 
@@ -34,6 +33,8 @@
 #include "Systems/include/sound_system.h"
 #include "Systems/include/particle_system.h"
 #include "Systems/include/cleanup_system.h"
+
+#include "Globals/include/globals.h"
 
 //#include "Managers/include/event_manager.h"
 

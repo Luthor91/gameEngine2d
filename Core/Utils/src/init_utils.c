@@ -1,4 +1,4 @@
-#include "../include/init.h"
+#include "../include/init_utils.h"
 
 int Init_All() {
     srand(time(NULL));

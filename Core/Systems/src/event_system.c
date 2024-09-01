@@ -36,13 +36,13 @@ void initializeEventTypes() {
     int predefinedEventCount = sizeof(predefinedEventNames) / sizeof(predefinedEventNames[0]);
 
     for (int i = 0; i < predefinedEventCount; ++i) {
+        // Sécuriser la copie de chaîne
         strncpy(eventTypes[eventTypeCount].name, predefinedEventNames[i], sizeof(eventTypes[eventTypeCount].name) - 1);
-        eventTypes[eventTypeCount].name[sizeof(eventTypes[eventTypeCount].name) - 1] = '\0';  // Assurez-vous que la chaîne est terminée
+        eventTypes[eventTypeCount].name[sizeof(eventTypes[eventTypeCount].name) - 1] = '\0';
         eventTypes[eventTypeCount].index = eventTypeCount;
         eventTypeCount++;
     }
 }
-
 
 // Ajout d'un écouteur d'événements
 void addEventListener(EventType type, EventListener listener) {
@@ -70,13 +70,11 @@ void removeAllEvents(Entity entity) {
         return;
     }
 
-    // Parcours de tous les bindings d'événements pour cette entité
     for (int i = 0; i < MAX_BINDINGS; ++i) {
-        // Si un binding est trouvé, le supprimer
         if (entityBindings[entity][i].key != 0) {
-            entityBindings[entity][i].key = 0; // Réinitialise la touche liée à cet événement
-            entityBindings[entity][i].eventType = (EventType){0}; // Réinitialise le type d'événement
-            entityBindings[entity][i].eventData = NULL; // Supprime les données associées à l'événement
+            entityBindings[entity][i].key = 0; 
+            entityBindings[entity][i].eventType = (EventType){0};
+            entityBindings[entity][i].eventData = NULL; // Assurez-vous que les données sont bien libérées si nécessaire
         }
     }
 }
@@ -108,7 +106,6 @@ void emitEvent(Event event) {
 
 // Fonction pour lier un événement à une touche
 void bindEvent(Entity entity, SDL_Keycode key, EventType eventType, void* eventData) {
-    // Trouver le premier binding vide ou mettre à jour un binding existant
     for (int i = 0; i < MAX_BINDINGS; ++i) {
         if (entityBindings[entity][i].key == key || entityBindings[entity][i].key == 0) {
             entityBindings[entity][i].key = key;
@@ -159,12 +156,12 @@ void processEvents() {
         }
         eventQueue[i] = (Event){0};
     }
-    eventQueueCount = 0;  // Réinitialiser la file d'attente des événements
+    eventQueueCount = 0;  
 }
 
 void updateEvent() {
     SDL_Event sdlEvent;
-    static int mouse_x, mouse_y; // Pour garder la position de la souris
+    static int mouse_x, mouse_y; 
     static bool leftMouseHeld = false;
     static bool rightMouseHeld = false;
     static bool middleMouseHeld = false;
@@ -186,46 +183,77 @@ void updateEvent() {
         int rightMouseHeldType = getEventTypeIndex("EVENT_RIGHT_MOUSEHELD");
         int middleMouseHeldType = getEventTypeIndex("EVENT_MIDDLE_MOUSEHELD");
 
-        Uint32 currentTime = SDL_GetTicks(); // Obtenez le temps actuel en millisecondes
+        Uint32 currentTime = SDL_GetTicks(); 
 
         if (sdlEvent.type == SDL_MOUSEBUTTONDOWN) {
             SDL_GetMouseState(&mouse_x, &mouse_y);
             SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
+            if (!cursor_position) {
+                printf("Error: Failed to allocate memory for cursor position\n");
+                continue; // Skip this event
+            }
+
             cursor_position->x = mouse_x;
             cursor_position->y = mouse_y;
 
             Event event;
-            event.data = cursor_position; // Assignez le pointeur aux données
+            event.data = cursor_position; 
 
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
                 leftMouseHeld = true;
                 if (currentTime - lastLeftClickTime > clickThreshold) {
                     event.type.index = leftMouseClickType;
-                    strncpy(event.name, "left_click", sizeof(event.name) - 1);  // Nom par défaut "left_click"
-                    event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
-                    emitEvent(event);
+                    strncpy(event.name, "left_click", sizeof(event.name) - 1); 
+                    event.name[sizeof(event.name) - 1] = '\0';  
                     lastLeftClickTime = currentTime;
+                }
+                else {
+                    event.type.index = leftMouseHeldType;
+                    strncpy(event.name, "left_held", sizeof(event.name) - 1); 
+                    event.name[sizeof(event.name) - 1] = '\0'; 
                 }
             } else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) {
                 rightMouseHeld = true;
                 if (currentTime - lastRightClickTime > clickThreshold) {
                     event.type.index = rightMouseClickType;
-                    strncpy(event.name, "right_click", sizeof(event.name) - 1);  // Nom par défaut "right_click"
-                    event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
-                    emitEvent(event);
+                    strncpy(event.name, "right_click", sizeof(event.name) - 1); 
+                    event.name[sizeof(event.name) - 1] = '\0'; 
                     lastRightClickTime = currentTime;
+                }
+                else {
+                    event.type.index = rightMouseHeldType;
+                    strncpy(event.name, "right_held", sizeof(event.name) - 1); 
+                    event.name[sizeof(event.name) - 1] = '\0'; 
                 }
             } else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) {
                 middleMouseHeld = true;
                 if (currentTime - lastMiddleClickTime > clickThreshold) {
                     event.type.index = middleMouseClickType;
-                    strncpy(event.name, "middle_click", sizeof(event.name) - 1);  // Nom par défaut "middle_click"
-                    event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
-                    emitEvent(event);
+                    strncpy(event.name, "middle_click", sizeof(event.name) - 1); 
+                    event.name[sizeof(event.name) - 1] = '\0'; 
                     lastMiddleClickTime = currentTime;
                 }
+                else {
+                    event.type.index = middleMouseHeldType;
+                    strncpy(event.name, "middle_held", sizeof(event.name) - 1); 
+                    event.name[sizeof(event.name) - 1] = '\0'; 
+                }
             }
-        } else if (sdlEvent.type == SDL_MOUSEBUTTONUP) {
+
+            emitEvent(event); 
+        }
+
+        if (sdlEvent.type == SDL_MOUSEBUTTONUP) {
+            SDL_GetMouseState(&mouse_x, &mouse_y);
+            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
+            if (!cursor_position) {
+                printf("Error: Failed to allocate memory for cursor position\n");
+                continue; // Skip this event
+            }
+
+            cursor_position->x = mouse_x;
+            cursor_position->y = mouse_y;
+
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
                 leftMouseHeld = false;
             } else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) {
@@ -234,55 +262,7 @@ void updateEvent() {
                 middleMouseHeld = false;
             }
         }
-
-        // Gestion des événements de maintien de la souris
-        if (leftMouseHeld) {
-            Event event;
-            event.type.index = leftMouseHeldType;
-            strncpy(event.name, "left_hold", sizeof(event.name) - 1);  // Nom par défaut "left_hold"
-            event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
-            event.data = NULL;
-            emitEvent(event);
-        }
-
-        if (rightMouseHeld) {
-            Event event;
-            event.type.index = rightMouseHeldType;
-            strncpy(event.name, "right_hold", sizeof(event.name) - 1);  // Nom par défaut "right_hold"
-            event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
-            event.data = NULL;
-            emitEvent(event);
-        }
-
-        if (middleMouseHeld) {
-            Event event;
-            event.type.index = middleMouseHeldType;
-            strncpy(event.name, "middle_hold", sizeof(event.name) - 1);  // Nom par défaut "middle_hold"
-            event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
-            event.data = NULL;
-            emitEvent(event);
-        }
-
-        // Gestion des événements clavier
-        if (sdlEvent.type == SDL_KEYDOWN || sdlEvent.type == SDL_KEYUP) {
-            int eventTypeIndex = (sdlEvent.type == SDL_KEYDOWN) ? getEventTypeIndex("EVENT_KEYDOWN") : getEventTypeIndex("EVENT_KEYUP");
-
-            for (int entity = 0; entity < MAX_ENTITIES; ++entity) {
-                for (int i = 0; i < MAX_BINDINGS; ++i) {
-                    if (entityBindings[entity][i].key == sdlEvent.key.keysym.sym && entityBindings[entity][i].eventType.index == eventTypeIndex) {
-                        Event event;
-                        event.type = entityBindings[entity][i].eventType;
-                        event.data = entityBindings[entity][i].eventData;
-                        strncpy(event.name, eventTypes[eventTypeIndex].name, sizeof(event.name) - 1);
-                        event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
-                        emitEvent(event);
-                    }
-                }
-            }
-        }
     }
-
-    processEvents();  // Process all the events that have been emitted
 }
 
 int getEventTypeIndex(const char* eventName) {

@@ -4,10 +4,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
-
-extern SDL_Window* g_window;
+#include "../../Globals/include/globals.h"
 
 // Fonction pour créer une SDL_Window
 SDL_Window* createWindow(const char* title);

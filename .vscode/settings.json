@@ -45,6 +45,10 @@
         "array": "c",
         "string": "c",
         "string_view": "c",
-        "span": "c"
+        "span": "c",
+        "math.h": "c",
+        "globals.h": "c",
+        "string.h": "c",
+        "init_utils.h": "c"
     }
 }

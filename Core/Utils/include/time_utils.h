@@ -1,5 +1,5 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef TIME_UTILS_H
+#define TIME_UTILS_H
 
 #include <SDL2/SDL.h>
 #include <stdio.h>
@@ -45,4 +45,4 @@ char* Time_GetTimeStamp();
 // Fonction pour obtenir le delta time
 float Time_GetDelta();
 
-#endif /* TIME_H */
+#endif // TIME_UTILS_H
