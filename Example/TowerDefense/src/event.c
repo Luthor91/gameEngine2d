@@ -49,7 +49,7 @@ void onBullet_Shoot(Event event) {
     SizeComponent bullet_size = {12, 12};
     HitboxComponent bullet_hitbox = {0, 0, bullet_size.width, bullet_size.height, true};
     SpriteComponent bullet_sprite = {
-        loadColor(g_renderer, COLOR_BLACK, bullet_size.width, bullet_size.height),
+        loadColor(game.renderer, COLOR_BLACK, bullet_size.width, bullet_size.height),
         (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
     };
     DataComponent bullet_data = DATA_COMPONENT_DEFAULT;
@@ -96,7 +96,7 @@ void onBait_Spawn(Event event) {
         cursor_position->y - size.height / 2
     };
     SpriteComponent bait_sprite = {
-        loadColor(g_renderer, COLOR_PURPLE, size.width, size.height),
+        loadColor(game.renderer, COLOR_PURPLE, size.width, size.height),
         (SDL_Rect){0, 0, size.width, size.height}
     };
 
@@ -309,8 +309,8 @@ void onDeathPlayer(Event event) {
     Entity end_screen = createEntity();
     PositionComponent pos = POSITION_ZERO;
     SpriteComponent sprite = {
-        loadTexture("Assets/TowerDefense/EndScreen.png", g_renderer), 
-        (SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}
+        loadTexture("Assets/TowerDefense/EndScreen.png", game.renderer), 
+        (SDL_Rect){0, 0, game.window_width, game.window_height}
     };
 
     addPositionComponent(end_screen, pos);
@@ -380,7 +380,7 @@ void onDamaged(Event event) {
         }
 
         // Charger la texture correspondante
-        SDL_Texture* texture = loadTexture(sprite_file, g_renderer);
+        SDL_Texture* texture = loadTexture(sprite_file, game.renderer);
 
         // Obtenir la taille du joueur (assumant que getSizeComponent retourne un pointeur valide)
         SizeComponent size = *getSizeComponent(entity);
@@ -405,7 +405,7 @@ void onDamaged(Event event) {
         }
 
         // Charger la texture correspondante
-        SDL_Texture* texture = loadTexture(sprite_file, g_renderer);
+        SDL_Texture* texture = loadTexture(sprite_file, game.renderer);
 
         // Obtenir la taille de l'ennemi (assumant que getSizeComponent retourne un pointeur valide)
         SizeComponent size = *getSizeComponent(entity);

@@ -1,25 +1,36 @@
 #include "../include/sound_system.h"
 
-static Sound sounds[MAX_SOUNDS];
+// Allocation dynamique des sons
+static Sound* sounds = NULL;
 static int soundCount = 0;
 
+// Initialisation du système audio
 int Init_SoundSystem() {
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
-        printf("Failed to initialize SDL_mixer: %s\n", Mix_GetError());
+    sounds = (Sound*)malloc(sizeof(Sound) * MAX_SOUNDS);  // Allocation dynamique de l'espace pour les sons
+    if (!sounds) {
+        printf("Error: Unable to allocate memory for sounds.\n");
         return -1;
     }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        printf("Failed to initialize SDL_mixer: %s\n", Mix_GetError());
+        free(sounds);
+        return -1;
+    }
+
     return 0;
 }
 
+// Ajouter un son au système
 int AddSound(const char *path, const char *name, SoundType type) {
     if (soundCount >= MAX_SOUNDS) {
         printf("Error: Sound system is full.\n");
         return -1;
     }
 
-    Sound *sound = &sounds[soundCount++];
+    Sound *sound = &sounds[soundCount++];  // Récupération du prochain slot
     strncpy(sound->name, name, MAX_SOUND_NAME_LENGTH - 1);
-    sound->name[MAX_SOUND_NAME_LENGTH - 1] = '\0'; // Assurez-vous que le nom est null-terminated
+    sound->name[MAX_SOUND_NAME_LENGTH - 1] = '\0';  // Assurer la terminaison nulle du nom
 
     if (type == SOUND_TYPE_CHUNK) {
         sound->audioData.chunk = Mix_LoadWAV(path);
@@ -28,7 +39,7 @@ int AddSound(const char *path, const char *name, SoundType type) {
             return -1;
         }
         sound->type = SOUND_TYPE_CHUNK;
-        sound->channel = -1;  // Aucun canal attribué par défaut
+        sound->channel = -1;
         sound->isPaused = 0;
     } else if (type == SOUND_TYPE_MUSIC) {
         sound->audioData.music = Mix_LoadMUS(path);
@@ -47,6 +58,7 @@ int AddSound(const char *path, const char *name, SoundType type) {
     return 0;
 }
 
+// Recherche d'un son par son nom
 static Sound* findSoundByName(const char *name) {
     for (int i = 0; i < soundCount; ++i) {
         if (strcmp(name, sounds[i].name) == 0) {
@@ -56,6 +68,7 @@ static Sound* findSoundByName(const char *name) {
     return NULL;
 }
 
+// Jouer un son
 int PlaySound(const char *name) {
     Sound *sound = findSoundByName(name);
     if (!sound) {
@@ -84,9 +97,11 @@ int PlaySound(const char *name) {
             return -1;
         }
     }
+
     return 0;
 }
 
+// Mettre en pause un son
 int PauseSound(const char *name) {
     Sound *sound = findSoundByName(name);
     if (!sound) {
@@ -97,6 +112,9 @@ int PauseSound(const char *name) {
     if (sound->type == SOUND_TYPE_CHUNK && sound->channel != -1) {
         Mix_Pause(sound->channel);
         sound->isPaused = 1;
+    } else if (sound->type == SOUND_TYPE_MUSIC) {
+        Mix_PauseMusic();
+        sound->isPaused = 1;
     } else {
         printf("Error: Sound is not playing or not a chunk.\n");
         return -1;
@@ -105,6 +123,7 @@ int PauseSound(const char *name) {
     return 0;
 }
 
+// Reprendre un son
 int ResumeSound(const char *name) {
     Sound *sound = findSoundByName(name);
     if (!sound) {
@@ -115,6 +134,9 @@ int ResumeSound(const char *name) {
     if (sound->type == SOUND_TYPE_CHUNK && sound->isPaused) {
         Mix_Resume(sound->channel);
         sound->isPaused = 0;
+    } else if (sound->type == SOUND_TYPE_MUSIC && sound->isPaused) {
+        Mix_ResumeMusic();
+        sound->isPaused = 0;
     } else {
         printf("Error: Sound is not paused or not a chunk.\n");
         return -1;
@@ -123,6 +145,7 @@ int ResumeSound(const char *name) {
     return 0;
 }
 
+// Libérer les ressources et fermer le système de son
 void Close_SoundSystem() {
     for (int i = 0; i < soundCount; ++i) {
         if (sounds[i].type == SOUND_TYPE_CHUNK) {
@@ -131,5 +154,10 @@ void Close_SoundSystem() {
             Mix_FreeMusic(sounds[i].audioData.music);
         }
     }
+
+    free(sounds);  // Libérer la mémoire allouée pour les sons
+    sounds = NULL;
+    soundCount = 0;
+
     Mix_CloseAudio();
 }

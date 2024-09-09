@@ -17,7 +17,7 @@ void amplify_bullet(Entity bullet) {
     bullet_hitbox.width = bullet_size.width;
 
     SpriteComponent sprite = {
-        loadColor(g_renderer, COLOR_RED, bullet_size.width, bullet_size.height),
+        loadColor(game.renderer, COLOR_RED, bullet_size.width, bullet_size.height),
         (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
     };
     addSpriteComponent(bullet, sprite);
@@ -47,7 +47,7 @@ void summonSecondBullet(Entity bullet, float direction_x, float direction_y) {
     bullet_hitbox.height = bullet_size.height;
 
     SpriteComponent second_bullet_sprite = {
-        loadColor(g_renderer, COLOR_GREEN, bullet_size.width, bullet_size.height),
+        loadColor(game.renderer, COLOR_GREEN, bullet_size.width, bullet_size.height),
         (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
     };
 
@@ -77,7 +77,7 @@ void summonTrap(PositionComponent death_position) {
     HitboxComponent hitbox = {0.0f, 0.0f, trap_size.width, trap_size.height, true};
     DataComponent trap_data = DATA_COMPONENT_DEFAULT;
     SpriteComponent trap_sprite = {
-        loadTexture("Assets/TowerDefense/Trap.png", g_renderer),
+        loadTexture("Assets/TowerDefense/Trap.png", game.renderer),
         (SDL_Rect){0, 0, trap_size.width, trap_size.height}
     };
 
@@ -141,15 +141,15 @@ void summonBarrel() {
     VelocityComponent velocity = {0.0f, 0.0f};
     SizeComponent size = {64, 64};
     PositionComponent position = {
-        .x = 0 + rand() % (WINDOW_WIDTH - (int)size.width),
-        .y = 0 + rand() % (WINDOW_HEIGHT - (int)size.height)
+        .x = 0 + rand() % (game.window_width - (int)size.width),
+        .y = 0 + rand() % (game.window_height - (int)size.height)
     };
     HitboxComponent hitbox = {0.0f, 0.0f, size.width, size.height, true};
     DataComponent barrel_data = DATA_COMPONENT_DEFAULT;
 
     // Créer le SpriteComponent pour le barrel
     SpriteComponent barrel_sprite = {
-        .texture = loadColor(g_renderer, (SDL_Color){255, 0, 0, 64}, size.width, size.height),
+        .texture = loadColor(game.renderer, (SDL_Color){255, 0, 0, 64}, size.width, size.height),
         .srcRect = {0, 0, (int)size.width, (int)size.height}
     };
 
@@ -261,7 +261,7 @@ void summonPoison() {
     HitboxComponent hitbox = {0.0f, 0.0f, size_poison.width, size_poison.height, true};
     DataComponent poison_data = DATA_COMPONENT_DEFAULT;
     SpriteComponent poison_sprite = {
-        loadColor(g_renderer, (SDL_Color){0, 255, 0, 64}, size_poison.width, size_poison.height),
+        loadColor(game.renderer, (SDL_Color){0, 255, 0, 64}, size_poison.width, size_poison.height),
         (SDL_Rect){0, 0, size_poison.width, size_poison.height}
     };
 

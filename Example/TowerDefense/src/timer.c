@@ -56,16 +56,16 @@ void uponSpawnEnemies(Event event) {
 
         switch (edge) {
             case 0:  // Haut
-                x = rand() % WINDOW_WIDTH - 32, y = 0;
+                x = rand() % game.window_width - 32, y = 0;
                 break;
             case 1:  // Droite
-                x = WINDOW_WIDTH - 32, y = rand() % WINDOW_HEIGHT;
+                x = game.window_width - 32, y = rand() % game.window_height;
                 break;
             case 2:  // Bas
-                x = rand() % WINDOW_WIDTH - 32, y = WINDOW_HEIGHT - 32;
+                x = rand() % game.window_width - 32, y = game.window_height - 32;
                 break;
             case 3:  // Gauche
-                x = 0, y = rand() % WINDOW_HEIGHT;
+                x = 0, y = rand() % game.window_height;
                 break;
         }
 
@@ -73,11 +73,11 @@ void uponSpawnEnemies(Event event) {
         SizeComponent enemy_size = {32, 32};
         HitboxComponent enemy_hitbox = { 0, 0, enemy_size.width, enemy_size.height, true};
         DataComponent enemy_data = DATA_COMPONENT_DEFAULT;
-        SDL_Texture* enemy_texture = loadTexture("Assets/TowerDefense/EnemyFullHealth.png", g_renderer);
+        SDL_Texture* enemy_texture = loadTexture("Assets/TowerDefense/EnemyFullHealth.png", game.renderer);
 
         // Calcul de la direction vers le centre de l'écran
-        float delta_x = (WINDOW_WIDTH / 2) - x;
-        float delta_y = (WINDOW_HEIGHT / 2) - y;
+        float delta_x = (game.window_width / 2) - x;
+        float delta_y = (game.window_height / 2) - y;
         float magnitude = sqrt(delta_x * delta_x + delta_y * delta_y);
         VelocityComponent enemy_velocity = { 
             (delta_x / magnitude) * speed_multiplier, 

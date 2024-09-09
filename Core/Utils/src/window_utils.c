@@ -11,8 +11,8 @@ SDL_Window* createWindow(const char* title) {
     SDL_Window* window = SDL_CreateWindow(title,
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
-                                          WINDOW_WIDTH,
-                                          WINDOW_HEIGHT,
+                                          game.window_width,
+                                          game.window_height,
                                           SDL_WINDOW_SHOWN);
 
     if (window == NULL) {
@@ -21,7 +21,7 @@ SDL_Window* createWindow(const char* title) {
         return NULL;
     }
 
-    g_window = window;
+    game.window = window;
 
     return window;
 }

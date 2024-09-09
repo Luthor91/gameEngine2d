@@ -95,8 +95,8 @@ void handleExitState() {
     }
 
     freeParticleEmitters(getEmitters(), MAX_EMITTERS);
-    SDL_DestroyRenderer(g_renderer);
-    SDL_DestroyWindow(g_window);
+    SDL_DestroyRenderer(game.renderer);
+    SDL_DestroyWindow(game.window);
     SDL_Quit();
 
 }

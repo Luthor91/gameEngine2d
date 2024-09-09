@@ -14,16 +14,16 @@ SDL_Renderer* createRenderer(SDL_Window* window) {
         return NULL;
     }
 
-    g_renderer = renderer;
+    game.renderer = renderer;
 
     return renderer;
 }
 
 // Fonction pour rendre les entités et les particules
 void renderEntities() {
-    if (g_renderer == NULL) { return; }
+    if (game.renderer == NULL) { return; }
             
-    SDL_RenderClear(g_renderer);
+    SDL_RenderClear(game.renderer);
 
     // Rendu des entités
     for (Entity entity = 0; entity < getEntityCount(); ++entity) {
@@ -44,7 +44,7 @@ void renderEntities() {
             .h = (int)(sprite->srcRect.h * transform->scaleY)
         };
         SDL_SetTextureBlendMode(sprite->texture, SDL_BLENDMODE_BLEND);
-        SDL_RenderCopyEx(g_renderer, sprite->texture, &sprite->srcRect, &destRect, transform->rotation, NULL, SDL_FLIP_NONE);
+        SDL_RenderCopyEx(game.renderer, sprite->texture, &sprite->srcRect, &destRect, transform->rotation, NULL, SDL_FLIP_NONE);
     }
 
     // Rendu des particules
@@ -65,9 +65,9 @@ void renderEntities() {
                 .h = (int)(particle->srcRect.h * particle->size)
             };
 
-            SDL_RenderCopy(g_renderer, particle->texture, &particle->srcRect, &particleRect);
+            SDL_RenderCopy(game.renderer, particle->texture, &particle->srcRect, &particleRect);
         }
     }
 
-    SDL_RenderPresent(g_renderer);
+    SDL_RenderPresent(game.renderer);
 }

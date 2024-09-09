@@ -56,8 +56,8 @@ int main(int argc, char* argv[]) {
     Entity background = createEntity();
     PositionComponent background_position = POSITION_ZERO;
     SpriteComponent background_sprite = {
-        loadTexture("Assets/TowerDefense/BackgroundSpace.png", g_renderer), 
-        (SDL_Rect){0, 0, WINDOW_WIDTH, WINDOW_HEIGHT}
+        loadTexture("Assets/TowerDefense/BackgroundSpace.png", game.renderer), 
+        (SDL_Rect){0, 0, game.window_width, game.window_height}
     };
 
     addPositionComponent(background, background_position);
@@ -65,12 +65,12 @@ int main(int argc, char* argv[]) {
 
     // Définition du player
     player_entity = createEntity();
-    PositionComponent player_position = {WINDOW_WIDTH/2 - 16, WINDOW_HEIGHT/2};
+    PositionComponent player_position = {game.window_width/2 - 16, game.window_height/2};
     SizeComponent player_size = {32, 32};
     HitboxComponent player_hitbox = { 0, 0, player_size.width, player_size.height, true};
     DataComponent player_data = DATA_COMPONENT_DEFAULT;
     SpriteComponent player_sprite = {
-        loadTexture("Assets/TowerDefense/TurretFullHealth.png", g_renderer), 
+        loadTexture("Assets/TowerDefense/TurretFullHealth.png", game.renderer), 
         (SDL_Rect){0, 0, (int)player_size.width, (int)player_size.height}
     };
 
@@ -107,10 +107,10 @@ int main(int argc, char* argv[]) {
     emitEvent(event_spawn_enemies);
 
     // Ajouts d'emitter de particules
-    SDL_Texture* particle_texture_explosion = loadColor(g_renderer, COLOR_BLACK, 1, 1);
-    SDL_Texture* particle_texture_poison = loadColor(g_renderer, COLOR_GREEN, 1, 1);
-    SDL_Texture* particle_texture_trap = loadColor(g_renderer, COLOR_GRAY, 1, 1);
-    SDL_Texture* particle_texture_barrel = loadColor(g_renderer, COLOR_RED, 2, 2);
+    SDL_Texture* particle_texture_explosion = loadColor(game.renderer, COLOR_BLACK, 1, 1);
+    SDL_Texture* particle_texture_poison = loadColor(game.renderer, COLOR_GREEN, 1, 1);
+    SDL_Texture* particle_texture_trap = loadColor(game.renderer, COLOR_GRAY, 1, 1);
+    SDL_Texture* particle_texture_barrel = loadColor(game.renderer, COLOR_RED, 2, 2);
     
     initParticleEmitter("Explosion", 128, particle_texture_explosion, 0, 0, 2.0f, 2.0f);
     initParticleEmitter("Poison", 128, particle_texture_poison, 0, 0, 2.0f, 2.0f);

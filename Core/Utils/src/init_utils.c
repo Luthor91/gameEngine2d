@@ -3,8 +3,8 @@
 int Init_All() {
     srand(time(NULL));
     initializeEventTypes();
-    g_window = createWindow("Game Window");
-    g_renderer = createRenderer(g_window);
+    game.window = createWindow("Game Window");
+    game.renderer = createRenderer(game.window);
     initStateMachine();
     if (Init_Dependancies == 0) { return 0; }
     
