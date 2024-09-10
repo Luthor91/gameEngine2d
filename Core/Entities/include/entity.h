@@ -2,10 +2,9 @@
 #define ENTITY_H
 
 typedef unsigned int Entity;
-// Max entity on screen
-#define MAX_ENTITIES 4096
 
 #include <stdbool.h>
+#include "../../Globals/include/globals.h"
 #include "../../Systems/include/event_system.h"
 
 #include "../../Components/include/position_component.h"
@@ -20,19 +19,6 @@ typedef unsigned int Entity;
 #include "../../Components/include/data_component.h"
 
 #define INVALID_ENTITY_ID -1
-
-// Tableau pour stocker les états des entités
-extern bool entityStates[MAX_ENTITIES];
-extern bool hasSprite[MAX_ENTITIES];
-extern bool hasPosition[MAX_ENTITIES];
-extern bool hasVelocity[MAX_ENTITIES];
-extern bool hasInput[MAX_ENTITIES];
-extern bool hasTransform[MAX_ENTITIES];
-extern bool hasAnimation[MAX_ENTITIES];
-extern bool hasHitbox[MAX_ENTITIES];
-extern bool hasSize[MAX_ENTITIES];
-extern bool hasTags[MAX_ENTITIES];
-extern bool hasDatas[MAX_ENTITIES];
 
 extern Entity player_entity;
 

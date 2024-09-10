@@ -6,6 +6,10 @@ static int soundCount = 0;
 
 // Initialisation du système audio
 int Init_SoundSystem() {
+    if (sounds != NULL) {
+        free(sounds);  // Libérer toute mémoire allouée avant de réinitialiser
+    }
+    
     sounds = (Sound*)malloc(sizeof(Sound) * MAX_SOUNDS);  // Allocation dynamique de l'espace pour les sons
     if (!sounds) {
         printf("Error: Unable to allocate memory for sounds.\n");
@@ -15,6 +19,7 @@ int Init_SoundSystem() {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
         printf("Failed to initialize SDL_mixer: %s\n", Mix_GetError());
         free(sounds);
+        sounds = NULL;
         return -1;
     }
 
@@ -148,9 +153,9 @@ int ResumeSound(const char *name) {
 // Libérer les ressources et fermer le système de son
 void Close_SoundSystem() {
     for (int i = 0; i < soundCount; ++i) {
-        if (sounds[i].type == SOUND_TYPE_CHUNK) {
+        if (sounds[i].type == SOUND_TYPE_CHUNK && sounds[i].audioData.chunk) {
             Mix_FreeChunk(sounds[i].audioData.chunk);
-        } else if (sounds[i].type == SOUND_TYPE_MUSIC) {
+        } else if (sounds[i].type == SOUND_TYPE_MUSIC && sounds[i].audioData.music) {
             Mix_FreeMusic(sounds[i].audioData.music);
         }
     }

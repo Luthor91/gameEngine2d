@@ -1,9 +1,9 @@
 #include "../include/tag_component.h"
 #include "../../Systems/include/event_system.h"
 
-static TagComponent tagComponents[MAX_ENTITIES];
+static TagComponent tagComponents[MAX_ENTITIES] = {0};
 
-static int findTagIndex(TagComponent* tagComp, const char* tag) {
+int findTagIndex(TagComponent* tagComp, const char* tag) {
     for (int i = 0; i < tagComp->tagCount; ++i) {
         if (strcmp(tagComp->tags[i], tag) == 0) {
             return i;

@@ -32,6 +32,8 @@ typedef struct TimerData {
 // Fonction pour initialiser le système de timers
 TimerData* TimerData_Init(const char* name, Entity entity);
 
+void TimerData_Free(TimerData* timerData);
+
 // Fonction pour ajouter un composant Timer à une entité
 void addTimerComponent(Entity entity, const char* name, float duration, bool repeat);
 

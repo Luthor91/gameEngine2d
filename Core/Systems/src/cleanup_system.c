@@ -1,10 +1,10 @@
 #include "../include/cleanup_system.h"
 #include <stdio.h>
 
-static CleanupFunction cleanupFunctions[MAX_CLEANUP_FUNCTIONS];
+static CleanupFunction cleanupFunctions[MAX_CLEANUP_FUNCTIONS] = {0};
 static int cleanupFunctionCount = 0;
 
-static Entity outOfBoundsEntities[MAX_ENTITIES];
+static Entity outOfBoundsEntities[MAX_ENTITIES] = {0};
 static int outOfBoundsEntityCount = 0;
 
 void registerCleanupFunction(CleanupFunction func) {

@@ -5,6 +5,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include "Globals/include/globals.h"
+
 #include "Entities/include/entity.h"
 
 #include "Utils/include/init_utils.h"
@@ -33,9 +35,5 @@
 #include "Systems/include/sound_system.h"
 #include "Systems/include/particle_system.h"
 #include "Systems/include/cleanup_system.h"
-
-#include "Globals/include/globals.h"
-
-//#include "Managers/include/event_manager.h"
 
 #endif

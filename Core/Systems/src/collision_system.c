@@ -18,6 +18,13 @@ CollisionData* CollisionData_Init(Entity entity1, Entity entity2) {
     return collider;
 }
 
+// Fonction pour libérer les données de collision
+void CollisionData_Free(CollisionData* colliderData) {
+    if (colliderData != NULL) {
+        free(colliderData);
+    }
+}
+
 // Fonction pour mettre à jour le système de collision
 void updateCollisionSystem() {
     // Obtenez l'index pour le type d'événement de collision
@@ -48,6 +55,9 @@ void updateCollisionSystem() {
 
                 // Émettez l'événement
                 emitEvent(collisionEvent);
+
+                // Libérer les données de collision après émission de l'événement
+                CollisionData_Free(collisionEvent.data);
             }
         }
     }
@@ -55,7 +65,6 @@ void updateCollisionSystem() {
 
 // Fonction pour vérifier la collision entre deux entités
 bool checkCollision(Entity entity1, Entity entity2) {
-
     HitboxComponent* hitbox1 = getHitboxComponent(entity1);
     HitboxComponent* hitbox2 = getHitboxComponent(entity2);
 
@@ -70,7 +79,6 @@ bool checkCollision(Entity entity1, Entity entity2) {
     if (!hitbox1->is_active || !hitbox2->is_active) {
         return false;
     }
-    
 
     // Calculer les positions des hitboxes
     float leftA = pos1->x + hitbox1->x;

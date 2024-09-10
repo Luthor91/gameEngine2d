@@ -1,6 +1,6 @@
 #include "../include/size_component.h"
 
-static SizeComponent sizeComponents[MAX_ENTITIES];
+static SizeComponent sizeComponents[MAX_ENTITIES] = {0};
 
 // Fonction pour ajouter un composant Size à une entité
 void addSizeComponent(Entity entity, SizeComponent size) {

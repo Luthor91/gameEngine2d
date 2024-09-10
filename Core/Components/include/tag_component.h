@@ -17,7 +17,7 @@ typedef struct TagComponent {
 
 // Fonctions pour gérer les tags
 
-static int findTagIndex(TagComponent* tagComp, const char* tag);
+int findTagIndex(TagComponent* tagComp, const char* tag);
 void addTagComponent(Entity entity, TagComponent tagComponent);
 TagComponent* getTagComponent(Entity entity);
 const char* getFirstTag(Entity entity);

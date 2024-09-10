@@ -49,6 +49,10 @@
         "math.h": "c",
         "globals.h": "c",
         "string.h": "c",
-        "init_utils.h": "c"
+        "init_utils.h": "c",
+        "stdbool.h": "c",
+        "data_component.h": "c",
+        "constants.h": "c",
+        "stdlib.h": "c"
     }
 }

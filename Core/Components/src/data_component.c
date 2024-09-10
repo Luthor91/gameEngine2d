@@ -1,12 +1,10 @@
 #include "../include/data_component.h"
-#include <string.h>
-#include <stdio.h>
 
 // Table des composants de données pour les entités (ici un tableau statique pour la simplicité)
 static DataComponent dataComponents[MAX_ENTITIES] = { [0 ... MAX_ENTITIES-1] = DATA_COMPONENT_DEFAULT };
 
 // Tableau pour les types de données dynamiques
-static DynamicDataType dynamicTypes[DATA_MAX_DYNAMIC_TYPE];
+static DynamicDataType dynamicTypes[DATA_MAX_DYNAMIC_TYPE] = {0}; // Initialisation complète avec zéro
 static int dynamicTypeCount = 0;
 
 // Fonction pour obtenir le DataComponent d'une entité

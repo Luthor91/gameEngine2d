@@ -17,6 +17,8 @@ void initCollisionSystem();
 
 CollisionData* CollisionData_Init(Entity entity1, Entity entity2);
 
+void CollisionData_Free(CollisionData* colliderData);
+
 // Fonction pour mettre à jour le système de collision
 void updateCollisionSystem();
 

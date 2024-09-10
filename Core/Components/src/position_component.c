@@ -1,6 +1,6 @@
 #include "../include/position_component.h"
 
-static PositionComponent positionComponents[MAX_ENTITIES];
+static PositionComponent positionComponents[MAX_ENTITIES] = {0};
 
 // Fonction pour ajouter un composant Sprite à une entité
 void addPositionComponent(Entity entity, PositionComponent position) {

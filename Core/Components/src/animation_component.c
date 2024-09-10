@@ -1,13 +1,15 @@
 #include "../include/animation_component.h"
 
-static AnimationComponent animationComponents[MAX_ENTITIES];
+static AnimationComponent animationComponents[MAX_ENTITIES] = { ANIMATION_ZERO };
 
 // Fonction pour ajouter un AnimationComponent à une entité
 void addAnimationComponent(Entity entity, AnimationComponent animation) {
-    if (entity < MAX_ENTITIES) {
-        animationComponents[entity] = animation;
-        hasAnimation[entity] = true;
+    if (entity >= MAX_ENTITIES) {
+        fprintf(stderr, "Erreur: entité %d hors des limites\n", entity);
+        return;
     }
+    animationComponents[entity] = animation;
+    hasAnimation[entity] = true;
 }
 
 // Fonction pour obtenir un AnimationComponent pour une entité

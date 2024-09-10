@@ -1,6 +1,6 @@
 #include "../include/sprite_component.h"
 
-static SpriteComponent spriteComponents[MAX_ENTITIES];
+static SpriteComponent spriteComponents[MAX_ENTITIES] = {0};
 
 // Fonction pour ajouter un composant Sprite à une entité
 void addSpriteComponent(Entity entity, SpriteComponent sprite) {

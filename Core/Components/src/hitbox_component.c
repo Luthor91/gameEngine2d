@@ -1,6 +1,6 @@
 #include "../include/hitbox_component.h"
 
-static HitboxComponent hitboxComponents[MAX_ENTITIES];
+static HitboxComponent hitboxComponents[MAX_ENTITIES] = {0};
 
 void addHitboxComponent(Entity entity, HitboxComponent hitbox) {
     if (entity >= 0 && entity < MAX_ENTITIES) {
