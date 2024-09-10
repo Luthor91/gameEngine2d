@@ -332,3 +332,11 @@ EventType getEventType(const char* eventName) {
     }
     return EVENT_NOT_FOUND;
 }
+
+// Fonction qui vérifie si le nom d'un événement correspond à une chaîne donnée
+bool isEventName(Event event, const char* name) {
+    if (strncmp(event.name, name, sizeof(event.name)) == 0) {
+        return true;
+    }
+    return false;
+}

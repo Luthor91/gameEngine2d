@@ -6,6 +6,13 @@
 #include <math.h>
 #include "../../Entities/include/entity.h"
 
+#define DATA_COMPONENT_DEFAULT {{0}}
+#define DATA_INVALID_VALUE -99999.99f
+#define DATA_MAX_DYNAMIC_TYPE 128
+
+#define DATA_TYPE_LIST \
+
+
 // Génération de l'énumération DataType avec le préprocesseur
 typedef enum DataType {
     #define X(name) name,

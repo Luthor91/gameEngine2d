@@ -118,9 +118,10 @@ int main(int argc, char* argv[]) {
     initParticleEmitter("Barrel", 256, particle_texture_barrel, 0, 0, 4.0f, 4.0f);
 
     // Lancement du jeu
-    changeState(STATE_PLAYING);
+    changeState(STATE_PLAYING); 
     while (current_state != STATE_EXIT) {       
         handleState();
+        printf("tst\n");
     }
 
     return 0;
