@@ -179,7 +179,7 @@ void updateEvent() {
 
     static Uint32 lastLeftClickTime = 0;
     static Uint32 lastRightClickTime = 0;
-    static Uint32 lastMiddleClickTime = 0;
+    Uint32 lastMiddleClickTime = 0;
     static const Uint32 clickThreshold = 100;
 
     while (SDL_PollEvent(&sdlEvent)) {

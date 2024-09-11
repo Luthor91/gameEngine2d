@@ -6,7 +6,6 @@
 #include <SDL2/SDL_image.h>
 
 #include "Globals/include/globals.h"
-#include "Globals/include/constants.h"
 
 #include "Entities/include/entity.h"
 
