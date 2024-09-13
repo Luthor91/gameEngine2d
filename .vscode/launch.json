@@ -3,7 +3,7 @@
     "configurations": [
         
         {
-            "name": "Build and Run l_td",
+            "name": "Build and Run td",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/main", // Remplacez par le chemin vers l'exécutable généré
@@ -20,7 +20,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "Build l_td",
+            "preLaunchTask": "Build td",
             "miDebuggerPath": "/usr/bin/gdb", // Chemin vers gdb si besoin de spécifier
             "logging": {
                 "engineLogging": false,

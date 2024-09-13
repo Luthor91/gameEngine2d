@@ -4,7 +4,7 @@
 int main(int argc, char* argv[]) {
     Init_All();
 
-    registerCleanupFunction(cleanupOutOfBoundsEntities);
+    //registerCleanupFunction(cleanupOutOfBoundsEntities);
 
     EventType EVENT_LEFT_MOUSECLICK = getEventType("EVENT_LEFT_MOUSECLICK");
     EventType EVENT_LEVEL_UP = getEventType("EVENT_LEVEL_UP");
@@ -121,7 +121,6 @@ int main(int argc, char* argv[]) {
     changeState(STATE_PLAYING); 
     while (current_state != STATE_EXIT) {       
         handleState();
-        printf("tst\n");
     }
 
     return 0;

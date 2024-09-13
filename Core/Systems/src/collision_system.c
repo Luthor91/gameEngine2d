@@ -22,6 +22,7 @@ CollisionData* CollisionData_Init(Entity entity1, Entity entity2) {
 void CollisionData_Free(CollisionData* colliderData) {
     if (colliderData != NULL) {
         free(colliderData);
+        colliderData = NULL;
     }
 }
 

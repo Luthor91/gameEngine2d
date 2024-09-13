@@ -56,9 +56,9 @@ void deactivateEmitter(const char* name);
 void freeParticleEmitter(ParticleEmitter* emitter);
 void instanciateParticleEmitter(const char* sourceName);
 
-void freeParticleTextures(Particle* particles, int count);
+void freeParticleTextures();
 // Fonction pour libérer les ressources des émetteurs de particules
-void freeParticleEmitters(ParticleEmitter* emitters, int emitterCount);
+void freeParticleEmitters();
 
 
 #endif  // PARTICLE_SYSTEM_H

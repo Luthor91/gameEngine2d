@@ -228,7 +228,7 @@ void explodeBarrel(Entity barrel) {
         }
     }
 
-    destroyEntity(barrel);
+    disableComponentEntity(barrel);
 }
 
 // Effet lvl 7

@@ -32,32 +32,27 @@ void initParticleEmitter(const char* name, int particleCount, SDL_Texture* textu
     int textureWidth, textureHeight;
     SDL_QueryTexture(texture, NULL, NULL, &textureWidth, &textureHeight);
 
-    for (int i = 0; i < MAX_PARTICLES; i++) {
+    for (int i = 0; i < emitter->particleCount; i++) {
         Particle* particle = &emitter->particles[i];
-        if (i < emitter->particleCount) {
-            particle->texture = texture;
-            particle->srcRect = (SDL_Rect){0, 0, textureWidth, textureHeight};
+        particle->texture = texture;
+        particle->srcRect = (SDL_Rect){0, 0, textureWidth, textureHeight};
 
-            particle->position.x = x;
-            particle->position.y = y;
+        particle->position.x = x;
+        particle->position.y = y;
 
-            // Ajustement de l'angle selon la spreadness
-            float angleRange = spreadness * 180.0f; // Spreadness définit la largeur du cône (en degrés)
-            float angleDegrees = (rand() / (float)RAND_MAX) * angleRange - (angleRange / 2); // Centre autour de 0 degré
-            float angleRadians = angleDegrees * (M_PI / 180.0f);
+        // Ajustement de l'angle selon la spreadness
+        float angleRange = spreadness * 180.0f; // Spreadness définit la largeur du cône (en degrés)
+        float angleDegrees = (rand() / (float)RAND_MAX) * angleRange - (angleRange / 2); // Centre autour de 0 degré
+        float angleRadians = angleDegrees * (M_PI / 180.0f);
 
-            float speed = 100.0f * expansionRate;
-            particle->velocity.x = speed * cosf(angleRadians);
-            particle->velocity.y = speed * sinf(angleRadians);
+        float speed = 100.0f * expansionRate;
+        particle->velocity.x = speed * cosf(angleRadians);
+        particle->velocity.y = speed * sinf(angleRadians);
 
-            particle->lifetime = MAX_PARTICLE_LIFETIME;
-            particle->current_lifetime = MAX_PARTICLE_LIFETIME; // Initialisation de current_lifetime
-            particle->size = 1.0f;
-            particle->active = 1;
-            
-        } else {
-            particle->active = 0;
-        }
+        particle->lifetime = MAX_PARTICLE_LIFETIME;
+        particle->current_lifetime = MAX_PARTICLE_LIFETIME; // Initialisation de current_lifetime
+        particle->size = 1.0f;
+        particle->active = 1;
     }
 }
 
@@ -93,10 +88,7 @@ void updateParticles(float deltaTime) {
         if (allParticlesInactive) {
             emitter->active = 0;
             activeEmitterCount--;
-            if (strcmp(emitter->name, "") == 0) {
-                emitter->initialized = 0;
-            }
-            
+            emitter->initialized = 0;
         }
     }
 }
@@ -177,14 +169,47 @@ void deactivateEmitter(const char* name) {
     }
 }
 
+// Fonction pour libérer les textures associées aux particules de tous les émetteurs actifs
+void freeParticleTextures() {
+    for (int i = 0; i < MAX_EMITTERS; i++) {
+        if (emitters[i].initialized) {
+            for (int j = 0; j < emitters[i].particleCount; j++) {
+                Particle* particle = &emitters[i].particles[j];
+                if (particle->texture != NULL) {
+                    SDL_DestroyTexture(particle->texture);
+                    particle->texture = NULL;
+                }
+            }
+        }
+    }
+}
+
 // Fonction pour libérer les ressources d'un émetteur de particules
 void freeParticleEmitter(ParticleEmitter* emitter) {
-    if (emitter->particles) {
-        //free(emitter->particles);
+    if (emitter == NULL) return;
+
+    // Libérer les textures des particules
+    for (int i = 0; i < emitter->particleCount; i++) {
+        Particle* particle = &emitter->particles[i];
+        if (particle->texture) {
+            SDL_DestroyTexture(particle->texture);
+            particle->texture = NULL;
+        }
     }
+
     emitter->particleCount = 0;
     emitter->active = 0;
+    emitter->initialized = 0;
     activeEmitterCount--;
+}
+
+// Fonction pour libérer tous les émetteurs et leurs ressources associées
+void freeParticleEmitters() {
+    for (int i = 0; i < MAX_EMITTERS; i++) {
+        if (emitters[i].initialized) {
+            freeParticleEmitter(&emitters[i]);
+        }
+    }
 }
 
 // Fonction pour copier un émetteur de particules sans nom
@@ -224,41 +249,21 @@ void instanciateParticleEmitter(const char* sourceName) {
     targetEmitter->position = sourceEmitter->position;
     targetEmitter->spreadness = sourceEmitter->spreadness;
     targetEmitter->expansionRate = sourceEmitter->expansionRate;
-
-    // Copier les particules
-    for (int i = 0; i < MAX_PARTICLES; i++) {
-        if (i < targetEmitter->particleCount) {
-            targetEmitter->particles[i] = sourceEmitter->particles[i]; // Copier les données de particule
-        } else {
-            targetEmitter->particles[i].active = 0; // Marquer les particules excédentaires comme inactives
-        }
-    }
-
-    // Activer le nouvel émetteur
-    targetEmitter->active = 1;
+    targetEmitter->active = 0;
     targetEmitter->initialized = 1;
     activeEmitterCount++;
-}
 
-// Fonction pour libérer les textures des particules
-void freeParticleTextures(Particle* particles, int count) {
-    for (int i = 0; i < count; i++) {
-        if (particles[i].active && particles[i].texture != NULL) {
-            SDL_DestroyTexture(particles[i].texture);
-            particles[i].texture = NULL;
-        }
-    }
-}
+    for (int i = 0; i < targetEmitter->particleCount; i++) {
+        Particle* sourceParticle = &sourceEmitter->particles[i];
+        Particle* targetParticle = &targetEmitter->particles[i];
 
-// Fonction pour libérer les ressources des émetteurs de particules
-void freeParticleEmitters(ParticleEmitter* emitters, int emitterCount) {
-    for (int i = 0; i < emitterCount; i++) {
-        ParticleEmitter* emitter = &emitters[i];
-        if (emitter->initialized) {
-            // Libérer les textures des particules associées à cet émetteur
-            freeParticleTextures(emitter->particles, emitter->particleCount);
-            // Réinitialiser les champs de l'émetteur
-            emitter->initialized = 0;
-        }
+        targetParticle->texture = sourceParticle->texture;
+        targetParticle->srcRect = sourceParticle->srcRect;
+        targetParticle->position = sourceParticle->position;
+        targetParticle->velocity = sourceParticle->velocity;
+        targetParticle->lifetime = sourceParticle->lifetime;
+        targetParticle->current_lifetime = targetParticle->lifetime;
+        targetParticle->size = sourceParticle->size;
+        targetParticle->active = sourceParticle->active;
     }
 }

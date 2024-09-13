@@ -2,15 +2,15 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build l_td",
+            "label": "Build td",
             "type": "shell",
-            "command": "make l_td",
+            "command": "make td",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "problemMatcher": ["$gcc"],
-            "detail": "Generated task to build l_td using make."
+            "detail": "Generated task to build td using make."
         }
     ]
 }

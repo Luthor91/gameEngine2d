@@ -36,9 +36,8 @@ void initializeEventTypes() {
     int predefinedEventCount = sizeof(predefinedEventNames) / sizeof(predefinedEventNames[0]);
 
     for (int i = 0; i < predefinedEventCount; ++i) {
-        // Sécuriser la copie de chaîne
-        strncpy(eventTypes[eventTypeCount].name, predefinedEventNames[i], sizeof(eventTypes[eventTypeCount].name) - 1);
-        eventTypes[eventTypeCount].name[sizeof(eventTypes[eventTypeCount].name) - 1] = '\0';
+        strncpy(eventTypes[eventTypeCount].name, predefinedEventNames[i], MAX_EVENT_NAME_LENGTH - 1);
+        eventTypes[eventTypeCount].name[MAX_EVENT_NAME_LENGTH - 1] = '\0';
         eventTypes[eventTypeCount].index = eventTypeCount;
         eventTypeCount++;
     }
@@ -159,13 +158,14 @@ void processEvents() {
             }
         }
 
-        // Libérer les données associées à l'événement si elles ont été allouées dynamiquement
-        if (event.data != NULL) {
-            free(event.data);
-            event.data = NULL;
-        }
+            // Libérer les données associées à l'événement si elles ont été allouées dynamiquement
+            if (event.data != NULL) {
+                printf("Freeing event.data at address %p\n", event.data);
+                free(event.data);
+                event.data = NULL;
+            }
 
-        eventQueue[i] = (Event){0};  // Réinitialiser l'événement après traitement
+        eventQueue[i] = (Event){0};  // Réinitialiser l'événement après traitement      
     }
     eventQueueCount = 0;
 }
@@ -182,17 +182,17 @@ void updateEvent() {
     Uint32 lastMiddleClickTime = 0;
     static const Uint32 clickThreshold = 100;
 
+    int leftMouseClickType = getEventTypeIndex("EVENT_LEFT_MOUSECLICK");
+    int rightMouseClickType = getEventTypeIndex("EVENT_RIGHT_MOUSECLICK");
+    int middleMouseClickType = getEventTypeIndex("EVENT_MIDDLE_MOUSECLICK");
+    int leftMouseHeldType = getEventTypeIndex("EVENT_LEFT_MOUSEHELD");
+    int rightMouseHeldType = getEventTypeIndex("EVENT_RIGHT_MOUSEHELD");
+    int middleMouseHeldType = getEventTypeIndex("EVENT_MIDDLE_MOUSEHELD");
+
     while (SDL_PollEvent(&sdlEvent)) {
         if (sdlEvent.type == SDL_QUIT) {
             changeState(STATE_EXIT);
         }
-
-        int leftMouseClickType = getEventTypeIndex("EVENT_LEFT_MOUSECLICK");
-        int rightMouseClickType = getEventTypeIndex("EVENT_RIGHT_MOUSECLICK");
-        int middleMouseClickType = getEventTypeIndex("EVENT_MIDDLE_MOUSECLICK");
-        int leftMouseHeldType = getEventTypeIndex("EVENT_LEFT_MOUSEHELD");
-        int rightMouseHeldType = getEventTypeIndex("EVENT_RIGHT_MOUSEHELD");
-        int middleMouseHeldType = getEventTypeIndex("EVENT_MIDDLE_MOUSEHELD");
 
         Uint32 currentTime = SDL_GetTicks(); 
 
@@ -244,6 +244,7 @@ void updateEvent() {
 
             emitEvent(event);
             free(cursor_position);  // Libérer la mémoire après utilisation
+            cursor_position = NULL;
         } else if (sdlEvent.type == SDL_MOUSEBUTTONUP) {
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
                 leftMouseHeld = false;
@@ -272,6 +273,7 @@ void updateEvent() {
 
             emitEvent(event);
             free(cursor_position);  // Libérer après utilisation
+            cursor_position = NULL;
         }
 
         if (rightMouseHeld) {
@@ -291,6 +293,7 @@ void updateEvent() {
 
             emitEvent(event);
             free(cursor_position);  // Libérer après utilisation
+            cursor_position = NULL;
         }
 
         if (middleMouseHeld) {
@@ -310,6 +313,7 @@ void updateEvent() {
 
             emitEvent(event);
             free(cursor_position);  // Libérer après utilisation
+            cursor_position = NULL;
         }
     }
 }

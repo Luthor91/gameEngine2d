@@ -50,7 +50,7 @@ void uponSpawnEnemies(Event event) {
         if (count + i >= MAX_ENEMIES_SCREEN) return;
         Entity enemy = createEntity();
         if (enemy == INVALID_ENTITY_ID) continue;
-        
+        printf("enemy : %d\n", enemy);
         float speed_multiplier = 5.0f * (getDataValue(player_entity, DATA_DIFFICULTY) + 1);
         int edge = rand() % 4, x = 0, y = 0;
 

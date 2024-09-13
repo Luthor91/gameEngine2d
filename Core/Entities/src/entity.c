@@ -170,6 +170,10 @@ bool isEntityValid(Entity entity) {
 }
 
 bool isEntityEnabled(Entity entity) {
+    if (!isEntityValid(entity)) {
+        return false;
+    }
+    
     return entityStates[entity];
 }
 

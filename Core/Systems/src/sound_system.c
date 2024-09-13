@@ -8,6 +8,7 @@ static int soundCount = 0;
 int Init_SoundSystem() {
     if (sounds != NULL) {
         free(sounds);  // Libérer toute mémoire allouée avant de réinitialiser
+        sounds = NULL;
     }
     
     sounds = (Sound*)malloc(sizeof(Sound) * MAX_SOUNDS);  // Allocation dynamique de l'espace pour les sons
