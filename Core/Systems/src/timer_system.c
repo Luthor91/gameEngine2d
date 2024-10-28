@@ -24,7 +24,8 @@ TimerData* TimerData_Init(const char* name, Entity entity) {
     timer->name = (char*)malloc(MAX_TIMER_NAME_LENGTH * sizeof(char));
     if (timer->name == NULL) {
         printf("Memory allocation failed for timer name\n");
-        free(timer);  // Libérer la mémoire allouée pour TimerData
+        free(timer);
+        timer = NULL;
         return NULL;
     }
 
@@ -194,6 +195,10 @@ bool CheckTimerName(Event event, const char* name) {
     if (!name) {
         printf("Error: Comparison name is NULL\n");
         return false;
+    }
+
+    if (timer_data->name && name) {
+        printf("Comparing timer_data->name='%s' with name='%s'\n", timer_data->name, name);
     }
 
     return strcmp(timer_data->name, name) == 0;

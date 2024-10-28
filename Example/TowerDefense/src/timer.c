@@ -2,6 +2,7 @@
 
 void uponReloading(Event event) {
     if (!CheckTimerName(event, "reloading")) return;
+    printf("uponReloading\n");
     setDataValue(
         player_entity, 
         getDataType("DATA_CAN_SHOOT"), 
@@ -11,6 +12,7 @@ void uponReloading(Event event) {
 
 void uponInvincibilityFinished(Event event) {
     if (!CheckTimerName(event, "immunity")) return;
+    printf("uponInvincibilityFinished\n");
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity player = timer_data->entity;
@@ -19,6 +21,7 @@ void uponInvincibilityFinished(Event event) {
 
 void uponIncreasingDifficulty(Event event) {
     if (!CheckTimerName(event, "difficulty_increase")) return;  
+    printf("uponIncreasingDifficulty\n");
 
     int DATA_DIFFICULTY = getDataType("DATA_DIFFICULTY");
 
@@ -34,7 +37,8 @@ void uponIncreasingDifficulty(Event event) {
 
 void uponSpawnEnemies(Event event) {
     if (!CheckTimerName(event, "spawn_enemies")) return;
-    
+    printf("uponSpawnEnemies\n");
+
     int DATA_DIFFICULTY = getDataType("DATA_DIFFICULTY");
     int DATA_HEALTH = getDataType("DATA_HEALTH");
     int DATA_MAX_HEALTH = getDataType("DATA_MAX_HEALTH");
@@ -50,7 +54,7 @@ void uponSpawnEnemies(Event event) {
         if (count + i >= MAX_ENEMIES_SCREEN) return;
         Entity enemy = createEntity();
         if (enemy == INVALID_ENTITY_ID) continue;
-        printf("enemy : %d\n", enemy);
+        
         float speed_multiplier = 5.0f * (getDataValue(player_entity, DATA_DIFFICULTY) + 1);
         int edge = rand() % 4, x = 0, y = 0;
 
@@ -104,6 +108,7 @@ void uponSpawnEnemies(Event event) {
 
 void uponDispawnTrap(Event event) {  
     if (!CheckTimerName(event, "dispawn_trap")) return;
+    printf("uponDispawnTrap\n");
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity trap = timer_data->entity;
@@ -112,11 +117,14 @@ void uponDispawnTrap(Event event) {
 
 void uponSpawnBarrel(Event event) {
     if (!CheckTimerName(event, "spawn_barrel")) return;
+    printf("uponSpawnBarrel\n");
+
     summonBarrel();
 }
 
 void uponDispawnBarrel(Event event) {  
     if (!CheckTimerName(event, "dispawn_barrel")) return;
+    printf("uponDispawnBarrel\n");
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity barrel = timer_data->entity;
@@ -127,12 +135,14 @@ void uponDispawnBarrel(Event event) {
 
 void uponSpawnPoison(Event event) {
     if (!CheckTimerName(event, "spawn_poison")) return;
-    printf("spawn poison\n");
+    printf("uponSpawnPoison\n");
+
     summonPoison();
 }
 
 void uponApplyingPoisonTicks(Event event) {
     if (!CheckTimerName(event, "apply_poison_tick")) return;
+    printf("uponApplyingPoisonTicks\n");
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity poison = timer_data->entity;
@@ -202,7 +212,7 @@ void uponApplyingPoisonTicks(Event event) {
 
 void uponDispawnBait(Event event) {  
     if (!CheckTimerName(event, "dispawn_bait")) return;
-    printf("dispawn bait\n");
+    printf("uponDispawnBait\n");
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity bait = timer_data->entity;

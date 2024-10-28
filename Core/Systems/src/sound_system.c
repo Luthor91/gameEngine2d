@@ -7,7 +7,7 @@ static int soundCount = 0;
 // Initialisation du système audio
 int Init_SoundSystem() {
     if (sounds != NULL) {
-        free(sounds);  // Libérer toute mémoire allouée avant de réinitialiser
+        free(sounds);
         sounds = NULL;
     }
     

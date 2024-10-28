@@ -158,14 +158,17 @@ void processEvents() {
             }
         }
 
-            // Libérer les données associées à l'événement si elles ont été allouées dynamiquement
-            if (event.data != NULL) {
-                printf("Freeing event.data at address %p\n", event.data);
-                free(event.data);
-                event.data = NULL;
-            }
+        // Libérer les données associées à l'événement si elles ont été allouées dynamiquement
+        // ERROR : free(): double free detected in tcache 2
+        if (event.data != NULL) {
+            printf("Freeing event.data at address %p\n", event.data);
+            printf("Name of event : %s\n", event.name);
+            free(event.data);
+            printf("Is freed successfully\n");
+            event.data = NULL;
+        }
 
-        eventQueue[i] = (Event){0};  // Réinitialiser l'événement après traitement      
+        eventQueue[i] = (Event){0};  // Réinitialiser l'événement après traitement
     }
     eventQueueCount = 0;
 }
@@ -243,8 +246,10 @@ void updateEvent() {
             }
 
             emitEvent(event);
-            free(cursor_position);  // Libérer la mémoire après utilisation
-            cursor_position = NULL;
+            if(cursor_position != NULL) {
+                free(cursor_position);
+                cursor_position = NULL;
+            }
         } else if (sdlEvent.type == SDL_MOUSEBUTTONUP) {
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
                 leftMouseHeld = false;
@@ -272,8 +277,10 @@ void updateEvent() {
             event.data = cursor_position; 
 
             emitEvent(event);
-            free(cursor_position);  // Libérer après utilisation
-            cursor_position = NULL;
+            if(cursor_position != NULL) {
+                free(cursor_position);
+                cursor_position = NULL;
+            }
         }
 
         if (rightMouseHeld) {
@@ -292,8 +299,10 @@ void updateEvent() {
             event.data = cursor_position; 
 
             emitEvent(event);
-            free(cursor_position);  // Libérer après utilisation
-            cursor_position = NULL;
+            if(cursor_position != NULL) {
+                free(cursor_position);
+                cursor_position = NULL;
+            }
         }
 
         if (middleMouseHeld) {
@@ -312,8 +321,10 @@ void updateEvent() {
             event.data = cursor_position; 
 
             emitEvent(event);
-            free(cursor_position);  // Libérer après utilisation
-            cursor_position = NULL;
+            if(cursor_position != NULL) {
+                free(cursor_position);
+                cursor_position = NULL;
+            }
         }
     }
 }

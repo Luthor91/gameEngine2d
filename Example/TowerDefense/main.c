@@ -115,7 +115,7 @@ int main(int argc, char* argv[]) {
     initParticleEmitter("Explosion", 128, particle_texture_explosion, 0, 0, 2.0f, 2.0f);
     initParticleEmitter("Poison", 128, particle_texture_poison, 0, 0, 2.0f, 2.0f);
     initParticleEmitter("Trap", 128, particle_texture_trap, 0, 0, 2.0f, 2.0f);
-    initParticleEmitter("Barrel", 256, particle_texture_barrel, 0, 0, 4.0f, 4.0f);
+    initParticleEmitter("Barrel", 128, particle_texture_barrel, 0, 0, 4.0f, 4.0f);
 
     // Lancement du jeu
     changeState(STATE_PLAYING); 
