@@ -5,7 +5,7 @@ static AnimationComponent animationComponents[MAX_ENTITIES] = { ANIMATION_ZERO }
 // Fonction pour ajouter un AnimationComponent à une entité
 void addAnimationComponent(Entity entity, AnimationComponent animation) {
     if (entity >= MAX_ENTITIES) {
-        fprintf(stderr, "Erreur: entité %d hors des limites\n", entity);
+        fprintf(stderr, "Erreur: entité %ld hors des limites\n", entity);
         return;
     }
     animationComponents[entity] = animation;

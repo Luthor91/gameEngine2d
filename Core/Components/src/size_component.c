@@ -8,7 +8,7 @@ void addSizeComponent(Entity entity, SizeComponent size) {
         sizeComponents[entity] = size;
         hasSize[entity] = true;
     } else {
-        printf("Error: Invalid entity ID %d\n", entity);
+        printf("Error: Invalid entity ID %ld\n", entity);
     }
 }
 

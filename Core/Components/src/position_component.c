@@ -28,6 +28,8 @@ PositionComponent* getCenterPosition(Entity entity) {
             // Initialiser les champs de la structure
             center->x = position.x + size.width / 2.0f;
             center->y = position.y + size.height / 2.0f;
+        } else {
+            return NULL;
         }
         return center;
     }

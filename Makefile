@@ -1,27 +1,27 @@
 # Définition des variables
 CC := gcc
-OPTS := -fPIC -g
+# A voir pour rajouter -fPIC et -Wall
+OPTS :=  -g -m64
 CFLAGS := $(OPTS) $(L_SDL2)
 L_SDL2 := -I/usr/include/SDL2 
-L_LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm -Wl,--no-relax
+L_LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm -mcmodel=medium -Wl,--no-relax 
 
 # Windows-specific flags (non utilisés sur Linux)
 W_SDL2 := -I"C:/msys64/mingw64/include/SDL2"
 W_LDFLAGS := -L"C:/msys64/mingw64/lib" -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -lm 
 
 # Détection des fichiers sources
-Components := $(wildcard Core/Components/src/*.c)
-Entities := $(wildcard Core/Entities/src/*.c)
-Global := $(wildcard Core/Global/src/*.c)
-Systems := $(wildcard Core/Systems/src/*.c)
-Utils := $(wildcard Core/Utils/src/*.c)
 Globals := $(wildcard Core/Globals/src/*.c)
+Engine := $(wildcard Core/Engine/src/*.c)
+Utils := $(wildcard Core/Utils/src/*.c)
+Systems := $(wildcard Core/Systems/src/*.c)
+Entities := $(wildcard Core/Entities/src/*.c)
+Components := $(wildcard Core/Components/src/*.c)
 
-AllFiles := $(Components) $(Entities) $(Global) $(Systems) $(Utils) $(Globals)
+AllFiles := $(Globals) $(Engine) $(Utils) $(Systems) $(Entities) $(Components)
 
 TD_Files := $(wildcard Example/TowerDefense/src/*.c)
 
-# Cibles pour installation des dépendances
 ##########
 # INSTALL
 ##########
@@ -42,7 +42,7 @@ ainstall:
 # BUILD
 ##########
 
-main:
+test:
 	$(CC) $(CFLAGS) -o main Core/main.c $(AllFiles) $(L_LDFLAGS) && ./main
 
 td:

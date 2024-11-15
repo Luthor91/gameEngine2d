@@ -1,5 +1,4 @@
-#ifndef INIT_UTILS_H
-#define INIT_UTILS_H
+#ifndef INIT_ENGINE_H
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -7,16 +6,14 @@
 #include <SDL2/SDL_mixer.h>
 #include <stdio.h>
 
+#include "../../Globals/include/globals.h"
 #include "../../Systems/include/game_system.h"
-#include "time_utils.h"
+#include "../../Utils/include/time_utils.h"
 
 #define MAX_LINE_LENGTH 1024
 
 int Init_All();
-void Init_Env(const char *filename);
 int Init_Dependancies();
-void Init_Global();
+int Init_entity_attributes();
 
-void Exit_All();
-
-#endif // INIT_UTILS_H
+#endif // INIT_ENGINE_H

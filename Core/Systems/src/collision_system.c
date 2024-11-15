@@ -48,17 +48,22 @@ void updateCollisionSystem() {
                 }
 
                 // Créez l'événement de collision
-                Event collisionEvent;
-                collisionEvent.type = EVENT_COLLIDE;
-                collisionEvent.data = colliderData;
-                strncpy(collisionEvent.name, "collision", sizeof(collisionEvent.name) - 1);
-                collisionEvent.name[sizeof(collisionEvent.name) - 1] = '\0';
+                Event event;
+                event.type = EVENT_COLLIDE;
+                event.data = (CollisionData*)malloc(sizeof(CollisionData));
+                if (event.data != NULL) {
+                    memcpy(event.data, colliderData, sizeof(CollisionData)); // Copier les données de colliderData
+                } else {
+                    free(event.data);
+                    event.data = NULL;
+                    continue;
+                }
+                strncpy(event.name, "collision", sizeof(event.name) - 1);
+                event.name[sizeof(event.name) - 1] = '\0';
 
                 // Émettez l'événement
-                emitEvent(collisionEvent);
+                emitEvent(event);
 
-                // Libérer les données de collision après émission de l'événement
-                CollisionData_Free(collisionEvent.data);
             }
         }
     }
@@ -73,7 +78,7 @@ bool checkCollision(Entity entity1, Entity entity2) {
     PositionComponent* pos2 = getPositionComponent(entity2);
 
     if (!hitbox1 || !hitbox2 || !pos1 || !pos2) {
-        printf("Error: Missing components for entities %d or %d\n", entity1, entity2);
+        printf("Error: Missing components for entities %ld or %ld\n", entity1, entity2);
         return false;
     }
 

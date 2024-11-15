@@ -53,6 +53,14 @@
         "stdbool.h": "c",
         "data_component.h": "c",
         "constants.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "init_engine.h": "c",
+        "sdl_ttf.h": "c",
+        "exit_engine.h": "c",
+        "time_utils.h": "c",
+        "string_utils.h": "c",
+        "ctype.h": "c",
+        "compare": "c",
+        "type_traits": "c"
     }
 }

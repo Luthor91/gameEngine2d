@@ -18,16 +18,16 @@ typedef struct GameGlobals {
 extern GameGlobals game;
 
 // Tableau pour stocker les états des entités
-extern bool entityStates[MAX_ENTITIES];
-extern bool hasSprite[MAX_ENTITIES];
-extern bool hasPosition[MAX_ENTITIES];
-extern bool hasVelocity[MAX_ENTITIES];
-extern bool hasInput[MAX_ENTITIES];
-extern bool hasTransform[MAX_ENTITIES];
-extern bool hasAnimation[MAX_ENTITIES];
-extern bool hasHitbox[MAX_ENTITIES];
-extern bool hasSize[MAX_ENTITIES];
-extern bool hasTags[MAX_ENTITIES];
-extern bool hasDatas[MAX_ENTITIES];
+extern bool *entityStates;
+extern bool *hasSprite;
+extern bool *hasPosition;
+extern bool *hasVelocity;
+extern bool *hasInput;
+extern bool *hasTransform;
+extern bool *hasAnimation;
+extern bool *hasHitbox;
+extern bool *hasSize;
+extern bool *hasTags;
+extern bool *hasDatas;
 
 #endif // GLOBALS_H

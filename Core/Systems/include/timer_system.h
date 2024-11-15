@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "../../Entities/include/entity.h"
 #include "../../Systems/include/event_system.h"
+#include "../../Utils/include/string_utils.h"
 
 // Limite de timers par entité
 #define MAX_TIMERS_PER_ENTITY 32

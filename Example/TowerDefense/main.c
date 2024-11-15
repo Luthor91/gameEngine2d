@@ -2,9 +2,14 @@
 #include "src/global.h"
 
 int main(int argc, char* argv[]) {
-    Init_All();
 
-    //registerCleanupFunction(cleanupOutOfBoundsEntities);
+    if (Init_All() == 0) {
+        printf("Main: ERROR INIT\n");
+    } else {
+        printf("Main: Success\n");
+    }
+
+    registerCleanupFunction(cleanupOutOfBoundsEntities);
 
     EventType EVENT_LEFT_MOUSECLICK = getEventType("EVENT_LEFT_MOUSECLICK");
     EventType EVENT_LEVEL_UP = getEventType("EVENT_LEVEL_UP");
@@ -94,16 +99,16 @@ int main(int argc, char* argv[]) {
     setDataValue(player_entity, DATA_CAN_SHOOT, 1.0f);
     setDataValue(player_entity, DATA_COUNT_SHOOT, 0.0f);
 
-    // Définition d'evènements supplémentaires
-    bindEvent(player_entity, SDL_BUTTON_LEFT, EVENT_LEFT_MOUSECLICK, "Shoot");
+    Event event_shoot;
+    event_shoot.type = EVENT_LEFT_MOUSECLICK;
+    event_shoot.data = "Shoot";
+    bindEvent(player_entity, SDL_BUTTON_LEFT, event_shoot);
+    
     addTimerComponent(player_entity, "difficulty_increase", 30.0f, true);
     addTimerComponent(player_entity, "spawn_enemies", 15.50f, true);
 
-    Event event_spawn_enemies;
-    event_spawn_enemies.type = EVENT_TIMER_EXPIRED;
+    Event event_spawn_enemies = Event_Create(EVENT_TIMER_EXPIRED, "spawn_enemies");
     event_spawn_enemies.data = TimerData_Init("spawn_enemies", background);
-    strncpy(event_spawn_enemies.name, "spawn_enemies", sizeof(event_spawn_enemies.name) - 1);
-    event_spawn_enemies.name[sizeof(event_spawn_enemies.name) - 1] = '\0';
     emitEvent(event_spawn_enemies);
 
     // Ajouts d'emitter de particules
@@ -122,6 +127,8 @@ int main(int argc, char* argv[]) {
     while (current_state != STATE_EXIT) {       
         handleState();
     }
+
+    Exit_All();
 
     return 0;
 }

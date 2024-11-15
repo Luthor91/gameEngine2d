@@ -1,7 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-typedef unsigned int Entity;
+typedef unsigned long Entity; // Pour garantir son intégrité sur des architectures 64 bits
 
 #include <stdbool.h>
 #include "../../Globals/include/globals.h"

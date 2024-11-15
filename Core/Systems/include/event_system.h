@@ -78,17 +78,17 @@ typedef struct EventListeners {
 // Structure pour stocker les bindings d'événements
 typedef struct EventBinding {
     SDL_Keycode key;
-    EventType eventType;
-    void* eventData;
+    Event event;
 } EventBinding;
 
 // Fonctions pour gérer les événements
-void initializeEventTypes();
+int Init_event_types();
+
 void addEventListener(EventType type, EventListener listener);
 void removeAllEvents(Entity entity);
 void removeEventListener(EventType type, EventListener listener);
 void emitEvent(Event event);
-void bindEvent(Entity entity, SDL_Keycode key, EventType eventType, void* eventData);
+void bindEvent(Entity entity, SDL_Keycode key, Event event);
 
 void processEvents();
 void updateEvent();  // Pour gérer les événements SDL et les convertir en événements internes
@@ -102,5 +102,8 @@ int getEventTypeIndex(const char* eventName);
 
 // Fonction qui vérifie si le nom d'un événement correspond à une chaîne donnée
 bool isEventName(Event event, const char* name);
+
+Event Event_Create(EventType type, const char* name);
+void EventData_Free(Event *event);
 
 #endif // EVENT_SYSTEM_H

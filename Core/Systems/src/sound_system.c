@@ -12,7 +12,7 @@ int Init_SoundSystem() {
     }
     
     sounds = (Sound*)malloc(sizeof(Sound) * MAX_SOUNDS);  // Allocation dynamique de l'espace pour les sons
-    if (!sounds) {
+    if (sounds == NULL) {
         printf("Error: Unable to allocate memory for sounds.\n");
         return -1;
     }

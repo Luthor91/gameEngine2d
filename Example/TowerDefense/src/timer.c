@@ -7,7 +7,7 @@ void uponReloading(Event event) {
         player_entity, 
         getDataType("DATA_CAN_SHOOT"), 
         1.0f
-    );    
+    );
 }
 
 void uponInvincibilityFinished(Event event) {

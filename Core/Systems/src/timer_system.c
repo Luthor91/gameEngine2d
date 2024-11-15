@@ -38,18 +38,6 @@ TimerData* TimerData_Init(const char* name, Entity entity) {
     return timer;
 }
 
-// Fonction pour libérer la mémoire allouée pour TimerData
-void TimerData_Free(TimerData* timerData) {
-    if (timerData != NULL) {
-        if (timerData->name != NULL) {
-            free(timerData->name);
-            timerData->name = NULL;
-        }
-        free(timerData);
-        timerData = NULL;
-    }
-}
-
 void addTimerComponent(Entity entity, const char* name, float duration, bool repeat) {
     if (entity >= MAX_ENTITIES) {
         printf("Error: Entity ID out of bounds.\n");
@@ -71,7 +59,7 @@ void addTimerComponent(Entity entity, const char* name, float duration, bool rep
         }
     }
 
-    printf("Error: No available timer slots for entity %u.\n", entity);
+    printf("Error: No available timer slots for entity %lu.\n", entity);
 }
 
 // Fonction pour mettre à jour tous les timers
@@ -87,15 +75,19 @@ void updateTimers(float deltaTime) {
                 // Vérifier si le timer a expiré
                 while (timer->elapsedTime >= timer->duration) {
                     // Émettre un événement de type EVENT_TIMER
-                    Event timerEvent;
-                    timerEvent.type = getEventType("EVENT_TIMER_EXPIRED");
-                    timerEvent.data = TimerData_Init(timer->name, entity);
-                    strncpy(timerEvent.name, "right_hold", sizeof(timerEvent.name) - 1);  // Nom par défaut "right_hold"
-                    timerEvent.name[sizeof(timerEvent.name) - 1] = '\0'; // Assure la terminaison de la chaîne
-                    emitEvent(timerEvent);
-
-                    // Libérer la mémoire allouée pour TimerData après émission de l'événement
-                    TimerData_Free(timerEvent.data);
+                    Event event;
+                    event.type = getEventType("EVENT_TIMER_EXPIRED");
+                    event.data = (TimerData*)malloc(sizeof(TimerData));
+                    if (event.data != NULL) {
+                        memcpy(event.data, TimerData_Init(timer->name, entity), sizeof(TimerData)); // Copier les données de colliderData
+                    } else {
+                        free(event.data);
+                        event.data = NULL;
+                        continue;
+                    }
+                    strncpy(event.name, "right_hold", sizeof(event.name) - 1);  // Nom par défaut "right_hold"
+                    event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
+                    emitEvent(event);
 
                     // Réinitialiser le timer
                     timer->elapsedTime -= timer->duration; // Réduire le temps écoulé par la durée du timer
@@ -180,26 +172,13 @@ bool CheckTimerName(Event event, const char* name) {
         return false;
     }
 
+    TimerComponent* timer_component = (TimerComponent*)event.data;
     TimerData* timer_data = (TimerData*)event.data;
-    if (!timer_data) {
-        printf("Error: TimerData is NULL\n");
+
+    // Vérification de validité ASCII de timer->name et timer_data->name
+    if (!isAsciiString(timer_component->name) || !isAsciiString(timer_data->name)) {
         return false;
     }
 
-    if (!timer_data->name) {
-        printf("Error: timer_data->name is NULL\n");
-        return false;
-    }
-
-    // Assurez-vous que name est non NULL et que la comparaison est possible
-    if (!name) {
-        printf("Error: Comparison name is NULL\n");
-        return false;
-    }
-
-    if (timer_data->name && name) {
-        printf("Comparing timer_data->name='%s' with name='%s'\n", timer_data->name, name);
-    }
-
-    return strcmp(timer_data->name, name) == 0;
+    return ((strcmp(timer_component->name, name) == 0) || (strcmp(timer_data->name, name) == 0));
 }

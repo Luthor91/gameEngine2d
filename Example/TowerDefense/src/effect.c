@@ -308,6 +308,10 @@ void adjustEnemyDirection(Entity enemy, PositionComponent bait_position) {
 // Utility
 void handle_damage_received(Entity entity, float health) { 
     Entity* ptr_entity = malloc(sizeof(Entity));
+    if (ptr_entity == NULL) {
+        return;
+    }
+    
     *ptr_entity = entity;
     if (health <= 0) {
         Event event_death;

@@ -5,7 +5,6 @@ void onBullet_Shoot(Event event) {
     int DATA_CAN_SHOOT = getDataType("DATA_CAN_SHOOT");
     float can_shoot = getDataValue(player_entity, DATA_CAN_SHOOT);
     if (can_shoot == 0.0f) return;
-
     // Variables pour gérer les données du joueur
     int DATA_SPEED = getDataType("DATA_SPEED");
     int DATA_COUNT_SHOOT = getDataType("DATA_COUNT_SHOOT");
@@ -269,7 +268,11 @@ void onEnemy_CollideWith_Player(Event event) {
 void onLeveling_Up(Event event) {
     if (!isEventName(event, "level_up")) return;
 
-    Entity entity = *(Entity*)event.data; 
+    Entity *entity_ptr = (Entity *)event.data;
+    if (entity_ptr == NULL) {
+        printf("onLeveling_Up: Entity corrupted\n");
+    }
+    Entity entity = *entity_ptr;
     
     int DATA_LEVEL = getDataType("DATA_LEVEL");
     int DATA_ATTACK = getDataType("DATA_ATTACK");
@@ -334,14 +337,21 @@ void onDeathEnemy(Event event) {
         getDataValue(player_entity, DATA_KILLED)+1.0f
     );
 
-    bool should_level_up = (int)getDataValue(player_entity, DATA_KILLED) % 2 == 0;
-    if (should_level_up) {
-        Event level_up;
-        level_up.type = getEventType("EVENT_LEVEL_UP");
-        strncpy(level_up.name, "level_up", sizeof(level_up.name) - 1);
-        level_up.name[sizeof(level_up.name) - 1] = '\0';
-        emitEvent(level_up);
+bool should_level_up = (int)getDataValue(player_entity, DATA_KILLED) % 2 == 0;
+if (should_level_up) {
+    Event level_up = Event_Create(getEventType("EVENT_LEVEL_UP"), "level_up");
+
+    Entity *player_entity_ptr = malloc(sizeof(Entity));
+    if (player_entity_ptr == NULL) {
+        fprintf(stderr, "Erreur : Impossible d'allouer de la mémoire pour player_entity_ptr\n");
+        exit(EXIT_FAILURE);
     }
+
+    *player_entity_ptr = player_entity;
+    level_up.data = (void *)player_entity_ptr;
+
+    emitEvent(level_up);
+}
 
     float level = getDataValue(player_entity, DATA_LEVEL);
     if (level >= 5.0) {

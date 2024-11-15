@@ -10,7 +10,7 @@ static int listenerCount = 0;
 static EventType eventTypes[MAX_EVENT_TYPES] = {0};
 static int eventTypeCount = 0;
 
-void initializeEventTypes() {
+int Init_event_types() {
     const char* predefinedEventNames[] = {
         "EVENT_MOVE",
         "EVENT_JUMP",
@@ -36,11 +36,29 @@ void initializeEventTypes() {
     int predefinedEventCount = sizeof(predefinedEventNames) / sizeof(predefinedEventNames[0]);
 
     for (int i = 0; i < predefinedEventCount; ++i) {
-        strncpy(eventTypes[eventTypeCount].name, predefinedEventNames[i], MAX_EVENT_NAME_LENGTH - 1);
-        eventTypes[eventTypeCount].name[MAX_EVENT_NAME_LENGTH - 1] = '\0';
-        eventTypes[eventTypeCount].index = eventTypeCount;
-        eventTypeCount++;
+        if (eventTypeCount < MAX_EVENT_TYPES) {
+            strncpy(eventTypes[eventTypeCount].name, predefinedEventNames[i], MAX_EVENT_NAME_LENGTH - 1);
+            eventTypes[eventTypeCount].name[MAX_EVENT_NAME_LENGTH - 1] = '\0';
+            eventTypes[eventTypeCount].index = eventTypeCount;
+            eventTypeCount++;
+        } else {
+            fprintf(stderr, "Error: Maximum event types reached. Cannot add more events.\n");
+            return 0;
+        }
     }
+
+    return 1;
+}
+
+// Fonction pour créer un Event avec un type et un nom, et avec data initialisé à NULL
+Event Event_Create(EventType type, const char* name) {
+    Event event;
+    event.type = type;
+    event.data = NULL;  // Initialise le pointeur data à NULL
+    strncpy(event.name, name, sizeof(event.name) - 1);
+    event.name[sizeof(event.name) - 1] = '\0'; // Ajoute un terminateur de chaîne
+
+    return event;
 }
 
 // Ajout d'un écouteur d'événements
@@ -72,12 +90,12 @@ void removeAllEvents(Entity entity) {
     for (int i = 0; i < MAX_BINDINGS; ++i) {
         if (entityBindings[entity][i].key != 0) {
             entityBindings[entity][i].key = 0; 
-            entityBindings[entity][i].eventType = (EventType){0};
+            entityBindings[entity][i].event.type = (EventType){0};
 
             // Libérer la mémoire associée à eventData si elle est allouée dynamiquement
-            if (entityBindings[entity][i].eventData != NULL) {
-                free(entityBindings[entity][i].eventData);
-                entityBindings[entity][i].eventData = NULL;
+            if (entityBindings[entity][i].event.data != NULL) {
+                free(entityBindings[entity][i].event.data);
+                entityBindings[entity][i].event.data = NULL;
             }
         }
     }
@@ -108,16 +126,15 @@ void emitEvent(Event event) {
     }
 }
 
-void bindEvent(Entity entity, SDL_Keycode key, EventType eventType, void* eventData) {
+void bindEvent(Entity entity, SDL_Keycode key, Event event) {
     for (int i = 0; i < MAX_BINDINGS; ++i) {
         if (entityBindings[entity][i].key == key || entityBindings[entity][i].key == 0) {
             entityBindings[entity][i].key = key;
-            entityBindings[entity][i].eventType = eventType;
-            entityBindings[entity][i].eventData = eventData;
+            entityBindings[entity][i].event = event;
             return;
         }
     }
-    printf("Warning: Max bindings reached for entity %d\n", entity);
+    printf("Warning: Max bindings reached for entity %ld\n", entity);
 }
 
 void processEvents() {
@@ -130,7 +147,7 @@ void processEvents() {
             printf("Error: Invalid event index %d\n", i);
             continue;
         }
-
+        
         Event event = eventQueue[i];
 
         if (event.type.index < 0 || event.type.index >= MAX_EVENT_COUNT) {
@@ -150,7 +167,7 @@ void processEvents() {
                         printf("Error: Invalid listener function index %d\n", k);
                         continue;
                     }
-
+                    
                     if (eventListeners[j].listeners[k] != NULL) {
                         eventListeners[j].listeners[k](event);
                     }
@@ -158,16 +175,7 @@ void processEvents() {
             }
         }
 
-        // Libérer les données associées à l'événement si elles ont été allouées dynamiquement
-        // ERROR : free(): double free detected in tcache 2
-        if (event.data != NULL) {
-            printf("Freeing event.data at address %p\n", event.data);
-            printf("Name of event : %s\n", event.name);
-            free(event.data);
-            printf("Is freed successfully\n");
-            event.data = NULL;
-        }
-
+        EventData_Free(&event); 
         eventQueue[i] = (Event){0};  // Réinitialiser l'événement après traitement
     }
     eventQueueCount = 0;
@@ -202,7 +210,7 @@ void updateEvent() {
         if (sdlEvent.type == SDL_MOUSEBUTTONDOWN) {
             SDL_GetMouseState(&mouse_x, &mouse_y);
             SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
-            if (!cursor_position) {
+            if (cursor_position == NULL) {
                 printf("Error: Failed to allocate memory for cursor position\n");
                 continue; // Skip this event
             }
@@ -211,7 +219,13 @@ void updateEvent() {
             cursor_position->y = mouse_y;
 
             Event event = {0};
-            event.data = cursor_position; 
+            event.data = malloc(sizeof(*cursor_position)); // Alloue de la mémoire pour une copie de cursor_position
+            if (event.data == NULL) {
+                continue;
+            }
+
+            // Copier les données de cursor_position vers event.data
+            memcpy(event.data, cursor_position, sizeof(*cursor_position));
 
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
                 leftMouseHeld = true;
@@ -246,10 +260,7 @@ void updateEvent() {
             }
 
             emitEvent(event);
-            if(cursor_position != NULL) {
-                free(cursor_position);
-                cursor_position = NULL;
-            }
+
         } else if (sdlEvent.type == SDL_MOUSEBUTTONUP) {
             if (sdlEvent.button.button == SDL_BUTTON_LEFT) {
                 leftMouseHeld = false;
@@ -260,70 +271,40 @@ void updateEvent() {
             }
         }
 
-        // Traitement des événements de souris maintenus
+        SDL_Point cursor_position;
+        cursor_position.x = mouse_x;
+        cursor_position.y = mouse_y;
+
         if (leftMouseHeld) {
-            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
-            if (!cursor_position) {
-                printf("Error: Failed to allocate memory for cursor position\n");
-                continue;
-            }
-
-            cursor_position->x = mouse_x;
-            cursor_position->y = mouse_y;
-
             Event event = {0};
             event.type.index = leftMouseHeldType;
             strncpy(event.name, "left_held", sizeof(event.name) - 1);
-            event.data = cursor_position; 
-
-            emitEvent(event);
-            if(cursor_position != NULL) {
-                free(cursor_position);
-                cursor_position = NULL;
+            event.data = malloc(sizeof(SDL_Point));
+            if (event.data) {
+                memcpy(event.data, &cursor_position, sizeof(SDL_Point));
+                emitEvent(event);
             }
         }
 
         if (rightMouseHeld) {
-            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
-            if (!cursor_position) {
-                printf("Error: Failed to allocate memory for cursor position\n");
-                continue;
-            }
-
-            cursor_position->x = mouse_x;
-            cursor_position->y = mouse_y;
-
             Event event = {0};
             event.type.index = rightMouseHeldType;
             strncpy(event.name, "right_held", sizeof(event.name) - 1);
-            event.data = cursor_position; 
-
-            emitEvent(event);
-            if(cursor_position != NULL) {
-                free(cursor_position);
-                cursor_position = NULL;
+            event.data = malloc(sizeof(SDL_Point));
+            if (event.data) {
+                memcpy(event.data, &cursor_position, sizeof(SDL_Point));
+                emitEvent(event);
             }
         }
 
         if (middleMouseHeld) {
-            SDL_Point* cursor_position = (SDL_Point*)malloc(sizeof(SDL_Point));
-            if (!cursor_position) {
-                printf("Error: Failed to allocate memory for cursor position\n");
-                continue;
-            }
-
-            cursor_position->x = mouse_x;
-            cursor_position->y = mouse_y;
-
             Event event = {0};
             event.type.index = middleMouseHeldType;
             strncpy(event.name, "middle_held", sizeof(event.name) - 1);
-            event.data = cursor_position; 
-
-            emitEvent(event);
-            if(cursor_position != NULL) {
-                free(cursor_position);
-                cursor_position = NULL;
+            event.data = malloc(sizeof(SDL_Point));
+            if (event.data) {
+                memcpy(event.data, &cursor_position, sizeof(SDL_Point));
+                emitEvent(event);
             }
         }
     }
@@ -354,4 +335,18 @@ bool isEventName(Event event, const char* name) {
         return true;
     }
     return false;
+}
+
+// ERREUR ICI
+// Fonction pour libérer la mémoire allouée pour TimerData
+void EventData_Free(Event *event) {
+    if (event->data == NULL || event->name == NULL || event->type.name == NULL) {
+        printf("EventData_Free: Event is Corrupted\n");
+    }
+
+    if (event->data) {
+        free(event->data);
+        event->data = NULL;
+    }
+
 }

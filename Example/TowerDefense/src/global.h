@@ -5,6 +5,8 @@
 #include "event.h"
 #include "timer.h"
 
+#include <stdint.h>
+
 #define ENEMIES_PER_SPAWN 10
 #define MAX_ENEMIES_SCREEN 1024
 

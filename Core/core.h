@@ -9,7 +9,10 @@
 
 #include "Entities/include/entity.h"
 
-#include "Utils/include/init_utils.h"
+#include "Engine/include/init_engine.h"
+#include "Engine/include/exit_engine.h"
+
+#include "Utils/include/string_utils.h"
 #include "Utils/include/time_utils.h"
 #include "Utils/include/window_utils.h"
 #include "Utils/include/texture_utils.h"
