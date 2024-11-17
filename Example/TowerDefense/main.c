@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
     
     setDataValue(player_entity, DATA_HEALTH, 100.0f);
     setDataValue(player_entity, DATA_MAX_HEALTH, getDataValue(player_entity, DATA_HEALTH));
-    setDataValue(player_entity, DATA_SPEED, 0.5f); 
+    setDataValue(player_entity, DATA_SPEED, 1.5f); 
     setDataValue(player_entity, DATA_ATTACK, 50.0f); 
     setDataValue(player_entity, DATA_PASSIVE, 2.0f); 
     setDataValue(player_entity, DATA_LEVEL, 1.0f);   
@@ -112,7 +112,7 @@ int main(int argc, char* argv[]) {
     emitEvent(event_spawn_enemies);
 
     // Ajouts d'emitter de particules
-    SDL_Texture* particle_texture_explosion = loadColor(game.renderer, COLOR_BLACK, 1, 1);
+    SDL_Texture* particle_texture_explosion = loadColor(game.renderer, COLOR_PINK, 1, 1);
     SDL_Texture* particle_texture_poison = loadColor(game.renderer, COLOR_GREEN, 1, 1);
     SDL_Texture* particle_texture_trap = loadColor(game.renderer, COLOR_GRAY, 1, 1);
     SDL_Texture* particle_texture_barrel = loadColor(game.renderer, COLOR_RED, 2, 2);
@@ -126,6 +126,7 @@ int main(int argc, char* argv[]) {
     changeState(STATE_PLAYING); 
     while (current_state != STATE_EXIT) {       
         handleState();
+        
     }
 
     Exit_All();

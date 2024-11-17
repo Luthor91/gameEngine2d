@@ -212,7 +212,6 @@ void freeParticleEmitters() {
     }
 }
 
-// Fonction pour copier un émetteur de particules sans nom
 void instanciateParticleEmitter(const char* sourceName) {
     ParticleEmitter* sourceEmitter = NULL;
     ParticleEmitter* targetEmitter = NULL;
@@ -221,6 +220,7 @@ void instanciateParticleEmitter(const char* sourceName) {
     for (int i = 0; i < MAX_EMITTERS; i++) {
         if (strcmp(emitters[i].name, sourceName) == 0) {
             sourceEmitter = &emitters[i];
+            //sourceEmitter->active = 1;
             break;
         }
     }
@@ -244,12 +244,13 @@ void instanciateParticleEmitter(const char* sourceName) {
     }
 
     // Copier les données de l'émetteur source vers l'émetteur cible
-    targetEmitter->name[0] = '\0';
+    // Limite de 30 caractères
+    snprintf(targetEmitter->name, sizeof(targetEmitter->name), "c_%.29s", sourceEmitter->name);
     targetEmitter->particleCount = sourceEmitter->particleCount;
     targetEmitter->position = sourceEmitter->position;
     targetEmitter->spreadness = sourceEmitter->spreadness;
     targetEmitter->expansionRate = sourceEmitter->expansionRate;
-    targetEmitter->active = 0;
+    targetEmitter->active = sourceEmitter->active;
     targetEmitter->initialized = 1;
     activeEmitterCount++;
 

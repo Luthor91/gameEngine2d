@@ -128,7 +128,7 @@ void onBullet_CollideWith_Enemy(Event event) {
 
     int DATA_ATTACK = getDataType("DATA_ATTACK");
     int DATA_HEALTH = getDataType("DATA_HEALTH");
-    
+
     if (!hasDataValue(enemy, DATA_HEALTH) || !hasDataValue(bullet, DATA_ATTACK)) return;
     if (!hasPositionComponent(bullet) || !hasSizeComponent(bullet)) return;
     if (!hasPositionComponent(enemy) || !hasSizeComponent(enemy)) return;
@@ -151,6 +151,8 @@ void onBullet_CollideWith_Enemy(Event event) {
     PositionComponent bullet_position = *getCenterPosition(bullet);
     setEmitterPosition("Explosion", bullet_position.x, bullet_position.y);
     instanciateParticleEmitter("Explosion");
+    activateEmitter("c_Explosion");
+    
     disableComponentEntity(bullet);
 }
 
@@ -273,7 +275,7 @@ void onLeveling_Up(Event event) {
         printf("onLeveling_Up: Entity corrupted\n");
     }
     Entity entity = *entity_ptr;
-    
+
     int DATA_LEVEL = getDataType("DATA_LEVEL");
     int DATA_ATTACK = getDataType("DATA_ATTACK");
     int DATA_HEALTH = getDataType("DATA_HEALTH");
@@ -337,27 +339,27 @@ void onDeathEnemy(Event event) {
         getDataValue(player_entity, DATA_KILLED)+1.0f
     );
 
-bool should_level_up = (int)getDataValue(player_entity, DATA_KILLED) % 2 == 0;
-if (should_level_up) {
-    Event level_up = Event_Create(getEventType("EVENT_LEVEL_UP"), "level_up");
+    bool should_level_up = (int)getDataValue(player_entity, DATA_KILLED) % 2 == 0;
+    if (should_level_up) {
+        Event level_up = Event_Create(getEventType("EVENT_LEVEL_UP"), "level_up");
 
-    Entity *player_entity_ptr = malloc(sizeof(Entity));
-    if (player_entity_ptr == NULL) {
-        fprintf(stderr, "Erreur : Impossible d'allouer de la mémoire pour player_entity_ptr\n");
-        exit(EXIT_FAILURE);
+        Entity *player_entity_ptr = malloc(sizeof(Entity));
+        if (player_entity_ptr == NULL) {
+            fprintf(stderr, "Erreur : Impossible d'allouer de la mémoire pour player_entity_ptr\n");
+            exit(EXIT_FAILURE);
+        }
+
+        *player_entity_ptr = player_entity;
+        level_up.data = (void *)player_entity_ptr;
+
+        emitEvent(level_up);
     }
-
-    *player_entity_ptr = player_entity;
-    level_up.data = (void *)player_entity_ptr;
-
-    emitEvent(level_up);
-}
 
     float level = getDataValue(player_entity, DATA_LEVEL);
     if (level >= 5.0) {
         killChance();
     }
-
+    printf("onDeathEnemy: Entity killed : %ld\n", entity);
     disableComponentEntity(entity);
 }
 

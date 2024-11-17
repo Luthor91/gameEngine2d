@@ -51,12 +51,11 @@ void renderEntities() {
     ParticleEmitter* emitters = getEmitters();
     for (int i = 0; i < getActiveEmitterCount(); ++i) {
         ParticleEmitter* emitter = &emitters[i];
-        if (!emitter->active) continue;
-
+        if (emitter->active == 0) continue;
+        
         for (int j = 0; j < emitter->particleCount; ++j) {
             Particle* particle = &emitter->particles[j];
-            if (!particle->active) continue;
-
+            if (particle->active == 0) continue;
             // Définir le rectangle de destination pour le rendu des particules
             SDL_Rect particleRect = {
                 .x = (int)particle->position.x,
