@@ -5,25 +5,23 @@ void amplify_bullet(Entity bullet) {
     int DATA_ATTACK = getDataType("DATA_ATTACK");
 
     if (!hasSizeComponent(bullet) || !hasVelocityComponent(bullet) || !hasHitboxComponent(bullet)) return;
-    SizeComponent bullet_size = *getSizeComponent(bullet);
-    HitboxComponent bullet_hitbox = *getHitboxComponent(bullet);
-    VelocityComponent bullet_velocity = *getVelocityComponent(bullet);
+    SizeComponent* bullet_size = getSizeComponent(bullet);
+    HitboxComponent* bullet_hitbox = getHitboxComponent(bullet);
+    VelocityComponent* bullet_velocity = getVelocityComponent(bullet);
 
-    bullet_size.height *= 1.5f;
-    bullet_size.width *= 1.5f;
-    bullet_velocity.velocityX *= 2.0f;
-    bullet_velocity.velocityY *= 2.0f;
-    bullet_hitbox.height =  bullet_size.height;
-    bullet_hitbox.width = bullet_size.width;
+    bullet_size->height *= 1.5f;
+    bullet_size->width *= 1.5f;
+    bullet_velocity->x *= 1.2f;
+    bullet_velocity->y *= 1.2f;
+    bullet_hitbox->height = bullet_size->height;
+    bullet_hitbox->width = bullet_size->width;
 
     SpriteComponent sprite = {
-        loadColor(game.renderer, COLOR_RED, bullet_size.width, bullet_size.height),
-        (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
+        loadColor(game.renderer, COLOR_RED, bullet_size->width, bullet_size->height),
+        (SDL_Rect){0, 0, bullet_size->width, bullet_size->height}
     };
     addSpriteComponent(bullet, sprite);
     setDataValue(bullet, DATA_ATTACK, getDataValue(bullet, DATA_ATTACK)*2.0f);
-    addTag(bullet, "Bullet");
-    addEntityToOutOfBoundsCleanup(bullet);
 }
 
 // Effet lvl 3
@@ -34,27 +32,27 @@ void summonSecondBullet(Entity bullet, float direction_x, float direction_y) {
     int DATA_PASSIVE = getDataType("DATA_PASSIVE");
 
     if (!hasDataValue(player_entity, DATA_ATTACK) || !hasDataValue(bullet, DATA_ATTACK) || !hasDataValue(player_entity, DATA_PASSIVE)) return;
-    
-    float coeff_passive = getDataValue(player_entity, getDataType("DATA_PASSIVE"));
-    Entity second_bullet = copyEntity(bullet);
-    SizeComponent bullet_size = *getSizeComponent(bullet);
-    HitboxComponent bullet_hitbox = *getHitboxComponent(bullet);
-    VelocityComponent velocity_second_bullet = {direction_x * 0.75f, direction_y * 0.75f};
 
-    bullet_size.width /= coeff_passive;
-    bullet_size.height /= coeff_passive;
-    bullet_hitbox.width = bullet_size.width;
-    bullet_hitbox.height = bullet_size.height;
+    Entity second_bullet = copyEntity(bullet);
+    SizeComponent* bullet_size = getSizeComponent(second_bullet);
+    HitboxComponent* bullet_hitbox = getHitboxComponent(second_bullet);
+    VelocityComponent* velocity_bullet = getVelocityComponent(second_bullet);
+
+    float coeff_passive = getDataValue(player_entity, getDataType("DATA_PASSIVE"));
+    bullet_size->width /= coeff_passive;
+    bullet_size->height /= coeff_passive;
+    bullet_hitbox->width = bullet_size->width;
+    bullet_hitbox->height = bullet_size->height;
+    velocity_bullet->x *= 0.75f;
+    velocity_bullet->y *= 0.75f;
 
     SpriteComponent second_bullet_sprite = {
-        loadColor(game.renderer, COLOR_GREEN, bullet_size.width, bullet_size.height),
-        (SDL_Rect){0, 0, bullet_size.width, bullet_size.height}
+        loadColor(game.renderer, COLOR_GREEN, bullet_size->width, bullet_size->height),
+        (SDL_Rect){0, 0, bullet_size->width, bullet_size->height}
     };
-
-    addVelocityComponent(second_bullet, velocity_second_bullet);
     addSpriteComponent(second_bullet, second_bullet_sprite);
+    
     setDataValue(second_bullet, DATA_ATTACK, getDataValue(player_entity, DATA_ATTACK) * 0.75);
-    addTag(second_bullet, "Bullet");
     addEntityToOutOfBoundsCleanup(second_bullet);
 }
 
@@ -111,11 +109,11 @@ void killChance() {
         Entity target = enemies[index];
 
         if (!hasPositionComponent(target) || !hasSizeComponent(target)) return;
-        PositionComponent pos_target = *getCenterPosition(target);
+        PositionComponent* pos_target = getCenterPosition(target);
 
         PositionComponent pos = { 
-            pos_target.x, 
-            pos_target.y
+            pos_target->x, 
+            pos_target->y
         };
         HitboxComponent hitbox = {0, 0, 1, 1, true};
         DataComponent data = DATA_COMPONENT_DEFAULT;
@@ -176,7 +174,7 @@ void summonBarrel() {
 
 void explodeBarrel(Entity barrel) {
     PositionComponent* barrel_pos = getPositionComponent(barrel);
-    PositionComponent barrel_center_position = *getCenterPosition(barrel);
+    PositionComponent* barrel_center_position = getCenterPosition(barrel);
     SizeComponent* barrel_size = getSizeComponent(barrel);
 
     if (barrel_pos == NULL || barrel_size == NULL) {
@@ -202,8 +200,9 @@ void explodeBarrel(Entity barrel) {
 
     float damage = getDataValue(barrel, DATA_ATTACK) * (1 + getDataValue(barrel, DATA_ACCUMULATION));
 
-    setEmitterPosition("Barrel", barrel_center_position.x, barrel_center_position.y);
+    setEmitterPosition("Barrel", barrel_center_position->x, barrel_center_position->y);
     instanciateParticleEmitter("Barrel");
+    activateEmitter("c_Barrel");
 
     int count = 0;
     Entity* enemies = getEntitiesWithTag("Enemy", &count);
@@ -251,12 +250,12 @@ void summonPoison() {
     SizeComponent size_poison = {100.0f * area_multiplier, 100.0f * area_multiplier};
 
     if (!hasSizeComponent(player_entity) || !hasPositionComponent(player_entity)) return;
-    SizeComponent size_player = *getSizeComponent(player_entity);
-    PositionComponent position_player = *getPositionComponent(player_entity);
+    SizeComponent* size_player = getSizeComponent(player_entity);
+    PositionComponent* position_player = getPositionComponent(player_entity);
 
     PositionComponent poison_position = {
-        (position_player.x + size_player.width / 2) - size_poison.width / 2,
-        (position_player.y + size_player.height / 2) - size_poison.height / 2
+        (position_player->x + size_player->width / 2) - size_poison.width / 2,
+        (position_player->y + size_player->height / 2) - size_poison.height / 2
     };
     HitboxComponent hitbox = {0.0f, 0.0f, size_poison.width, size_poison.height, true};
     DataComponent poison_data = DATA_COMPONENT_DEFAULT;
@@ -298,11 +297,11 @@ void adjustEnemyDirection(Entity enemy, PositionComponent bait_position) {
     }
 
     // Définir une vitesse propre à chaque ennemi ou utiliser une valeur fixe
-    float speed = sqrtf(enemy_velocity->velocityX * enemy_velocity->velocityX + enemy_velocity->velocityY * enemy_velocity->velocityY);
+    float speed = sqrtf(enemy_velocity->x * enemy_velocity->x + enemy_velocity->y * enemy_velocity->y);
 
     // Ajuster la vélocité de l'ennemi pour qu'il se dirige vers le "bait"
-    enemy_velocity->velocityX = direction_x * speed;
-    enemy_velocity->velocityY = direction_y * speed;
+    enemy_velocity->x = direction_x * speed;
+    enemy_velocity->y = direction_y * speed;
 }
 
 // Utility

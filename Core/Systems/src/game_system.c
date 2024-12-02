@@ -25,6 +25,9 @@ void handleState() {
         case STATE_PLAYING:
             handlePlayingState();
             break;
+        case STATE_DEBUGGING:
+            handleDebuggingState();
+            break;
         case STATE_PAUSED:
             handlePausedState();
             break;
@@ -51,8 +54,6 @@ void handleMenuState() {
 // Gestion de l'état de jeu
 void handlePlayingState() {
     float deltaTime = Time_GetDelta();
-    
-    Uint32 startTime = Time_GetCurrentTime(); // Temps avant l'exécution
     updateEvent();
     updateMovement(deltaTime);
     updateParticles(deltaTime);
@@ -62,7 +63,22 @@ void handlePlayingState() {
     updateAnimations();
     renderEntities();
     cleanupSystem();
-    Time_SetFPSLimit(DEFAULT_FPS_HIGH);
+    Time_SetFPSLimit(game.fps);
+}
+
+void handleDebuggingState() {
+    float deltaTime = Time_GetDelta();
+    updateEvent();
+    updateMovement(deltaTime);
+    updateParticles(deltaTime);
+    updateCollisionSystem();
+    updateTimers(deltaTime);
+    processEvents();
+    updateAnimations();
+    renderEntitiesWithHitboxes();
+    cleanupSystem();
+    Time_SetFPSLimit(game.fps);
+
 }
 
 // Gestion de l'état de pause

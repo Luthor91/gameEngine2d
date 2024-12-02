@@ -141,7 +141,7 @@ void processEvents() {
     if (eventQueueCount == 0) {
         return;
     }
-
+    
     for (int i = 0; i < eventQueueCount; ++i) {
         if (i < 0 || i >= MAX_EVENT_QUEUE_SIZE) {
             printf("Error: Invalid event index %d\n", i);
@@ -337,7 +337,6 @@ bool isEventName(Event event, const char* name) {
     return false;
 }
 
-// ERREUR ICI
 // Fonction pour libérer la mémoire allouée pour TimerData
 void EventData_Free(Event *event) {
     if (event->data == NULL || event->name == NULL || event->type.name == NULL) {

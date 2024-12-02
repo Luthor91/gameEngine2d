@@ -27,9 +27,9 @@ void onBullet_Shoot(Event event) {
     SDL_GetMouseState(&mouse_x, &mouse_y);
 
     // Calcul de la direction du tir
-    PositionComponent player_position = *getCenterPosition(player_entity);
-    float direction_x = mouse_x - player_position.x;
-    float direction_y = mouse_y - player_position.y;
+    PositionComponent* player_position = getCenterPosition(player_entity);
+    float direction_x = mouse_x - player_position->x;
+    float direction_y = mouse_y - player_position->y;
     float length = sqrtf(direction_x * direction_x + direction_y * direction_y);
     
     // Normalisation de la direction
@@ -43,8 +43,8 @@ void onBullet_Shoot(Event event) {
     if (!isEntityValid(bullet)) return;
 
     // Initialisation des composants du bullet
-    PositionComponent bullet_position = {player_position.x, player_position.y};
-    VelocityComponent bullet_velocity = {direction_x * 500.0f, direction_y * 500.0f};
+    PositionComponent bullet_position = {player_position->x, player_position->y};
+    VelocityComponent bullet_velocity = {direction_x * 400.0f, direction_y * 400.0f};
     SizeComponent bullet_size = {12, 12};
     HitboxComponent bullet_hitbox = {0, 0, bullet_size.width, bullet_size.height, true};
     SpriteComponent bullet_sprite = {
@@ -71,7 +71,7 @@ void onBullet_Shoot(Event event) {
     if (is_fifth_attack && level >= 2.0f) {
         amplify_bullet(bullet);
     } else if (is_third_attack && level >= 3.0f) {
-        summonSecondBullet(bullet, bullet_velocity.velocityX, bullet_velocity.velocityY);
+        summonSecondBullet(bullet, bullet_velocity.x, bullet_velocity.y);
     }
 }
 
@@ -89,7 +89,7 @@ void onBait_Spawn(Event event) {
     if (bait == INVALID_ENTITY_ID)  return;
 
     // Configurer les composants pour l'entité "bait"
-    SizeComponent size = {20.0f, 20.0f}; // Taille du bait
+    SizeComponent size = {20.0f, 20.0f};
     PositionComponent position = {
         cursor_position->x - size.width / 2, // Centrer la position sur la souris
         cursor_position->y - size.height / 2
@@ -121,7 +121,7 @@ void onBait_Spawn(Event event) {
 
 void onBullet_CollideWith_Enemy(Event event) {
     if (!checkCollisionTags(event, "Enemy", "Bullet")) return;
-
+    printf("bullet collided with enemy\n");
     CollisionData* collision_data = (CollisionData*)event.data;
     Entity enemy = collision_data->entity1;
     Entity bullet = collision_data->entity2;
@@ -133,8 +133,6 @@ void onBullet_CollideWith_Enemy(Event event) {
     if (!hasPositionComponent(bullet) || !hasSizeComponent(bullet)) return;
     if (!hasPositionComponent(enemy) || !hasSizeComponent(enemy)) return;
 
-    PositionComponent impact_position = *getCenterPosition(enemy);
-    
     float health_enemy =  getDataValue(enemy, DATA_HEALTH);
     float bullet_attack = getDataValue(bullet, DATA_ATTACK);
     int health = health_enemy - bullet_attack;
@@ -142,14 +140,8 @@ void onBullet_CollideWith_Enemy(Event event) {
     setDataValue(enemy, DATA_HEALTH, health);
     handle_damage_received(enemy, health);
 
-    int DATA_LEVEL = getDataType("DATA_LEVEL");
-    float level = getDataValue(player_entity, DATA_LEVEL);
-    if (level >= 4.0 && health <= 0) {
-        summonTrap(impact_position);
-    }
-
-    PositionComponent bullet_position = *getCenterPosition(bullet);
-    setEmitterPosition("Explosion", bullet_position.x, bullet_position.y);
+    PositionComponent* bullet_position = getCenterPosition(bullet);
+    setEmitterPosition("Explosion", bullet_position->x, bullet_position->y);
     instanciateParticleEmitter("Explosion");
     activateEmitter("c_Explosion");
     
@@ -225,11 +217,12 @@ void onTrap_CollideWith_Enemy(Event event) {
     int trap_attack = getDataValue(trap, DATA_ATTACK);
     int enemy_health = getDataValue(enemy, DATA_HEALTH) - trap_attack;
 
-    PositionComponent center_pos = *getCenterPosition(enemy);
+    PositionComponent* center_pos = getCenterPosition(enemy);
 
     setDataValue(enemy, DATA_HEALTH, enemy_health);
-    setEmitterPosition("Trap", center_pos.x, center_pos.y);
+    setEmitterPosition("Trap", center_pos->x, center_pos->y);
     instanciateParticleEmitter("Trap");
+    activateEmitter("c_Trap");
     handle_damage_received(enemy, enemy_health);
 
     disableComponentEntity(trap);
@@ -339,6 +332,17 @@ void onDeathEnemy(Event event) {
         getDataValue(player_entity, DATA_KILLED)+1.0f
     );
 
+    PositionComponent* death_position = getCenterPosition(entity);
+    float level = getDataValue(player_entity, DATA_LEVEL);
+
+    if (level >= 4.0) {
+        summonTrap(*death_position);
+    }
+
+    if (level >= 5.0) {
+        killChance();
+    }
+
     bool should_level_up = (int)getDataValue(player_entity, DATA_KILLED) % 2 == 0;
     if (should_level_up) {
         Event level_up = Event_Create(getEventType("EVENT_LEVEL_UP"), "level_up");
@@ -354,11 +358,7 @@ void onDeathEnemy(Event event) {
 
         emitEvent(level_up);
     }
-
-    float level = getDataValue(player_entity, DATA_LEVEL);
-    if (level >= 5.0) {
-        killChance();
-    }
+    
     printf("onDeathEnemy: Entity killed : %ld\n", entity);
     disableComponentEntity(entity);
 }
@@ -395,12 +395,12 @@ void onDamaged(Event event) {
         SDL_Texture* texture = loadTexture(sprite_file, game.renderer);
 
         // Obtenir la taille du joueur (assumant que getSizeComponent retourne un pointeur valide)
-        SizeComponent size = *getSizeComponent(entity);
+        SizeComponent* size = getSizeComponent(entity);
 
         // Créer un SpriteComponent avec la nouvelle texture
         SpriteComponent sprite = {
             texture, 
-            (SDL_Rect){0, 0, (int)size.width, (int)size.height}
+            (SDL_Rect){0, 0, (int)size->width, (int)size->height}
         };
 
         // Ajouter ou remplacer le composant de sprite du joueur
@@ -420,12 +420,12 @@ void onDamaged(Event event) {
         SDL_Texture* texture = loadTexture(sprite_file, game.renderer);
 
         // Obtenir la taille de l'ennemi (assumant que getSizeComponent retourne un pointeur valide)
-        SizeComponent size = *getSizeComponent(entity);
+        SizeComponent* size = getSizeComponent(entity);
 
         // Créer un SpriteComponent avec la nouvelle texture
         SpriteComponent sprite = {
             texture, 
-            (SDL_Rect){0, 0, (int)size.width, (int)size.height}
+            (SDL_Rect){0, 0, (int)size->width, (int)size->height}
         };
 
         // Ajouter ou remplacer le composant de sprite de l'ennemi

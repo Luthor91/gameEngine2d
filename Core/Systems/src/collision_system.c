@@ -12,11 +12,33 @@ CollisionData* CollisionData_Init(Entity entity1, Entity entity2) {
         printf("Memory allocation failed for collider1\n");
         return NULL;
     }
+
+    // Associer les entités
     collider->entity1 = entity1;
     collider->entity2 = entity2;
 
+    // Obtenir les centres des entités
+    PositionComponent* position_entity1 = getCenterPosition(entity1);
+    PositionComponent* position_entity2 = getCenterPosition(entity2);
+
+    // Calculer la position de la collision (point médian)
+    collider->position_x = (position_entity1->x + position_entity2->x) / 2.0f;
+    collider->position_y = (position_entity1->y + position_entity2->y) / 2.0f;
+
+    // Calculer la direction (vecteur de pos1 vers pos2)
+    collider->direction_x = position_entity2->x - position_entity1->x;
+    collider->direction_y = position_entity2->y - position_entity1->y;
+
+    // Normaliser le vecteur direction
+    float length = sqrt(collider->direction_x * collider->direction_x + collider->direction_y * collider->direction_y);
+    if (length > 0) {
+        collider->direction_x /= length;
+        collider->direction_y /= length;
+    }
+
     return collider;
 }
+
 
 // Fonction pour libérer les données de collision
 void CollisionData_Free(CollisionData* colliderData) {
@@ -39,6 +61,8 @@ void updateCollisionSystem() {
             if (!hasHitbox[entity2] || !hasPosition[entity2] || !isEntityEnabled(entity2)) continue;
 
             if (checkCollision(entity1, entity2)) {
+                printf("Collision between : %s : %s\n", getFirstTag(entity1), getFirstTag(entity2));
+                
                 // Initialisez les données de collision pour les deux entités
                 CollisionData* colliderData = CollisionData_Init(entity1, entity2);
 

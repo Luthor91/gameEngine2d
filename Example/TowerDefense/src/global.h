@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#define ENEMIES_PER_SPAWN 10
-#define MAX_ENEMIES_SCREEN 1024
+#define ENEMIES_PER_SPAWN 1 // 10
+#define MAX_ENEMIES_SCREEN 1 // 1024
 
 #endif // GLOBAL_H

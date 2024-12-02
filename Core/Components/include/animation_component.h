@@ -10,7 +10,7 @@ typedef struct AnimationComponent {
     int totalFrames;
     int frameDuration;
     Uint32 lastFrameTime;
-    bool isActive;
+    bool is_active;
 } AnimationComponent;
 
 AnimationComponent* getAnimationComponent(Entity entity);

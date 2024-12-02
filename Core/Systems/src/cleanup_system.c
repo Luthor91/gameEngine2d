@@ -45,9 +45,9 @@ void cleanupOutOfBoundsEntities(void) {
         Entity entity = outOfBoundsEntities[i];
 
         if (!hasPositionComponent(entity)) continue;
-        PositionComponent pos = *getPositionComponent(entity);
+        PositionComponent* pos = getPositionComponent(entity);
 
-        if (pos.x < 0 || pos.x > game.window_width || pos.y < 0 || pos.y > game.window_height) {
+        if (pos->x < 0 || pos->x > game.window_width || pos->y < 0 || pos->y > game.window_height) {
             disableComponentEntity(entity);
             removeEntityFromOutOfBoundsCleanup(i);
             --i;

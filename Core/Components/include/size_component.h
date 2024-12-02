@@ -6,8 +6,7 @@
 
 // Définition du composant Size
 typedef struct SizeComponent {
-    float width;
-    float height;
+    float width, height;
 } SizeComponent;
 
 // Fonction pour ajouter un composant Size à une entité

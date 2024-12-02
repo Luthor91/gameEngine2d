@@ -10,6 +10,10 @@ typedef struct Event Event;
 typedef struct CollisionData {
     Entity entity1;
     Entity entity2;
+    float position_x;
+    float position_y;
+    float direction_x;
+    float direction_y;
 } CollisionData;
 
 // Fonction pour initialiser le système de collision (si nécessaire)

@@ -9,6 +9,7 @@ typedef enum GameState {
     STATE_INIT,        // État d'initialisation
     STATE_MENU,        // État du menu principal
     STATE_PLAYING,     // État de jeu
+    STATE_DEBUGGING,     // État de Debug
     STATE_PAUSED,      // État de pause
     STATE_GAME_OVER,   // État de fin de jeu
     STATE_EXIT         // État de sortie du jeu
@@ -30,6 +31,7 @@ void handleState();
 void handleInitState();
 void handleMenuState();
 void handlePlayingState();
+void handleDebuggingState();
 void handlePausedState();
 void handleGameOverState();
 void handleExitState();

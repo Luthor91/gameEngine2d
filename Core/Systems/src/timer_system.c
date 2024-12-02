@@ -85,7 +85,7 @@ void updateTimers(float deltaTime) {
                         event.data = NULL;
                         continue;
                     }
-                    strncpy(event.name, "right_hold", sizeof(event.name) - 1);  // Nom par défaut "right_hold"
+                    strncpy(event.name, "default_timer_expired", sizeof(event.name) - 1);  // Nom par défaut "right_hold"
                     event.name[sizeof(event.name) - 1] = '\0'; // Assure la terminaison de la chaîne
                     emitEvent(event);
 

@@ -48,6 +48,9 @@ test:
 td:
 	$(CC) $(CFLAGS) -o main Example/TowerDefense/main.c $(AllFiles) $(TD_Files) $(L_LDFLAGS) && ./main
 
+rpg:
+	$(CC) $(CFLAGS) -o main Example/RPG/main.c $(AllFiles) $(TD_Files) $(L_LDFLAGS) && ./main
+
 # Nettoyage des fichiers compilés
 ##########
 # CLEAN

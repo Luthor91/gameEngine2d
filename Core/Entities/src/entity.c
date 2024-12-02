@@ -33,7 +33,8 @@ Entity copyEntity(Entity entity) {
     Entity new_entity = createEntity();
 
     if (new_entity == INVALID_ENTITY_ID) return INVALID_ENTITY_ID;
-    
+
+    // Copier les drapeaux indiquant les composants présents
     hasPosition[new_entity] = hasPosition[entity];
     hasVelocity[new_entity] = hasVelocity[entity];
     hasSprite[new_entity] = hasSprite[entity];
@@ -45,36 +46,56 @@ Entity copyEntity(Entity entity) {
     hasTags[new_entity] = hasTags[entity];
     hasDatas[new_entity] = hasDatas[entity];
 
-    // Copier les composants
+    // Copier chaque composant avec une copie indépendante
     if (hasAnimationComponent(entity)) {
-        addAnimationComponent(new_entity, *getAnimationComponent(entity));
+        AnimationComponent original = *getAnimationComponent(entity);
+        AnimationComponent new = {original.currentFrame, original.totalFrames, original.frameDuration, original.lastFrameTime, original.is_active};
+        addAnimationComponent(new_entity, new); // Copie profonde des champs si nécessaire
     }
     if (hasPositionComponent(entity)) {
-        addPositionComponent(new_entity, *getPositionComponent(entity));
+        PositionComponent original = *getPositionComponent(entity);
+        PositionComponent new = {original.x, original.y};
+        addPositionComponent(new_entity, original); // Copie profonde des champs
     }
     if (hasVelocityComponent(entity)) {
-        addVelocityComponent(new_entity, *getVelocityComponent(entity));
+        VelocityComponent original = *getVelocityComponent(entity);
+        VelocityComponent new = {original.x, original.y};
+        addVelocityComponent(new_entity, original);
     }
     if (hasSpriteComponent(entity)) {
-        addSpriteComponent(new_entity, *getSpriteComponent(entity));
+        SpriteComponent original = *getSpriteComponent(entity);
+        SpriteComponent new = {original.texture, original.srcRect};
+        addSpriteComponent(new_entity, original);
     }
     if (hasInputComponent(entity)) {
-        addInputComponent(new_entity, *getInputComponent(entity));
+        InputComponent original = *getInputComponent(entity);
+        InputComponent new = {original.keys};
+        addInputComponent(new_entity, original);
     }
     if (hasTransformComponent(entity)) {
-        addTransformComponent(new_entity, *getTransformComponent(entity));
+        TransformComponent original = *getTransformComponent(entity);
+        TransformComponent new = {original.x, original.y, original.scaleX, original.scaleY, original.rotation};
+        addTransformComponent(new_entity, original);
     }
     if (hasHitboxComponent(entity)) {
-        addHitboxComponent(new_entity, *getHitboxComponent(entity));
+        HitboxComponent original = *getHitboxComponent(entity);
+        HitboxComponent new = {original.x, original.y, original.width, original.height, original.is_active};
+        addHitboxComponent(new_entity, original);
     }
     if (hasSizeComponent(entity)) {
-        addSizeComponent(new_entity, *getSizeComponent(entity));
+        SizeComponent original = *getSizeComponent(entity);
+        SizeComponent new = {original.width, original.height};
+        addSizeComponent(new_entity, original);
     }
     if (hasDataComponents(entity)) {
-        addDataComponent(new_entity, *getDataComponent(entity));
+        DataComponent original = *getDataComponent(entity);
+        DataComponent new = {original.values[DATA_MAX+128]};
+        addDataComponent(new_entity, original);
     }
     if (hasTagComponent(entity)) {
-        addTagComponent(new_entity, *getTagComponent(entity));
+        TagComponent original = *getTagComponent(entity);
+        TagComponent new = {original.tags[MAX_TAGS][MAX_TAG_LENGTH], original.tagCount};
+        addTagComponent(new_entity, original);
     }
 
     return new_entity;

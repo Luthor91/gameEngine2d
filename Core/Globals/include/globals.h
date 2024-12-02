@@ -12,6 +12,7 @@ typedef struct GameGlobals {
     SDL_Window* window;
     int window_width;
     int window_height;
+    float fps;
 } GameGlobals;
 
 // Déclaration d'une instance globale de cette structure

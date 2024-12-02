@@ -53,7 +53,9 @@ void uponSpawnEnemies(Event event) {
     for (int i = 0; i < ENEMIES_PER_SPAWN; ++i) {
         if (count + i >= MAX_ENEMIES_SCREEN) return;
         Entity enemy = createEntity();
-        if (enemy == INVALID_ENTITY_ID) continue;
+        if (enemy == INVALID_ENTITY_ID) {
+            printf("Warning : uponSpawnEnemies: error creating entity\n");
+        }
         
         float speed_multiplier = 5.0f * (getDataValue(player_entity, DATA_DIFFICULTY) + 1);
         int edge = rand() % 4, x = 0, y = 0;
@@ -148,19 +150,19 @@ void uponApplyingPoisonTicks(Event event) {
     Entity poison = timer_data->entity;
 
     if (!hasHitboxComponent(poison) || !hasPositionComponent(poison) || !hasSizeComponent(poison)) return;
-    HitboxComponent hitbox = *getHitboxComponent(poison);
-    PositionComponent poison_pos = *getPositionComponent(poison);
-    SizeComponent poison_size = *getSizeComponent(poison);
+    HitboxComponent* hitbox = getHitboxComponent(poison);
+    PositionComponent* poison_pos = getPositionComponent(poison);
+    SizeComponent* poison_size = getSizeComponent(poison);
 
     int DATA_MAX_PROC = getDataType("DATA_MAX_PROC");
     int DATA_HEALTH = getDataType("DATA_HEALTH");
     int DATA_ATTACK = getDataType("DATA_ATTACK");
 
     SDL_Rect poison_area = {
-        .x = poison_pos.x,
-        .y = poison_pos.y,
-        .w = poison_size.width,
-        .h = poison_size.height
+        .x = poison_pos->x,
+        .y = poison_pos->y,
+        .w = poison_size->width,
+        .h = poison_size->height
     };
 
     if (!hasDataValue(poison, DATA_ATTACK) || !hasDataValue(poison, DATA_MAX_PROC)) return;
@@ -176,14 +178,14 @@ void uponApplyingPoisonTicks(Event event) {
         Entity enemy = enemies[index];
 
         if (!hasPositionComponent(enemy) || !hasSizeComponent(enemy) || !hasDataValue(enemy, DATA_HEALTH)) continue;
-        PositionComponent enemy_pos = *getPositionComponent(enemy);
-        SizeComponent enemy_size = *getSizeComponent(enemy);
+        PositionComponent* enemy_pos = getPositionComponent(enemy);
+        SizeComponent* enemy_size = getSizeComponent(enemy);
 
         SDL_Rect enemy_area = {
-            .x = enemy_pos.x,
-            .y = enemy_pos.y,
-            .w = enemy_size.width,
-            .h = enemy_size.height
+            .x = enemy_pos->x,
+            .y = enemy_pos->y,
+            .w = enemy_size->width,
+            .h = enemy_size->height
         };
 
         if (SDL_HasIntersection(&poison_area, &enemy_area) ) {
@@ -194,16 +196,17 @@ void uponApplyingPoisonTicks(Event event) {
                 getDataValue(player_entity, DATA_HEALTH) + (damage / 100)
             );
 
-            PositionComponent pos_centered = *getCenterPosition(enemy);
-            setEmitterPosition("Poison", pos_centered.x, pos_centered.y);
+            PositionComponent* pos_centered = getCenterPosition(enemy);
+            setEmitterPosition("Poison", pos_centered->x, pos_centered->y);
             instanciateParticleEmitter("Poison");
+            activateEmitter("c_Poison");
 
             handle_damage_received(enemy, health);
             current_poison_proc++;
         }
     }
 
-    hitbox.is_active = !hitbox.is_active;
+    hitbox->is_active = !hitbox->is_active;
     setDataValue(poison, DATA_ATTACK, getDataValue(poison, DATA_ATTACK) * 0.95);
     if (getDataValue(poison, DATA_ATTACK) < getDataValue(player_entity, DATA_ATTACK) / 20.0f) {
         disableComponentEntity(poison);
@@ -216,13 +219,13 @@ void uponDispawnBait(Event event) {
 
     TimerData* timer_data = (TimerData*)event.data;
     Entity bait = timer_data->entity;
-    PositionComponent position_player = *getPositionComponent(player_entity);
+    PositionComponent* position_player = getPositionComponent(player_entity);
     // Faire changer la direction des ennemis vers le joueur
     int count = 0;
     Entity* enemies = getEntitiesWithTag("Enemy", &count);
     for (int index = 0; index < count; index++) {
         Entity enemy = enemies[index];
-        adjustEnemyDirection(enemy, position_player);
+        adjustEnemyDirection(enemy, *position_player);
     }
 
     disableComponentEntity(bait);

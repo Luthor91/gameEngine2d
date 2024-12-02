@@ -13,6 +13,8 @@ int Init_All() {
         return 0;
     }
     
+    game.fps = DEFAULT_FPS_AVERAGE;
+
     game.window = createWindow("Game Window");
     if (game.window == NULL) {
         fprintf(stderr, "Error: Failed to create window\n");
@@ -25,7 +27,7 @@ int Init_All() {
         SDL_DestroyWindow(game.window); // Nettoyage avant retour
         return 0; // Échec
     }
-    
+
     initStateMachine();
 
     if (Init_Dependancies() == 0) {
@@ -34,8 +36,6 @@ int Init_All() {
         return 0; // Échec
     }
     
-
-
     return 1; // Succès
 }
 

@@ -1,6 +1,14 @@
 #include "../../Core/core.h"
 #include "src/global.h"
 
+/**
+ * Etat du jeu : 
+ *  - Colision buggés entre Bullet, Trap et Enemy
+ *  - Bullets qui partent dans une direction étrange
+ *  - Second Bullets qui se désactivent et se réactivent quand une autre entité bouge 
+ * 
+ */
+
 int main(int argc, char* argv[]) {
 
     if (Init_All() == 0) {
@@ -88,8 +96,8 @@ int main(int argc, char* argv[]) {
     
     setDataValue(player_entity, DATA_HEALTH, 100.0f);
     setDataValue(player_entity, DATA_MAX_HEALTH, getDataValue(player_entity, DATA_HEALTH));
-    setDataValue(player_entity, DATA_SPEED, 1.5f); 
-    setDataValue(player_entity, DATA_ATTACK, 50.0f); 
+    setDataValue(player_entity, DATA_SPEED, 0.5f); 
+    setDataValue(player_entity, DATA_ATTACK, 100.0f); 
     setDataValue(player_entity, DATA_PASSIVE, 2.0f); 
     setDataValue(player_entity, DATA_LEVEL, 1.0f);   
 
@@ -105,7 +113,7 @@ int main(int argc, char* argv[]) {
     bindEvent(player_entity, SDL_BUTTON_LEFT, event_shoot);
     
     addTimerComponent(player_entity, "difficulty_increase", 30.0f, true);
-    addTimerComponent(player_entity, "spawn_enemies", 15.50f, true);
+    addTimerComponent(player_entity, "spawn_enemies", 1.50f, true);
 
     Event event_spawn_enemies = Event_Create(EVENT_TIMER_EXPIRED, "spawn_enemies");
     event_spawn_enemies.data = TimerData_Init("spawn_enemies", background);
@@ -117,16 +125,15 @@ int main(int argc, char* argv[]) {
     SDL_Texture* particle_texture_trap = loadColor(game.renderer, COLOR_GRAY, 1, 1);
     SDL_Texture* particle_texture_barrel = loadColor(game.renderer, COLOR_RED, 2, 2);
     
-    initParticleEmitter("Explosion", 128, particle_texture_explosion, 0, 0, 2.0f, 2.0f);
-    initParticleEmitter("Poison", 128, particle_texture_poison, 0, 0, 2.0f, 2.0f);
-    initParticleEmitter("Trap", 128, particle_texture_trap, 0, 0, 2.0f, 2.0f);
-    initParticleEmitter("Barrel", 128, particle_texture_barrel, 0, 0, 4.0f, 4.0f);
+    initParticleEmitter("Explosion", 64, particle_texture_explosion, 0, 0, 1.5f, 1.5f);
+    initParticleEmitter("Poison", 64, particle_texture_poison, 0, 0, 2.0f, 2.0f);
+    initParticleEmitter("Trap", 64, particle_texture_trap, 0, 0, 2.0f, 2.0f);
+    initParticleEmitter("Barrel", 64, particle_texture_barrel, 0, 0, 4.0f, 4.0f);
 
     // Lancement du jeu
-    changeState(STATE_PLAYING); 
-    while (current_state != STATE_EXIT) {       
+    changeState(STATE_DEBUGGING);
+    while (current_state != STATE_EXIT) {
         handleState();
-        
     }
 
     Exit_All();
